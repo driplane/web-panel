@@ -1,0 +1,78 @@
+<ion-content scrollY="false">
+  <ion-grid>
+    <ion-row class="login-container-row">
+      <ion-col>
+        <div class="login-container">
+          <div class="logo-container">
+            <h1>Driplane</h1>
+          </div>
+          <form #form="ngForm" *ngIf="!success" (ngSubmit)="signUp(form)">
+            <ion-list>
+              <ion-item>
+                <ion-label position="stacked">E-mail</ion-label>
+                <ion-input
+                  autocomplete="email"
+                  type="email"
+                  email
+                  name="username"
+                  [(ngModel)]="username"
+                  required
+                  #email="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-text *ngIf="form.submitted && email.invalid" color="danger">
+                <p>Please write a valid email address</p>
+              </ion-text>
+
+              <ion-item>
+                <ion-label position="stacked">Password</ion-label>
+                <ion-input
+                  type="password"
+                  name="password"
+                  [(ngModel)]="password"
+                  required
+                  autocomplete="new-password"
+                  #pass="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-text *ngIf="form.submitted && pass.invalid" color="danger">
+                <p>Write your pasword</p>
+              </ion-text>
+              <ion-item>
+                <ion-label position="stacked">Verify Password</ion-label>
+                <ion-input
+                  type="password"
+                  name="password2"
+                  [(ngModel)]="password2"
+                  required
+                  autocomplete="new-password"
+                  #pass2="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-text *ngIf="form.submitted && password !== password2" color="danger">
+                <p>Passwords don't match</p>
+              </ion-text>
+            </ion-list>
+            <button type="submit"></button>
+            <ion-button
+              type="submit"
+              expand="block"
+              share="round"
+              color="success"
+              >Register</ion-button
+            >
+
+            <ion-item lines="none">
+              <p>Do you already have an account?</p>
+              <p>
+                <ion-button routerLink="/login">Login</ion-button>
+              </p></ion-item
+            >
+          </form>
+
+          <ion-text *ngIf="success" class="success">Please check your email and click the link to verify your registration.</ion-text>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,10 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Driplane Verify E-mail</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-spinner *ngIf="!success"></ion-spinner>
+  <ion-text *ngIf="success" class="success">Your E-mail is verified. You can now <a href="/login">login</a>.</ion-text>
+</ion-content>

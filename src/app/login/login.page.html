@@ -1,0 +1,61 @@
+<ion-content scrollY="false">
+  <ion-grid>
+    <ion-row class="login-container-row">
+      <ion-col>
+        <div class="login-container">
+          <div class="logo-container">
+            <h1>Driplane</h1>
+          </div>
+          <form #form="ngForm" (ngSubmit)="signIn(form)">
+            <ion-list>
+              <ion-item>
+                <ion-label position="stacked">E-mail</ion-label>
+                <ion-input
+                  autocomplete="email"
+                  type="email"
+                  email
+                  name="username"
+                  [(ngModel)]="username"
+                  required
+                  #email="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-text *ngIf="form.submitted && email.invalid" color="danger">
+                <p>Please write a valid email address</p>
+              </ion-text>
+
+              <ion-item>
+                <ion-label position="stacked">Password</ion-label>
+                <ion-input
+                  type="password"
+                  name="password"
+                  [(ngModel)]="password"
+                  required
+                  #pass="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-text *ngIf="form.submitted && pass.invalid" color="danger">
+                <p>Write your pasword</p>
+              </ion-text>
+            </ion-list>
+            <button type="submit"></button>
+            <ion-button
+              type="submit"
+              expand="block"
+              share="round"
+              color="success"
+              >Login</ion-button
+            >
+
+            <ion-item lines="none">
+              <p>
+                <ion-button routerLink="/signup">Create Account</ion-button>
+                <ion-button routerLink="/reset-password" fill="outline">Reset Password</ion-button>
+              </p></ion-item
+            >
+          </form>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,19 @@
+.login-container-row {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+.logo-container {
+    padding: 15px 0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+form > button {
+    visibility: hidden;
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Driplane",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -1,0 +1,32 @@
+
+:host {
+    display: flex;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
+
+    &:last-child {
+        border-bottom: none;
+    }
+    
+    @media only screen and (max-width: 600px) {
+        display: block;
+    }
+
+    label {
+        width: 140px;
+        padding-top: 20px;
+
+        .value {
+            font-weight: bold;
+            font-size: x-large;
+        }
+    }
+
+    .chart-container {
+        flex: 1;
+        height: 100px;
+    }
+    canvas {
+        height: 100px;
+    }
+}
