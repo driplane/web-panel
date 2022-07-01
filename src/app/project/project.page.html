@@ -13,14 +13,21 @@
       <ion-segment-button value="previous-month">Previous Month</ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  <ion-toolbar>
-    <ion-select [(ngModel)]="selectedProject" placeholder="Project" (ionChange)="projectChanged($event)">
-    </ion-select>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid>
+  <ion-card *ngIf="waitingForEvents">
+    <ion-card-header>
+      <!-- <ion-card-subtitle>Top pages</ion-card-subtitle> -->
+      <ion-card-title>Waiting for events <ion-spinner></ion-spinner></ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      This projects wait for a page view event. Did you put our snippet to your website?
+    </ion-card-content>
+  </ion-card>
+
+  <ion-grid *ngElse>
     <ion-row>
       <ion-col>
         <ion-card class="cache-ratio">
@@ -30,72 +37,38 @@
           </ion-card-header>
 
           <ion-card-content>
-            <app-timeline-chart-row label="Cache ratio" [chartData]="chartData.cacheRatio" unit="percent"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Total requests" [chartData]="chartData.imageViews"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Total resize" [chartData]="chartData.resizeCounts"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Total traffic" [chartData]="chartData.totalBWs" unit="filesize"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Origin requests" [chartData]="chartData.originRequestCounts"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Origin traffic" [chartData]="chartData.originBWs" unit="filesize"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Cache ratio" *ngIf="chartData" [chartData]="chartData.cacheRatio" unit="percent"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Total requests" *ngIf="chartData" [chartData]="chartData.imageViews"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Total resize" *ngIf="chartData" [chartData]="chartData.resizeCounts"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Total traffic" *ngIf="chartData" [chartData]="chartData.totalBWs" unit="filesize"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Origin requests" *ngIf="chartData" [chartData]="chartData.originRequestCounts"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Origin traffic" *ngIf="chartData" [chartData]="chartData.originBWs" unit="filesize"></app-timeline-chart-row>
           </ion-card-content>
         </ion-card>
       </ion-col>
       <ion-col>
         <ion-card>
           <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>Top requested images</ion-card-title>
+            <ion-card-subtitle>Top pages</ion-card-subtitle>
+            <!-- <ion-card-title>Top pages</ion-card-title> -->
           </ion-card-header>
 
           <ion-card-content>
             <table>
-              <tr *ngFor="let item of topRequestedImages">
+              <tr *ngFor="let item of topPages">
+                <td><a href="/projects/{{ accountId }}/page-detail{{item.path}}">{{ item.path }}</a></td>
                 <td>{{ item.count | number }}</td>
-                <td><a href="/projects/{{ accountId }}/image-detail{{item.path}}">{{ item.path }}</a></td>
               </tr>
             </table>
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <ion-col>
-        <ion-card>
-          <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>Top failed images</ion-card-title>
-          </ion-card-header>
 
-          <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topFailedImages">
-                <td>{{ item.count | number }}</td>
-                <td>{{ item.status }}</td>
-                <td>{{ item.path }}</td>
-              </tr>
-            </table>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
       <ion-col>
         <ion-card>
           <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>Top missing urls</ion-card-title>
-          </ion-card-header>
-
-          <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topBrokenImages">
-                <td>{{ item.count | number }}</td>
-                <td>{{ item.path }}</td>
-              </tr>
-            </table>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <ion-col>
-        <ion-card>
-          <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>Top referrers</ion-card-title>
+            <ion-card-subtitle>Top referrers</ion-card-subtitle>
+            <!-- <ion-card-title>Top referrers</ion-card-title> -->
           </ion-card-header>
 
           <ion-card-content>
@@ -112,8 +85,8 @@
       <ion-col>
         <ion-card>
           <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>Top Browsers</ion-card-title>
+            <ion-card-subtitle>Top Browsers</ion-card-subtitle>
+            <!-- <ion-card-title>Top Browsers</ion-card-title> -->
           </ion-card-header>
 
           <ion-card-content>
@@ -121,40 +94,6 @@
               <tr *ngFor="let item of topBrowsers">
                 <td>{{ item.count | number }}</td>
                 <td>{{ item.browser }}</td>
-              </tr>
-            </table>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <ion-col>
-        <ion-card>
-          <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>HTTP Statuses</ion-card-title>
-          </ion-card-header>
-
-          <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topStatuses">
-                <td>{{ item.count | number }}</td>
-                <td>{{ item.status }}</td>
-              </tr>
-            </table>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-      <ion-col>
-        <ion-card>
-          <ion-card-header>
-            <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-            <ion-card-title>Projects</ion-card-title>
-          </ion-card-header>
-
-          <ion-card-content>
-            <table>
-              <tr *ngFor="let item of projects">
-                <td>{{ item.count | number }}</td>
-                <td>{{ item.distribution }}</td>
               </tr>
             </table>
           </ion-card-content>

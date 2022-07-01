@@ -29,8 +29,10 @@ export class ResetPasswordPage implements OnInit {
         map(paramMap => paramMap.get('token')),
       )
       .subscribe((token) => {
-        this.tokenFlow = true;
-        this.token = token;
+        if (token) {
+          this.tokenFlow = true;
+          this.token = token;
+        }
       });
   }
 

@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap } from 'rxjs/operators';
 import { AuthResponse, Project, Response, TopListItem, CountItem, HistogramItem, RequestOptions, QueryResponse } from './driplane.types';
 
 @Injectable({
@@ -62,7 +62,14 @@ export class DriplaneService {
         email,
         password,
       })
-      .pipe(map((resp) => resp as AuthResponse));
+      .pipe(
+        map((resp) => resp as AuthResponse),
+        tap(resp => {
+          if (resp.token) {
+            this.token = resp.token;
+          }
+        })
+      );
   }
 
   getProjects(): Observable<Project[]> {

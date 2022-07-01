@@ -18,7 +18,8 @@ export class LoginPage implements OnInit {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   signIn(form: NgForm) {
     if (form.valid) {

@@ -5,3 +5,7 @@ ion-slides {
 .swiper-slide {
     display: block;
 }
+
+form > button {
+  visibility: hidden;
+}

@@ -2,12 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as dayjs from 'dayjs';
 import { combineLatest, Subject } from 'rxjs';
-import { combineAll, map, mapTo, switchMap, tap } from 'rxjs/operators';
+import { combineAll, map, mapTo, switchMap, tap, shareReplay } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
 import { Project } from '../driplane.types';
 import * as utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
+import { LoadingController } from '@ionic/angular';
+import { select, Store } from '@ngrx/store';
+import { activeProject } from '../project.selectors';
 
+dayjs.extend(utc);
 
 @Component({
   selector: 'app-project',
@@ -15,8 +18,15 @@ dayjs.extend(utc);
   styleUrls: ['./project.page.scss'],
 })
 export class ProjectPage implements OnInit {
+  activeProject$ = this.store.pipe(
+    select(activeProject),
+    shareReplay(1),
+  );
+
   selectedRange = 'day';
   selectedProject: Project;
+  loading = true;
+  waitingForEvents = false;
 
   dateRange = new Subject<any>();
   project = new Subject<Project>();
@@ -25,8 +35,10 @@ export class ProjectPage implements OnInit {
   until: string;
 
   constructor(
+    private store: Store,
     private driplane: DriplaneService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private loadingCtrl: LoadingController
   ) {}
 
   segmentChanged(ev: any) {
@@ -39,6 +51,7 @@ export class ProjectPage implements OnInit {
   }
 
   updateRange(range) {
+    console.log(range);
     const diffMap = {
       day: [-1, -1],
       week: [-1, -7],
@@ -63,17 +76,17 @@ export class ProjectPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.route.paramMap.pipe(
-      map((paramMap) => paramMap.get('projectId')),
-      switchMap(projectId => this.driplane.getProject(projectId))
-    ).subscribe((project) => {
-      this.project.next(project);
+  async ngOnInit() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Loading...'
     });
 
-    combineLatest([this.dateRange, this.project])
+    loading.present();
+
+    combineLatest([this.dateRange, this.activeProject$])
       .pipe(
         tap(([{ since, until }, project]) => {
+          console.log(since, until, project);
           this.projectId = project.id;
           this.since = since;
           this.until = until;
@@ -86,15 +99,14 @@ export class ProjectPage implements OnInit {
       )
       .subscribe((topList) => {
         console.log(topList);
+        loading.dismiss();
+      }, (error) => {
+        if (error.status === 404) {
+          this.waitingForEvents = true;
+        }
+        loading.dismiss();
       });
 
     this.updateRange('day');
-
-    this.route.paramMap.pipe(
-      map((paramMap) => paramMap.get('projectId')),
-      switchMap(projectId => this.driplane.getProject(projectId))
-    ).subscribe((project) => {
-      this.project.next(project);
-    });
   }
 }

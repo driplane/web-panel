@@ -3,7 +3,7 @@
     <ion-content>
       <ion-list id="inbox-list">
         <ion-list-header>Driplane</ion-list-header>
-        <ion-note>muratcorlu</ion-note>
+        <ion-note>{{ ( activeProject$ | async )?.name }}</ion-note>
 
         <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
           <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" [class.selected]="selectedIndex === i">
@@ -14,11 +14,11 @@
       </ion-list>
 
       <ion-list id="labels-list">
-        <ion-list-header>Labels</ion-list-header>
+        <ion-list-header>Projects</ion-list-header>
 
-        <ion-item *ngFor="let label of labels" lines="none">
+        <ion-item *ngFor="let project of projects$ | async" lines="none">
           <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-          <ion-label>{{ label }}</ion-label>
+          <ion-label>{{ project.name }}</ion-label>
         </ion-item>
       </ion-list>
     </ion-content>
