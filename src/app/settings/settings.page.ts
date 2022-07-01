@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { activeProject } from '../project.selectors';
+import { shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-settings',
@@ -6,8 +9,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit {
+  activeProject$ = this.store.pipe(
+    select(activeProject),
+    shareReplay(1),
+  );
 
-  constructor() { }
+  constructor(private store: Store) { }
 
   ngOnInit() {
   }

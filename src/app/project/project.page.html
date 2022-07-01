@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ (project | async )?.name }} Dashboard</ion-title>
+    <ion-title>{{ (activeProject$ | async )?.name }} Dashboard</ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment [(ngModel)]="selectedRange" value="day" (ionChange)="segmentChanged($event)">

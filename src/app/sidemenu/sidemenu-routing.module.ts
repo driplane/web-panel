@@ -12,7 +12,7 @@ const routes: Routes = [{
     loadChildren: () => import('../project/project.module').then( m => m.ProjectPageModule)
   },
   {
-    path: 'settings',
+    path: 'projects/:projectId/settings',
     loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
   },
   ]

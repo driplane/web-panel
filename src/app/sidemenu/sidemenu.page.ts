@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { filter, first, shareReplay } from 'rxjs/operators';
-import { DriplaneService } from '../driplane.service';
-import { Project } from '../driplane.types';
+import { shareReplay } from 'rxjs/operators';
 import { loadProjects, switchProject } from '../project.actions';
 import { activeProject, projects } from '../project.selectors';
 @Component({
@@ -41,7 +38,6 @@ export class SidemenuPage implements OnInit {
       icon: 'cog',
     },
   ];
-  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
   constructor(
     private router: Router,
@@ -52,6 +48,7 @@ export class SidemenuPage implements OnInit {
   ngOnInit() {
     this.store.dispatch(loadProjects());
 
+
     this.projects$.subscribe((projectList) => {
       this.store.dispatch(switchProject({activeProject: projectList[0]}));
     });
@@ -61,5 +58,13 @@ export class SidemenuPage implements OnInit {
         this.router.navigate([`/projects/${p.id}`]);
       }
     });
+  }
+
+  compareWith(o1, o2) {
+    return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  }
+
+  switchProject(event) {
+    this.store.dispatch(switchProject({activeProject: event.target.value}));
   }
 }
