@@ -29,8 +29,17 @@ export interface Project {
   id: string;
   name: string;
   secret: string;
+  keys: ProjectKey[];
 }
 
+export interface ProjectKey {
+  key: string;
+  name: string;
+  read: boolean;
+  write: boolean;
+  created_at: string;
+  auto_fill: object;
+}
 export interface TopListItem {
   tag: string;
   count: number;

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { shareReplay } from 'rxjs/operators';
-import { loadProjects, switchProject } from '../project.actions';
+import { loadProjects } from '../project.actions';
 import { activeProject, projects } from '../project.selectors';
 @Component({
   selector: 'app-sidemenu',
@@ -20,25 +20,6 @@ export class SidemenuPage implements OnInit {
     shareReplay(1),
   );
 
-  public selectedIndex = 0;
-  public appPages = [
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: 'speedometer',
-    },
-    {
-      title: 'Projects',
-      url: '/projects',
-      icon: 'paper-plane',
-    },
-    {
-      title: 'Settings',
-      url: '/settings',
-      icon: 'cog',
-    },
-  ];
-
   constructor(
     private router: Router,
     private store: Store
@@ -48,16 +29,30 @@ export class SidemenuPage implements OnInit {
   ngOnInit() {
     this.store.dispatch(loadProjects());
 
+    // let activeProjectSelected = false;
 
-    this.projects$.subscribe((projectList) => {
-      this.store.dispatch(switchProject({activeProject: projectList[0]}));
-    });
+    // this.activeProject$.subscribe(() => {
+    //   activeProjectSelected = true;
+    // });
 
-    this.activeProject$.subscribe((p) => {
-      if (p) {
-        this.router.navigate([`/projects/${p.id}`]);
-      }
-    });
+    // if(this.route.firstChild) {
+    //   this.route.firstChild.params.subscribe((params) => {
+    //     console.log(params);
+    //   });
+    // }
+
+    // this.projects$.subscribe((projectList) => {
+    //   if (!activeProjectSelected) {
+    //     this.store.dispatch(switchProject({activeProject: projectList[0]}));
+    //     this.router.navigate([`/projects/${projectList[0].id}`]);
+    //   }
+    // });
+
+    // this.activeProject$.subscribe((p) => {
+    //   if (p) {
+    //     this.router.navigate([`/projects/${p.id}`]);
+    //   }
+    // });
   }
 
   compareWith(o1, o2) {
@@ -65,6 +60,7 @@ export class SidemenuPage implements OnInit {
   }
 
   switchProject(event) {
-    this.store.dispatch(switchProject({activeProject: event.target.value}));
+    this.router.navigate([`/projects/${event.target.value.id}`]);
+    // this.store.dispatch(switchProject({activeProject: event.target.value}));
   }
 }

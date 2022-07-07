@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
 import { DriplaneService } from '../driplane.service';
 
 @Component({
@@ -15,7 +14,7 @@ export class SignupPage implements OnInit {
 
   success = false;
 
-  constructor(private router: Router, private driplane: DriplaneService) { }
+  constructor(private driplane: DriplaneService) { }
 
   ngOnInit() {
   }

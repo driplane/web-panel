@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { EMPTY } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { EMPTY, merge } from 'rxjs';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { DriplaneService } from './driplane.service';
-import { loadProjects, loadProjectSuccess } from './project.actions';
+import { loadProjects, loadProjectSuccess, loadProjectKeys, loadProjectKeysSuccess, switchProject } from './project.actions';
 
 @Injectable()
 export class ProjectEffects {
@@ -17,6 +17,23 @@ export class ProjectEffects {
       ))
     )
   );
+
+  loadProjectKeys$ = createEffect(() => this.actions$.pipe(
+    ofType(loadProjectKeys),
+    mergeMap(({ project }) => this.driplane.getProjectsKeys(project)
+      .pipe(
+        map((projectKeys) => loadProjectKeysSuccess({ project, projectKeys })),
+        catchError(() => EMPTY)
+      )
+    )
+  ));
+
+  // switchProject$ = createEffect(() => this.actions$.pipe(
+  //   ofType(switchProject),
+  //   tap(({activeProject}) => {
+  //     localStorage.setItem('lastProjectId', activeProject);
+  //   })
+  // ));
 
   constructor(
     private actions$: Actions,

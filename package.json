@@ -29,6 +29,7 @@
     "@ionic-native/status-bar": "^5.36.0",
     "@ionic/angular": "^6.1.9",
     "@ngrx/effects": "^14.0.1",
+    "@ngrx/router-store": "^14.0.1",
     "@ngrx/store": "^14.0.1",
     "@ngrx/store-devtools": "^14.0.1",
     "chart.js": "^3.8.0",

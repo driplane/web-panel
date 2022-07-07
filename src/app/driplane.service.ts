@@ -1,12 +1,18 @@
-import {
-  HttpClient,
-  HttpParams,
-  HttpResponse,
-} from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
-import { AuthResponse, Project, Response, TopListItem, CountItem, HistogramItem, RequestOptions, QueryResponse } from './driplane.types';
+import { filter, map, shareReplay, tap, throwIfEmpty } from 'rxjs/operators';
+import {
+  AuthResponse,
+  Project,
+  Response,
+  TopListItem,
+  CountItem,
+  HistogramItem,
+  RequestOptions,
+  QueryResponse,
+  ProjectKey,
+} from './driplane.types';
 
 @Injectable({
   providedIn: 'root',
@@ -20,20 +26,18 @@ export class DriplaneService {
   }
 
   register(email, password) {
-    return this.http
-      .post(`${this.baseUrl}/users`, {
-        email,
-        password,
-      });
+    return this.http.post(`${this.baseUrl}/users`, {
+      email,
+      password,
+    });
   }
 
   verifyToken(token) {
-    return this.http
-      .get(`${this.baseUrl}/auth/verify`, {
-        params: {
-          token
-        }
-      });
+    return this.http.get(`${this.baseUrl}/auth/verify`, {
+      params: {
+        token,
+      },
+    });
   }
 
   /**
@@ -42,18 +46,16 @@ export class DriplaneService {
    * @param email Email address to send password reset
    */
   passwordReset(email) {
-    return this.http
-      .post(`${this.baseUrl}/auth/password_reset`, {
-        email,
-      });
+    return this.http.post(`${this.baseUrl}/auth/password_reset`, {
+      email,
+    });
   }
 
   updatePassword(token, password) {
-    return this.http
-      .put(`${this.baseUrl}/users/me/password`, {
-        token,
-        password
-      });
+    return this.http.put(`${this.baseUrl}/users/me/password`, {
+      token,
+      password,
+    });
   }
 
   login(email, password): Observable<AuthResponse> {
@@ -64,7 +66,7 @@ export class DriplaneService {
       })
       .pipe(
         map((resp) => resp as AuthResponse),
-        tap(resp => {
+        tap((resp) => {
           if (resp.token) {
             this.token = resp.token;
           }
@@ -74,15 +76,23 @@ export class DriplaneService {
 
   getProjects(): Observable<Project[]> {
     return this.tokenReq<Response<Project[]>>('get', 'projects').pipe(
-      map((res) => res.response)
+      map((res) => res.response),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   getProject(projectId: string): Observable<Project> {
-    return this.tokenReq<Response<Project[]>>('get', `projects`).pipe(
-      map((res) => res.response),
+    return this.getProjects().pipe(
       map((projects) => projects.find((p) => p.id === projectId))
     );
+  }
+
+  getProjectsKeys(project: Project): Observable<ProjectKey[]> {
+    return this.projectAuthRequest<Response<ProjectKey[]>>(
+      project,
+      'get',
+      `projects/${project.id}/keys`
+    ).pipe(map((res) => res.response));
   }
 
   getToplist(project: Project, event, params): Observable<TopListItem[]> {
@@ -134,6 +144,23 @@ export class DriplaneService {
     });
   }
 
+  private projectAuthRequest<T>(
+    project: Project,
+    method: string,
+    endpoint: string,
+    options?: RequestOptions
+  ): Observable<T> {
+    const token = btoa(`${project.id}:${project.secret}`);
+    return this.http.request<T>(method, `${this.baseUrl}/${endpoint}`, {
+      headers: {
+        authorization: `Basic ${token}`,
+      },
+      observe: 'body',
+      responseType: 'json',
+      ...options,
+    });
+  }
+
   private projectEventRequest<T>(
     project: Project,
     event,
@@ -146,17 +173,12 @@ export class DriplaneService {
       }
     }
 
-    const token = btoa(`${project.id}:${project.secret}`);
-
-    return this.http.get<QueryResponse<T>>(
-      `${this.baseUrl}/events/${event}/${endpoint}`,
+    return this.projectAuthRequest<QueryResponse<T>>(
+      project,
+      'get',
+      `events/${event}/${endpoint}`,
       {
         params: queryParams,
-        headers: {
-          authorization: `Basic ${token}`,
-        },
-        observe: 'body',
-        responseType: 'json',
       }
     );
   }

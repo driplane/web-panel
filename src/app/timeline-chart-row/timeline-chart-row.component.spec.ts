@@ -3,7 +3,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { TimelineChartRowComponent } from './timeline-chart-row.component';
 
-describe('TimelineChartRowComponent', () => {
+xdescribe('TimelineChartRowComponent', () => {
   let component: TimelineChartRowComponent;
   let fixture: ComponentFixture<TimelineChartRowComponent>;
 

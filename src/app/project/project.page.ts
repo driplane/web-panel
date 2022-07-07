@@ -51,11 +51,12 @@ export class ProjectPage implements OnInit {
   }
 
   updateRange(range) {
-    console.log(range);
+    // console.log(range);
     const diffMap = {
       day: [-1, -1],
       week: [-1, -7],
       month: [-1, -30],
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       'previous-month': [-31, -60],
     };
     const [untilDiff, sinceDiff] = diffMap[range];
@@ -86,7 +87,7 @@ export class ProjectPage implements OnInit {
     combineLatest([this.dateRange, this.activeProject$])
       .pipe(
         tap(([{ since, until }, project]) => {
-          console.log(since, until, project);
+          // console.log(since, until, project);
           this.projectId = project.id;
           this.since = since;
           this.until = until;
@@ -94,11 +95,12 @@ export class ProjectPage implements OnInit {
         switchMap(([{ since, until }, project]) => this.driplane.getToplist(project, 'page_view', {
           since: '-4d',
           until: 'now',
-          limit: 10
+          limit: 10,
+          tag: 'url'
         }))
       )
       .subscribe((topList) => {
-        console.log(topList);
+        // console.log(topList);
         loading.dismiss();
       }, (error) => {
         if (error.status === 404) {

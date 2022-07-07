@@ -12,21 +12,20 @@
     <ion-card-header>
       <ion-card-title>Project Info</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
       <ion-list>
-        <ion-item>
+        <ion-item lines="none">
           <ion-label>
             <h2>Project Name:</h2>
             <p>{{ ( activeProject$ | async )?.name }}</p>
           </ion-label>
         </ion-item>
-        <ion-item>
+        <ion-item lines="none">
           <ion-label>
             <h2>Project Client ID:</h2>
             <p>{{ ( activeProject$ | async )?.id }}</p>
           </ion-label>
         </ion-item>
-        <ion-item>
+        <ion-item lines="none">
           <ion-label>
             <h2>Project Client Secret:</h2>
             <p>{{ ( activeProject$ | async )?.secret }}</p>
@@ -34,19 +33,34 @@
         </ion-item>
       </ion-list>
 
-    </ion-card-content>
   </ion-card>
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Project Snippet</ion-card-title>
+      <ion-card-title>Project Keys</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>You can put code below to before <code>&lt;/head&gt;</code> tag in your website:</p>
 
-      <code>
-        &lt;script type="module" data-driplane-token="YOUR KEY" src="https://cdn.jsdelivr.net/npm/@driplane/web@beta/driplane.js"&gt;&lt;/script&gt;
-      </code>
+      <ion-list>
+        <ion-item *ngFor="let key of (activeProject$ | async )?.keys">
+          <ion-label>
+            <h2>Name:</h2>
+            <p>{{ key.name }}</p>
+          </ion-label>
+          <ion-label>
+            <details>
+              <caption>Show Code</caption>
+
+              <p>You can put code below to before <code>&lt;/head&gt;</code> tag in your website:</p>
+
+              <p>
+                &lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/@driplane/web@beta/driplane.js"&gt;&lt;/script&gt;
+              </p>
+            </details>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
     </ion-card-content>
   </ion-card>
 

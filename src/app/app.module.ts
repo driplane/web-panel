@@ -15,6 +15,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { ProjectEffects } from './project.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -25,6 +26,7 @@ import { environment } from '../environments/environment';
     StoreModule.forRoot({ project: projectReducer }, {}),
     EffectsModule.forRoot([ProjectEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+    StoreRouterConnectingModule.forRoot(),
   ],
   providers: [
     StatusBar,
