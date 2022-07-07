@@ -21,13 +21,10 @@ describe('SidemenuPage', () => {
   let mockProjectsSelector: MemoizedSelector<ProjectState, Project[]>;
 
   beforeEach(waitForAsync(() => {
-    const mockRouter = { navigate: jasmine.createSpy('navigate') };
-
     TestBed.configureTestingModule({
       declarations: [SidemenuPage],
       imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
-        { provide: Router, useValue: mockRouter },
         provideMockStore({ initialState }),
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

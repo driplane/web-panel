@@ -21,7 +21,6 @@ describe('LoginPage', () => {
       declarations: [LoginPage],
       imports: [IonicModule.forRoot(), FormsModule, RouterTestingModule],
       providers: [
-        { provide: Router, useValue: mockRouter },
         { provide: DriplaneService, useValue: mockDriplaneService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

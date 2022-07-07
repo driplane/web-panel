@@ -18,16 +18,12 @@ describe('SettingsPage', () => {
   const initialState = { [PROJECT_FEATURE_KEY]: { projects: [], activeProject: null } };
 
   beforeEach(waitForAsync(() => {
-    const mockActivatedRoute = { snapshot: { params: { uuid: '123' } } };
-    const mockRouter = { navigate: jasmine.createSpy('navigate'), queryParamMap: of(new Map([['projectId', '1']])) };
     const mockDriplaneService = jasmine.createSpyObj(['login']);
 
     TestBed.configureTestingModule({
       declarations: [ SettingsPage ],
       imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: Router, useValue: mockRouter },
         { provide: DriplaneService, useValue: mockDriplaneService },
         provideMockStore({ initialState }),
       ],
