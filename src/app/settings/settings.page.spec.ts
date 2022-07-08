@@ -1,13 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { of } from 'rxjs';
 import { DriplaneService } from '../driplane.service';
 import { ProjectState, PROJECT_FEATURE_KEY } from '../project.reducer';
-import { SettingsPageRoutingModule } from './settings-routing.module';
 
 import { SettingsPage } from './settings.page';
 
@@ -17,10 +14,10 @@ describe('SettingsPage', () => {
   let store: MockStore<{ [PROJECT_FEATURE_KEY]: ProjectState }>;
   const initialState = { [PROJECT_FEATURE_KEY]: { projects: [], activeProject: null } };
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const mockDriplaneService = jasmine.createSpyObj(['login']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ SettingsPage ],
       imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
@@ -33,7 +30,7 @@ describe('SettingsPage', () => {
     fixture = TestBed.createComponent(SettingsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

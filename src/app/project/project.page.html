@@ -37,12 +37,12 @@
           </ion-card-header>
 
           <ion-card-content>
-            <app-timeline-chart-row label="Cache ratio" *ngIf="chartData" [chartData]="chartData.cacheRatio" unit="percent"></app-timeline-chart-row>
+            <!-- <app-timeline-chart-row label="Cache ratio" *ngIf="chartData" [chartData]="chartData.cacheRatio" unit="percent"></app-timeline-chart-row>
             <app-timeline-chart-row label="Total requests" *ngIf="chartData" [chartData]="chartData.imageViews"></app-timeline-chart-row>
             <app-timeline-chart-row label="Total resize" *ngIf="chartData" [chartData]="chartData.resizeCounts"></app-timeline-chart-row>
             <app-timeline-chart-row label="Total traffic" *ngIf="chartData" [chartData]="chartData.totalBWs" unit="filesize"></app-timeline-chart-row>
             <app-timeline-chart-row label="Origin requests" *ngIf="chartData" [chartData]="chartData.originRequestCounts"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Origin traffic" *ngIf="chartData" [chartData]="chartData.originBWs" unit="filesize"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Origin traffic" *ngIf="chartData" [chartData]="chartData.originBWs" unit="filesize"></app-timeline-chart-row> -->
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -56,7 +56,7 @@
           <ion-card-content>
             <table>
               <tr *ngFor="let item of topPages">
-                <td><a href="/projects/{{ accountId }}/page-detail{{item.path}}">{{ item.path }}</a></td>
+                <td><a href="/projects/{{ ( activeProject$ | async).id }}">{{ item.path }}</a></td>
                 <td>{{ item.count | number }}</td>
               </tr>
             </table>
