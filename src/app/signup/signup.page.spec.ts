@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 import { DriplaneService } from '../driplane.service';
 
@@ -15,7 +16,7 @@ describe('SignupPage', () => {
 
     TestBed.configureTestingModule({
       declarations: [ SignupPage ],
-      imports: [IonicModule.forRoot(), FormsModule],
+      imports: [IonicModule.forRoot(), FormsModule, RouterTestingModule],
       providers: [
         { provide: DriplaneService, useValue: mockDriplaneService },
       ],
