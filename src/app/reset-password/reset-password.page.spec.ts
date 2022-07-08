@@ -12,11 +12,11 @@ describe('ResetPasswordPage', () => {
   let component: ResetPasswordPage;
   let fixture: ComponentFixture<ResetPasswordPage>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const mockActivatedRoute = { snapshot: { params: { uuid: '123' } }, queryParamMap: of(new Map([['token', '1']])) };
     const mockDriplaneService = jasmine.createSpyObj(['login']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ ResetPasswordPage ],
       imports: [IonicModule.forRoot(), FormsModule],
       providers: [
@@ -29,7 +29,7 @@ describe('ResetPasswordPage', () => {
     fixture = TestBed.createComponent(ResetPasswordPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

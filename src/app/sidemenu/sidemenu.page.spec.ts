@@ -1,9 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
-import { MemoizedSelector, Store } from '@ngrx/store';
+import { MemoizedSelector } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { Project } from '../driplane.types';
 import { loadProjects } from '../project.actions';
@@ -20,8 +19,8 @@ describe('SidemenuPage', () => {
   let mockActiveProjectSelector: MemoizedSelector<ProjectState, Project>;
   let mockProjectsSelector: MemoizedSelector<ProjectState, Project[]>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [SidemenuPage],
       imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
@@ -48,7 +47,7 @@ describe('SidemenuPage', () => {
     fixture = TestBed.createComponent(SidemenuPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
