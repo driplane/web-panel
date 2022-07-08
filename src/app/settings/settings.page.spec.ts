@@ -17,10 +17,10 @@ describe('SettingsPage', () => {
   let store: MockStore<{ [PROJECT_FEATURE_KEY]: ProjectState }>;
   const initialState = { [PROJECT_FEATURE_KEY]: { projects: [], activeProject: null } };
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     const mockDriplaneService = jasmine.createSpyObj(['login']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ SettingsPage ],
       imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
@@ -33,7 +33,7 @@ describe('SettingsPage', () => {
     fixture = TestBed.createComponent(SettingsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
