@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ProjectPageRoutingModule } from './project-routing.module';
 
 import { ProjectPage } from './project.page';
+import { TimelineChartRowComponent } from '../timeline-chart-row/timeline-chart-row.component';
 
 @NgModule({
   imports: [
