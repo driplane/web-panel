@@ -34,6 +34,11 @@ export class ProjectPage implements OnInit {
   since: string;
   until: string;
 
+  topReferrers = []
+  topBrowsers = []
+  topPages = []
+  chartData: Object = {};
+
   constructor(
     private store: Store,
     private driplane: DriplaneService,
