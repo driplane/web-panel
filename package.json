@@ -6,7 +6,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -17,7 +17,7 @@
     "@angular/core": "^14.0.0",
     "@angular/forms": "^14.0.0",
     "@angular/platform-browser": "^14.0.0",
-    "@angular/platform-browser-dynamic": "^14.0.0",
+    "@angular/platform-browser-dynamic": "^14.0.5",
     "@angular/router": "^14.0.0",
     "@capacitor/app": "1.1.1",
     "@capacitor/core": "3.6.0",
