@@ -1,17 +1,14 @@
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { filter, map, shareReplay, tap, throwIfEmpty } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
+import { tokenInvalid } from './auth.actions';
 import {
-  AuthResponse,
-  Project,
-  Response,
-  TopListItem,
-  CountItem,
-  HistogramItem,
-  RequestOptions,
-  QueryResponse,
-  ProjectKey,
+  AuthResponse, CountItem,
+  HistogramItem, HistogramResponseItem, Project, ProjectKey, QueryResponse, RequestOptions, Response,
+  TopListItem
 } from './driplane.types';
 
 @Injectable({
@@ -21,8 +18,11 @@ export class DriplaneService {
   private baseUrl = 'https://driplane.io';
   private token = '';
 
-  constructor(private http: HttpClient) {
-    this.token = localStorage.getItem('auth');
+  constructor(private http: HttpClient, private router: Router, private store: Store) {
+  }
+
+  setToken(token: string) {
+    this.token = token;
   }
 
   register(email, password) {
@@ -114,12 +114,17 @@ export class DriplaneService {
   }
 
   getHistogram(project: Project, event, params): Observable<HistogramItem[]> {
-    return this.projectEventRequest<HistogramItem[]>(
+    return this.projectEventRequest<HistogramResponseItem[]>(
       project,
       event,
       'histogram',
       params
-    ).pipe(map((res) => res.result));
+    ).pipe(
+      map((res) => res.result.map((item => ({
+        ...item,
+        count: parseInt(item.count, 10)
+      }))))
+    );
   }
 
   getTotals(project: Project, event, tag, params): Observable<TopListItem[]> {
@@ -141,7 +146,14 @@ export class DriplaneService {
       observe: 'body',
       responseType: 'json',
       ...options,
-    });
+    }).pipe(
+      catchError((response: any) => {
+        if (response instanceof HttpErrorResponse && response.status === 401) {
+          this.store.dispatch(tokenInvalid());
+        }
+        return throwError(response);
+      })
+    );
   }
 
   private projectAuthRequest<T>(

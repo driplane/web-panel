@@ -9,54 +9,18 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class TimelineChartRowComponent implements OnInit {
   @Input() label = '';
-  @Input() unit: 'number'|'filesize'|'percent' = 'number';
+  @Input() unit: 'number' | 'filesize' | 'percent' = 'number';
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   public lineChartType: ChartType = 'line';
 
-  lineChartData: number[] = [];
-  // lineChartLabels: Label[] = [];
-  // lineChartColors: Color[] = [
-  //   { // grey
-  //     backgroundColor: 'rgba(148,159,177,0.2)',
-  //     borderColor: 'rgba(148,159,177,1)',
-  //     pointBackgroundColor: 'rgba(148,159,177,1)',
-  //     pointBorderColor: '#fff',
-  //     pointHoverBackgroundColor: '#fff',
-  //     pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-  //   }
-  // ];
+  public lineChartData: ChartConfiguration<'line'>['data'];
 
   lineChartOptions: ChartConfiguration['options'] = {
     responsive: true,
-
     maintainAspectRatio: false,
-    // scales: {
-    //   x: [{
-    //     ticks: {
-    //       display: false,
-    //       min: 0
-    //     }
-    //   }],
-    //   xAxes: [{
-    //     ticks: {
-    //       display: false
-    //     }
-    //   }]
-    // },
-    // legend: {
-    //   display: false
-    // },
-    // tooltips: {
-    //   callbacks: {
-    //     title: () => '',
-    //     label: (tooltipItem, data) => `${tooltipItem.xLabel}: ${tooltipItem.value}`,
-
-    //   }
-    // }
   };
-
 
   chartResults = [];
 
@@ -65,19 +29,31 @@ export class TimelineChartRowComponent implements OnInit {
   yScaleMin: number;
   yScaleMax: number;
 
-  constructor() { }
+  constructor() {}
 
   @Input()
-  set chartData(data: {name: string; value: number}[]) {
+  set chartData(data: { name: string; value: number }[]) {
+    console.log(data);
     if (!data) {
       return;
     }
-    this.lineChartData = data.map(item => item.value);
-    // this.lineChartLabels = data.map(item => item.name);
+    this.lineChartData = {
+      labels: data.map((item) => item.name),
+      datasets: [
+        {
+          data: data.map((item) => item.value),
+          // label: 'Series A',
+          fill: true,
+          tension: 0.5,
+          borderColor: 'rgba(148,159,177,1)',
+          backgroundColor: 'rgba(148,159,177,0.2)',
+        },
+      ],
+    };
 
-    this.chartResults = data.map(item => ({
+    this.chartResults = data.map((item) => ({
       ...item,
-      group: this.label
+      group: this.label,
     }));
 
     this.totalNumber = data.reduce((acc, item) => item.value + acc, 0);
@@ -85,10 +61,7 @@ export class TimelineChartRowComponent implements OnInit {
       this.totalNumber = this.totalNumber / data.length;
       this.yScaleMax = 100;
     }
-  };
-
-  ngOnInit() {
-
   }
 
+  ngOnInit() {}
 }

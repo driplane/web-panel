@@ -2,7 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as dayjs from 'dayjs';
 import { combineLatest, Subject } from 'rxjs';
-import { combineAll, map, mapTo, switchMap, tap, shareReplay } from 'rxjs/operators';
+import {
+  combineAll,
+  map,
+  mapTo,
+  switchMap,
+  tap,
+  shareReplay,
+  mergeMap,
+} from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
 import { Project } from '../driplane.types';
 import * as utc from 'dayjs/plugin/utc';
@@ -18,27 +26,53 @@ dayjs.extend(utc);
   styleUrls: ['./project.page.scss'],
 })
 export class ProjectPage implements OnInit {
-  activeProject$ = this.store.pipe(
-    select(activeProject),
-    shareReplay(1),
-  );
-
   selectedRange = 'day';
   selectedProject: Project;
   loading = true;
   waitingForEvents = false;
 
-  dateRange = new Subject<any>();
+  dateRange = new Subject<{ since: string; until: string }>();
   project = new Subject<Project>();
-  projectId: string;
-  since: string;
-  until: string;
 
-  topUrls = []
-  topReferrers = []
-  topBrowsers = []
-  topPages = []
-  chartData: Object = {};
+  topUrls = [];
+  topReferrers = [];
+  topBrowsers = [];
+  topPages = [];
+
+  activeProject$ = this.store.pipe(select(activeProject), shareReplay(1));
+
+  selection$ = combineLatest([this.dateRange, this.activeProject$]).pipe(
+    map(([{ since, until }, project]) => ({
+      since,
+      until,
+      project,
+    }))
+  );
+
+  topUrls$ = this.selection$.pipe(
+    switchMap(({ since, until, project }) =>
+      this.driplane.getToplist(project, 'page_view', {
+        since,
+        until,
+        limit: 10,
+        tag: 'url',
+      })
+    )
+  );
+
+  pageViews$ = this.selection$.pipe(
+    switchMap(({ since, until, project }) => this.driplane.getHistogram(project, 'page_view', {
+      since,
+      until,
+      op: 'count',
+      interval: this.selectedRange === 'day' ? 'hour' : 'day',
+      timezone: 'UTC'
+    })),
+    map((items) => items.map(item => ({
+      name: item.time,
+      value: item.count
+    })))
+  );
 
   constructor(
     private store: Store,
@@ -57,8 +91,8 @@ export class ProjectPage implements OnInit {
   }
 
   updateRange(range) {
-    // console.log(range);
     const diffMap = {
+      today: [0, 0],
       day: [-1, -1],
       week: [-1, -7],
       month: [-1, -30],
@@ -85,36 +119,10 @@ export class ProjectPage implements OnInit {
 
   async ngOnInit() {
     const loading = await this.loadingCtrl.create({
-      message: 'Loading...'
+      message: 'Loading...',
     });
 
-    loading.present();
-
-    combineLatest([this.dateRange, this.activeProject$])
-      .pipe(
-        tap(([{ since, until }, project]) => {
-          // console.log(since, until, project);
-          this.projectId = project.id;
-          this.since = since;
-          this.until = until;
-        }),
-        switchMap(([{ since, until }, project]) => this.driplane.getToplist(project, 'page_view', {
-          since: '-4d',
-          until: 'now',
-          limit: 10,
-          tag: 'url'
-        }))
-      )
-      .subscribe((topList) => {
-        // console.log(topList);
-        this.topUrls = topList;
-        loading.dismiss();
-      }, (error) => {
-        if (error.status === 404) {
-          this.waitingForEvents = true;
-        }
-        loading.dismiss();
-      });
+    // loading.present();
 
     this.updateRange('day');
   }

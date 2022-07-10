@@ -1,5 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import {
+  logInSuccess,
+  setSession,
   signOutSuccess,
 } from './auth.actions';
 
@@ -19,8 +21,23 @@ export const initialState: AuthState = {
 
 export const authReducer = createReducer(
   initialState,
+  on(setSession, (state, { token, expiresAt }) => ({
+    ...state,
+    token,
+    expiresAt
+  })),
+
   on(signOutSuccess, (state) => ({
     ...state,
-    loggedIn: false
+    loggedIn: false,
+    token: '',
+    expiresAt: null
   })),
+
+  on(logInSuccess, (state, { token, expiresAt }) => ({
+    ...state,
+    loggedIn: true,
+    token,
+    expiresAt
+  }))
 );

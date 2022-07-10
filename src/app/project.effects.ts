@@ -28,12 +28,12 @@ export class ProjectEffects {
     )
   ));
 
-  // switchProject$ = createEffect(() => this.actions$.pipe(
-  //   ofType(switchProject),
-  //   tap(({activeProject}) => {
-  //     localStorage.setItem('lastProjectId', activeProject);
-  //   })
-  // ));
+  switchProject$ = createEffect(() => this.actions$.pipe(
+    ofType(switchProject),
+    tap(({activeProject}) => {
+      localStorage.setItem('lastProjectId', activeProject);
+    })
+  ), { dispatch: false });
 
   constructor(
     private actions$: Actions,

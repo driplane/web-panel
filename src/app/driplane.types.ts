@@ -55,6 +55,11 @@ export interface HistogramItem {
   count: number;
 }
 
+export interface HistogramResponseItem {
+  time: string;
+  count: string;
+}
+
 export interface TotalItem {
   time: string;
   total: number;

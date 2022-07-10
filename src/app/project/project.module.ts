@@ -8,14 +8,16 @@ import { ProjectPageRoutingModule } from './project-routing.module';
 
 import { ProjectPage } from './project.page';
 import { TimelineChartRowComponent } from '../timeline-chart-row/timeline-chart-row.component';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ProjectPageRoutingModule
+    ProjectPageRoutingModule,
+    NgChartsModule
   ],
-  declarations: [ProjectPage]
+  declarations: [ProjectPage, TimelineChartRowComponent]
 })
 export class ProjectPageModule {}

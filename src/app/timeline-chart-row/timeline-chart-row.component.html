@@ -1,13 +1,15 @@
 <label>
   <div class="legend">{{ label }}</div>
+  <div class="value">{{ totalNumber | number }}</div>
   <!-- <div class="value" *ngIf="unit === 'number'">{{ totalNumber | number }}</div>
   <div class="value" *ngIf="unit === 'filesize'">{{ totalNumber | filesize }}</div>
   <div class="value" *ngIf="unit === 'percent'">{{ totalNumber | number }}%</div> -->
 </label>
 <div class="chart-container">
-  <!-- <canvas baseChart
+  <canvas baseChart
       [data]="lineChartData"
       [options]="lineChartOptions"
-      [type]="lineChartType">
-  </canvas> -->
+      [legend]="false"
+      [type]="'line'">
+  </canvas>
 </div>
