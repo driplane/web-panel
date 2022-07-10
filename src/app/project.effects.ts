@@ -14,9 +14,9 @@ export class ProjectEffects {
       .pipe(
         map(projects => loadProjectSuccess({ projects })),
         catchError(() => EMPTY)
-      ))
+      )
     )
-  );
+  ));
 
   loadProjectKeys$ = createEffect(() => this.actions$.pipe(
     ofType(loadProjectKeys),

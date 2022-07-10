@@ -34,6 +34,7 @@ export class ProjectPage implements OnInit {
   since: string;
   until: string;
 
+  topUrls = []
   topReferrers = []
   topBrowsers = []
   topPages = []
@@ -106,6 +107,7 @@ export class ProjectPage implements OnInit {
       )
       .subscribe((topList) => {
         // console.log(topList);
+        this.topUrls = topList;
         loading.dismiss();
       }, (error) => {
         if (error.status === 404) {

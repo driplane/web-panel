@@ -11,11 +11,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { projectReducer } from './project.reducer';
+import { authReducer } from './auth.reducer';
 import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './auth.effects';
 import { ProjectEffects } from './project.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -23,8 +26,8 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    StoreModule.forRoot({ project: projectReducer }, {}),
-    EffectsModule.forRoot([ProjectEffects]),
+    StoreModule.forRoot({ project: projectReducer, auth: authReducer }, {}),
+    EffectsModule.forRoot([AuthEffects, ProjectEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
   ],

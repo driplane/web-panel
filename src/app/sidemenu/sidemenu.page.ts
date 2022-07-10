@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { shareReplay } from 'rxjs/operators';
+import { signOut } from '../auth.actions';
 import { loadProjects } from '../project.actions';
 import { activeProject, projects } from '../project.selectors';
 @Component({
@@ -53,6 +54,10 @@ export class SidemenuPage implements OnInit {
     //     this.router.navigate([`/projects/${p.id}`]);
     //   }
     // });
+  }
+
+  signOut() {
+    this.store.dispatch(signOut());
   }
 
   compareWith(o1, o2) {

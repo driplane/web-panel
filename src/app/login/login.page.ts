@@ -30,8 +30,4 @@ export class LoginPage implements OnInit {
       });
     }
   }
-
-  signUp() {
-    // nothing
-  }
 }
