@@ -20,6 +20,7 @@ export class TimelineChartRowComponent implements OnInit {
   lineChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: false
   };
 
   chartResults = [];
@@ -33,7 +34,6 @@ export class TimelineChartRowComponent implements OnInit {
 
   @Input()
   set chartData(data: { name: string; value: number }[]) {
-    console.log(data);
     if (!data) {
       return;
     }

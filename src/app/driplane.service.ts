@@ -127,6 +127,24 @@ export class DriplaneService {
     );
   }
 
+
+  getUniqueTagCounts(project: Project, event: string, tag: string, params): Observable<HistogramItem[]> {
+    return this.projectEventRequest<HistogramResponseItem[]>(
+      project,
+      event,
+      'unique',
+      {
+        ...params,
+        tag
+      }
+    ).pipe(
+      map((res) => res.result.map((item => ({
+        ...item,
+        count: parseInt(item.count, 10)
+      }))))
+    );
+  }
+
   getTotals(project: Project, event, tag, params): Observable<TopListItem[]> {
     return this.projectEventRequest<TopListItem[]>(project, event, 'total', {
       ...params,

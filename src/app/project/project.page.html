@@ -6,11 +6,13 @@
     <ion-title>{{ (activeProject$ | async )?.name }} Dashboard</ion-title>
   </ion-toolbar>
   <ion-toolbar>
-    <ion-segment [(ngModel)]="selectedRange" value="day" (ionChange)="segmentChanged($event)">
+    <ion-segment [formControl]="range">
+      <ion-segment-button value="live">Live</ion-segment-button>
+      <ion-segment-button value="today">Today</ion-segment-button>
       <ion-segment-button value="day">Yesterday</ion-segment-button>
       <ion-segment-button value="week">Last week</ion-segment-button>
       <ion-segment-button value="month">Last Month</ion-segment-button>
-      <ion-segment-button value="previous-month">Previous Month</ion-segment-button>
+      <!-- <ion-segment-button value="previous-month">Previous Month</ion-segment-button> -->
     </ion-segment>
   </ion-toolbar>
 </ion-header>
@@ -33,12 +35,30 @@
         <ion-col>
           <ion-card class="main-card">
             <ion-card-header>
-              <ion-card-subtitle>Yesterday</ion-card-subtitle>
-              <ion-card-subtitle class="date-range">{{ (dateRange | async)?.since | date:'d MMMM':'UTC' }} - {{ (dateRange | async)?.until | date:'d MMMM':'UTC' }}</ion-card-subtitle>
+              <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
             </ion-card-header>
 
             <ion-card-content>
               <app-timeline-chart-row label="Total pageview" *ngIf="pageViews$ | async" [chartData]="pageViews$ | async"></app-timeline-chart-row>
+              <app-timeline-chart-row label="Unique visitors" *ngIf="users$ | async" [chartData]="users$ | async"></app-timeline-chart-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>Top Domains</ion-card-subtitle>
+              <!-- <ion-card-title>Top pages</ion-card-title> -->
+            </ion-card-header>
+
+            <ion-card-content>
+              <table>
+                <tr *ngFor="let item of topHosts$ | async">
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.count | number }}</td>
+                </tr>
+              </table>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -53,7 +73,7 @@
             <ion-card-content>
               <table>
                 <tr *ngFor="let item of topUrls$ | async">
-                  <td>{{ item.url }}</td>
+                  <td>{{ item.label }}</td>
                   <td>{{ item.count | number }}</td>
                 </tr>
               </table>
@@ -64,14 +84,13 @@
         <ion-col>
           <ion-card>
             <ion-card-header>
-              <ion-card-subtitle>Top pages</ion-card-subtitle>
-              <!-- <ion-card-title>Top pages</ion-card-title> -->
+              <ion-card-subtitle>Top Sources</ion-card-subtitle>
             </ion-card-header>
 
             <ion-card-content>
               <table>
-                <tr *ngFor="let item of topPages">
-                  <td><a href="/projects/{{ ( activeProject$ | async).id }}">{{ item.path }}</a></td>
+                <tr *ngFor="let item of topSources$ | async">
+                  <td>{{ item.label }}</td>
                   <td>{{ item.count | number }}</td>
                 </tr>
               </table>
@@ -79,24 +98,6 @@
           </ion-card>
         </ion-col>
 
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>Top referrers</ion-card-subtitle>
-              <!-- <ion-card-title>Top referrers</ion-card-title> -->
-            </ion-card-header>
-
-            <ion-card-content>
-              <table>
-                <tr *ngFor="let item of topReferrers">
-                  <td>{{ item.count | number }}</td>
-                  <td>{{ item.ref_host }}</td>
-                </tr>
-              </table>
-            </ion-card-content>
-          </ion-card>
-
-        </ion-col>
         <ion-col>
           <ion-card>
             <ion-card-header>
@@ -106,9 +107,27 @@
 
             <ion-card-content>
               <table>
-                <tr *ngFor="let item of topBrowsers">
+                <tr *ngFor="let item of topBrowsers$ | async">
+                  <td>{{ item.label }}</td>
                   <td>{{ item.count | number }}</td>
-                  <td>{{ item.browser }}</td>
+                </tr>
+              </table>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>Top Devices</ion-card-subtitle>
+              <!-- <ion-card-title>Top Browsers</ion-card-title> -->
+            </ion-card-header>
+
+            <ion-card-content>
+              <table>
+                <tr *ngFor="let item of topDevices$ | async">
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.count | number }}</td>
                 </tr>
               </table>
             </ion-card-content>
