@@ -18,122 +18,109 @@
 </ion-header>
 
 <ion-content>
-  <ion-card *ngIf="waitingForEvents; else dashboard">
-    <ion-card-header>
-      <!-- <ion-card-subtitle>Top pages</ion-card-subtitle> -->
-      <ion-card-title>Waiting for events <ion-spinner></ion-spinner></ion-card-title>
-    </ion-card-header>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card class="main-card">
+          <ion-card-header>
+            <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
+          </ion-card-header>
 
-    <ion-card-content>
-      This projects wait for a page view event. Did you put our snippet to your website?
-    </ion-card-content>
-  </ion-card>
+          <ion-card-content>
+            <app-timeline-chart-row label="Total pageview" *ngIf="pageViews$ | async" [chartData]="pageViews$ | async"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Unique visitors" *ngIf="users$ | async" [chartData]="users$ | async"></app-timeline-chart-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-  <ng-template #dashboard>
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <ion-card class="main-card">
-            <ion-card-header>
-              <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
-            </ion-card-header>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Top Domains</ion-card-subtitle>
+            <!-- <ion-card-title>Top pages</ion-card-title> -->
+          </ion-card-header>
 
-            <ion-card-content>
-              <app-timeline-chart-row label="Total pageview" *ngIf="pageViews$ | async" [chartData]="pageViews$ | async"></app-timeline-chart-row>
-              <app-timeline-chart-row label="Unique visitors" *ngIf="users$ | async" [chartData]="users$ | async"></app-timeline-chart-row>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+          <ion-card-content>
+            <table>
+              <tr *ngFor="let item of topHosts$ | async">
+                <td>{{ item.label }}</td>
+                <td>{{ item.count | number }}</td>
+              </tr>
+            </table>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>Top Domains</ion-card-subtitle>
-              <!-- <ion-card-title>Top pages</ion-card-title> -->
-            </ion-card-header>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Top URLs</ion-card-subtitle>
+            <!-- <ion-card-title>Top pages</ion-card-title> -->
+          </ion-card-header>
 
-            <ion-card-content>
-              <table>
-                <tr *ngFor="let item of topHosts$ | async">
-                  <td>{{ item.label }}</td>
-                  <td>{{ item.count | number }}</td>
-                </tr>
-              </table>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+          <ion-card-content>
+            <table>
+              <tr *ngFor="let item of topUrls$ | async">
+                <td>{{ item.label }}</td>
+                <td>{{ item.count | number }}</td>
+              </tr>
+            </table>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>Top URLs</ion-card-subtitle>
-              <!-- <ion-card-title>Top pages</ion-card-title> -->
-            </ion-card-header>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Top Sources</ion-card-subtitle>
+          </ion-card-header>
 
-            <ion-card-content>
-              <table>
-                <tr *ngFor="let item of topUrls$ | async">
-                  <td>{{ item.label }}</td>
-                  <td>{{ item.count | number }}</td>
-                </tr>
-              </table>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+          <ion-card-content>
+            <table>
+              <tr *ngFor="let item of topSources$ | async">
+                <td>{{ item.label }}</td>
+                <td>{{ item.count | number }}</td>
+              </tr>
+            </table>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>Top Sources</ion-card-subtitle>
-            </ion-card-header>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Top Browsers</ion-card-subtitle>
+            <!-- <ion-card-title>Top Browsers</ion-card-title> -->
+          </ion-card-header>
 
-            <ion-card-content>
-              <table>
-                <tr *ngFor="let item of topSources$ | async">
-                  <td>{{ item.label }}</td>
-                  <td>{{ item.count | number }}</td>
-                </tr>
-              </table>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
+          <ion-card-content>
+            <table>
+              <tr *ngFor="let item of topBrowsers$ | async">
+                <td>{{ item.label }}</td>
+                <td>{{ item.count | number }}</td>
+              </tr>
+            </table>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
 
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>Top Browsers</ion-card-subtitle>
-              <!-- <ion-card-title>Top Browsers</ion-card-title> -->
-            </ion-card-header>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Top Devices</ion-card-subtitle>
+            <!-- <ion-card-title>Top Browsers</ion-card-title> -->
+          </ion-card-header>
 
-            <ion-card-content>
-              <table>
-                <tr *ngFor="let item of topBrowsers$ | async">
-                  <td>{{ item.label }}</td>
-                  <td>{{ item.count | number }}</td>
-                </tr>
-              </table>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>Top Devices</ion-card-subtitle>
-              <!-- <ion-card-title>Top Browsers</ion-card-title> -->
-            </ion-card-header>
-
-            <ion-card-content>
-              <table>
-                <tr *ngFor="let item of topDevices$ | async">
-                  <td>{{ item.label }}</td>
-                  <td>{{ item.count | number }}</td>
-                </tr>
-              </table>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ng-template>
+          <ion-card-content>
+            <table>
+              <tr *ngFor="let item of topDevices$ | async">
+                <td>{{ item.label }}</td>
+                <td>{{ item.count | number }}</td>
+              </tr>
+            </table>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
