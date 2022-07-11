@@ -143,7 +143,6 @@ export class ProjectPage implements OnInit {
   constructor(
     private store: Store,
     private driplane: DriplaneService,
-    private route: ActivatedRoute,
     private loadingCtrl: LoadingController
   ) {}
 

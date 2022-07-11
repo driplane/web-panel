@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { DriplaneService } from './driplane.service';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('DriplaneService', () => {
   let httpClient: HttpClient;
@@ -11,6 +12,9 @@ describe('DriplaneService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
       HttpClientTestingModule
+    ],
+    providers: [
+      provideMockStore({}),
     ]
   }));
 

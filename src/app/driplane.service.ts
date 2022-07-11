@@ -1,6 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay, tap } from 'rxjs/operators';
@@ -18,7 +17,7 @@ export class DriplaneService {
   private baseUrl = 'https://driplane.io';
   private token = '';
 
-  constructor(private http: HttpClient, private router: Router, private store: Store) {
+  constructor(private http: HttpClient, private store: Store) {
   }
 
   setToken(token: string) {
