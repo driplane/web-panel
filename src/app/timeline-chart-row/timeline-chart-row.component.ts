@@ -20,7 +20,19 @@ export class TimelineChartRowComponent implements OnInit {
   lineChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false
+    animation: false,
+    scales: {
+      x: {
+        ticks: {
+          display: false,
+        },
+      },
+      y: {
+        ticks: {
+          display: false,
+        },
+      },
+    },
   };
 
   chartResults = [];

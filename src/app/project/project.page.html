@@ -7,13 +7,21 @@
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment [formControl]="range">
-      <ion-segment-button value="live">Live</ion-segment-button>
+      <ion-segment-button value="live">Live <span class="live-indicator"></span></ion-segment-button>
       <ion-segment-button value="today">Today</ion-segment-button>
       <ion-segment-button value="day">Yesterday</ion-segment-button>
       <ion-segment-button value="week">Last week</ion-segment-button>
       <ion-segment-button value="month">Last Month</ion-segment-button>
       <!-- <ion-segment-button value="previous-month">Previous Month</ion-segment-button> -->
     </ion-segment>
+
+  </ion-toolbar>
+  <ion-toolbar>
+      <ion-chip *ngFor="let filter of filters$ | async">
+        <!-- <ion-icon name="pin" color="primary"></ion-icon> -->
+        <ion-label>{{ filter.label || filter.key }}: {{ filter.value }}</ion-label>
+        <ion-icon name="close" (click)="clearFilter(filter.key)"></ion-icon>
+      </ion-chip>
   </ion-toolbar>
 </ion-header>
 
@@ -33,20 +41,19 @@
         </ion-card>
       </ion-col>
 
-      <ion-col>
+      <ion-col *ngIf="(hasFilter('url_host') | async) === false">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Domains</ion-card-subtitle>
-            <!-- <ion-card-title>Top pages</ion-card-title> -->
           </ion-card-header>
 
           <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topHosts$ | async">
-                <td>{{ item.label }}</td>
-                <td>{{ item.count | number }}</td>
-              </tr>
-            </table>
+            <ul class="bar-chart-list">
+              <li *ngFor="let item of topHosts$ | async">
+                <a class="label" (click)="addFilter('url_host', item.label, 'Domain')">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -55,38 +62,37 @@
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top URLs</ion-card-subtitle>
-            <!-- <ion-card-title>Top pages</ion-card-title> -->
           </ion-card-header>
 
           <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topUrls$ | async">
-                <td>{{ item.label }}</td>
-                <td>{{ item.count | number }}</td>
-              </tr>
-            </table>
+            <ul class="bar-chart-list">
+              <li *ngFor="let item of topUrls$ | async">
+                <a class="label">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
           </ion-card-content>
         </ion-card>
       </ion-col>
 
-      <ion-col>
+      <ion-col *ngIf="(hasFilter('ref_host') | async) === false">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Sources</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topSources$ | async">
-                <td>{{ item.label }}</td>
-                <td>{{ item.count | number }}</td>
-              </tr>
-            </table>
+            <ul class="bar-chart-list">
+              <li *ngFor="let item of topSources$ | async">
+                <a class="label" (click)="addFilter('ref_host', item.label, 'Source')">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
           </ion-card-content>
         </ion-card>
       </ion-col>
 
-      <ion-col>
+      <ion-col *ngIf="(hasFilter('ua_br') | async) === false">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Browsers</ion-card-subtitle>
@@ -94,30 +100,29 @@
           </ion-card-header>
 
           <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topBrowsers$ | async">
-                <td>{{ item.label }}</td>
-                <td>{{ item.count | number }}</td>
-              </tr>
-            </table>
+            <ul class="bar-chart-list">
+              <li *ngFor="let item of topBrowsers$ | async">
+                <a class="label" (click)="addFilter('ua_br', item.label, 'Browser')">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
           </ion-card-content>
         </ion-card>
       </ion-col>
 
-      <ion-col>
+      <ion-col *ngIf="(hasFilter('ua_dv_t') | async) === false">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Devices</ion-card-subtitle>
-            <!-- <ion-card-title>Top Browsers</ion-card-title> -->
           </ion-card-header>
 
           <ion-card-content>
-            <table>
-              <tr *ngFor="let item of topDevices$ | async">
-                <td>{{ item.label }}</td>
-                <td>{{ item.count | number }}</td>
-              </tr>
-            </table>
+            <ul class="bar-chart-list">
+              <li *ngFor="let item of topDevices$ | async">
+                <a class="label" (click)="addFilter('ua_dv_t', item.label, 'Device')">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
           </ion-card-content>
         </ion-card>
       </ion-col>

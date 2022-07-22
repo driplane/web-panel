@@ -2,3 +2,38 @@
   min-width: 600px;
   max-width: 90vw;
 }
+
+.bar-chart-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+
+    a {
+      flex: 1;
+    }
+  }
+}
+
+.live-indicator {
+  display: inline-block;
+  background: rgb(234, 36, 41);
+  width: 10px;
+  height: 10px;
+  // border: solid 2px transparent;
+  border-radius: 5px;
+  animation: blinker .8s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
+}
+
+@keyframes blinker {
+  from {
+    opacity: 1;
+    // border-color: rgba(234, 36, 41, 0);
+  }
+
+  to {
+    opacity: 0.4;
+    // border-color: rgba(234, 36, 41, .8);
+  }
+}

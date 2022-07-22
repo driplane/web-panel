@@ -119,7 +119,8 @@ export class DriplaneService {
       'histogram',
       params
     ).pipe(
-      map((res) => res.result.map((item => ({
+      map((res) => Array.isArray(res.result) ? res.result : [] ),
+      map((result) => result.map((item => ({
         ...item,
         count: parseInt(item.count, 10)
       }))))
@@ -137,7 +138,8 @@ export class DriplaneService {
         tag
       }
     ).pipe(
-      map((res) => res.result.map((item => ({
+      map((res) => Array.isArray(res.result) ? res.result : [] ),
+      map((result) => result.map((item => ({
         ...item,
         count: parseInt(item.count, 10)
       }))))
