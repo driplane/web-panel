@@ -84,10 +84,13 @@ export class ProjectPage implements OnInit {
     })),
   );
 
-  topUrls$ = this.topList('url');
+  topUrls$ = this.topList('url_path');
   topHosts$ = this.topList('url_host');
   topBrowsers$ = this.topList('ua_br');
   topSources$ = this.topList('ref_host').pipe(
+    map((result) => result.filter(({ label }) => !!label))
+  );
+  topSourcesUrls$ = this.topList('ref').pipe(
     map((result) => result.filter(({ label }) => !!label))
   );
   topDevices$ = this.topList('ua_dv_t');

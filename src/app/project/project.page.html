@@ -16,7 +16,7 @@
     </ion-segment>
 
   </ion-toolbar>
-  <ion-toolbar>
+  <ion-toolbar *ngIf="(filters$ | async).length > 0">
       <ion-chip *ngFor="let filter of filters$ | async">
         <!-- <ion-icon name="pin" color="primary"></ion-icon> -->
         <ion-label>{{ filter.label || filter.key }}: {{ filter.value }}</ion-label>
@@ -58,7 +58,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col>
+      <ion-col *ngIf="(hasFilter('url_path') | async) === false">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top URLs</ion-card-subtitle>
@@ -67,7 +67,7 @@
           <ion-card-content>
             <ul class="bar-chart-list">
               <li *ngFor="let item of topUrls$ | async">
-                <a class="label">{{ item.label }}</a>
+                <a class="label" (click)="addFilter('url_path', item.label, 'URL')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
             </ul>
@@ -85,6 +85,23 @@
             <ul class="bar-chart-list">
               <li *ngFor="let item of topSources$ | async">
                 <a class="label" (click)="addFilter('ref_host', item.label, 'Source')">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Source URLs</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ul class="bar-chart-list">
+              <li *ngFor="let item of topSourcesUrls$ | async">
+                <a class="label">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
             </ul>
