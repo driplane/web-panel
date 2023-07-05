@@ -87,7 +87,7 @@ export class ProjectPage implements OnInit {
   topUrls$ = this.topList('url_path');
   topHosts$ = this.topList('url_host');
   topBrowsers$ = this.topList('ua_br');
-  topSources$ = this.topList('ref_host').pipe(
+  topSources$ = this.topList('ref_host', { ref_ext: 1 }).pipe(
     map((result) => result.filter(({ label }) => !!label))
   );
   topSourcesUrls$ = this.topList('ref').pipe(
@@ -157,7 +157,7 @@ export class ProjectPage implements OnInit {
     private loadingCtrl: LoadingController
   ) {}
 
-  topList(tag: string) {
+  topList(tag: string, extraFilters = {}) {
     return this.selection$.pipe(
       switchMap(({ since, until, project, filters }) =>
         this.driplane.getToplist(project, 'page_view', {
@@ -165,7 +165,8 @@ export class ProjectPage implements OnInit {
           until,
           limit: 10,
           tag,
-          ...filters
+          ...filters,
+          ...extraFilters
         })
       ),
       map((list) => list.map(item => ({
