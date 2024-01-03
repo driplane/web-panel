@@ -191,6 +191,9 @@ export class ProjectPage implements OnInit {
 
     this.progress$.subscribe(() => {
       this.loading.dismiss();
+    }, (error) => {
+      console.log(error);
+      this.loading.dismiss('', 'error');
     });
 
     this.range.setValue('today');

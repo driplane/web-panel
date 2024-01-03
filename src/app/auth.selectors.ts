@@ -8,11 +8,11 @@ export const selectAuthState = createFeatureSelector<AuthState>(
 
 export const isLoggedIn = createSelector(
   selectAuthState,
-  (state: AuthState) => state?.loggedIn || [],
+  (state: AuthState) => state?.loggedIn || false,
 );
 
 
 export const token = createSelector(
   selectAuthState,
-  (state: AuthState) => state?.token || [],
+  (state: AuthState) => state?.token || false,
 );

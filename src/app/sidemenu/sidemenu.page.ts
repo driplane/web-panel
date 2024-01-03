@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { shareReplay } from 'rxjs/operators';
+import { shareReplay, takeUntil } from 'rxjs/operators';
 import { signOut } from '../auth.actions';
-import { loadProjects } from '../project.actions';
+import { loadProjects, switchProject } from '../project.actions';
 import { activeProject, projects } from '../project.selectors';
+import { Subject } from 'rxjs';
+import { isLoggedIn } from '../auth.selectors';
+
 @Component({
   selector: 'app-sidemenu',
   templateUrl: './sidemenu.page.html',
   styleUrls: ['./sidemenu.page.scss'],
 })
-export class SidemenuPage implements OnInit {
+export class SidemenuPage implements OnInit, OnDestroy {
   activeProject$ = this.store.pipe(
     select(activeProject),
     shareReplay(1),
@@ -21,6 +24,13 @@ export class SidemenuPage implements OnInit {
     shareReplay(1),
   );
 
+  unsubscribe: Subject<void> = new Subject();
+
+  isLoggedIn$ = this.store.pipe(
+    select(isLoggedIn),
+    takeUntil(this.unsubscribe)
+  );
+
   constructor(
     private router: Router,
     private store: Store
@@ -28,13 +38,25 @@ export class SidemenuPage implements OnInit {
   }
 
   ngOnInit() {
-    this.store.dispatch(loadProjects());
+    this.isLoggedIn$.subscribe(() => {
+      this.store.dispatch(loadProjects());
+    });
 
-    // let activeProjectSelected = false;
-
-    // this.activeProject$.subscribe(() => {
-    //   activeProjectSelected = true;
+    // this.isLoggedIn$.subscribe((loggedIn) => {
+    //   if (!loggedIn) {
+    //     this.router.navigate(['/login'], {
+    //       replaceUrl: true
+    //     });
+    //   }
     // });
+
+    let activeProjectSelected = false;
+
+    this.activeProject$.subscribe((currentProject) => {
+      if (currentProject) {
+        activeProjectSelected = true;
+      }
+    });
 
     // if(this.route.firstChild) {
     //   this.route.firstChild.params.subscribe((params) => {
@@ -42,18 +64,22 @@ export class SidemenuPage implements OnInit {
     //   });
     // }
 
-    // this.projects$.subscribe((projectList) => {
-    //   if (!activeProjectSelected) {
-    //     this.store.dispatch(switchProject({activeProject: projectList[0]}));
-    //     this.router.navigate([`/projects/${projectList[0].id}`]);
-    //   }
-    // });
+    this.projects$.subscribe((projectList) => {
+      if (projectList.length === 0) {
+        return;
+      }
 
-    // this.activeProject$.subscribe((p) => {
-    //   if (p) {
-    //     this.router.navigate([`/projects/${p.id}`]);
-    //   }
-    // });
+      if (!activeProjectSelected) {
+        this.store.dispatch(switchProject({activeProject: projectList[0].id}));
+        this.router.navigate([`/projects/${projectList[0].id}`]);
+      }
+    });
+
+    this.activeProject$.subscribe((p) => {
+      if (p) {
+        this.router.navigate([`/projects/${p.id}`]);
+      }
+    });
   }
 
   signOut() {
@@ -68,4 +94,9 @@ export class SidemenuPage implements OnInit {
     this.router.navigate([`/projects/${event.target.value.id}`]);
     // this.store.dispatch(switchProject({activeProject: event.target.value}));
   }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+   }
 }

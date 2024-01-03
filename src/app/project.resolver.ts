@@ -26,7 +26,7 @@ export class ProjectIdResolverService
     route: ActivatedRouteSnapshot
   ): Observable<Project | null> | Observable<never> {
     const urlId = route.paramMap.get('projectId');
-    console.log(urlId);
+
     return this.apiService.getProject(urlId).pipe(
       catchError(() => {
         console.error('project not found');
@@ -34,7 +34,6 @@ export class ProjectIdResolverService
         return EMPTY;
       }),
       map((project: Project) => {
-        console.log(project.id);
         this.store.dispatch(switchProject({ activeProject: project.id }));
         return project;
       })

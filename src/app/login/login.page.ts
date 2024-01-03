@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ofType } from '@ngrx/effects';
@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { logIn } from '../auth.actions';
 import { isLoggedIn } from '../auth.selectors';
 import { DriplaneService } from '../driplane.service';
+import { IonModal } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,8 @@ import { DriplaneService } from '../driplane.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit, OnDestroy {
+  @ViewChild(IonModal) modal: IonModal;
+
   username = '';
   password = '';
 
@@ -31,7 +34,10 @@ export class LoginPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loginSuccess$.subscribe(loggedIn => {
       if (loggedIn) {
-        this.router.navigate(['/']);
+        this.modal.dismiss();
+        this.router.navigate(['/'], {
+          replaceUrl: true
+        });
       }
     });
   }

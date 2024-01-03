@@ -17,7 +17,7 @@ import { NgChartsModule } from 'ng2-charts';
     ReactiveFormsModule,
     IonicModule,
     ProjectPageRoutingModule,
-    NgChartsModule
+    NgChartsModule,
   ],
   declarations: [ProjectPage, TimelineChartRowComponent]
 })
