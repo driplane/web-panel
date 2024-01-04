@@ -14,7 +14,7 @@ export interface AuthState {
 }
 
 export const initialState: AuthState = {
-  loggedIn: false,
+  loggedIn: localStorage.getItem('auth') ? true : false,
   token: '',
   expiresAt: null
 };

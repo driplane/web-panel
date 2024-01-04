@@ -18,7 +18,7 @@
         </ion-menu-toggle>
 
         <ion-item>
-          <ion-select interface="popover" [compareWith]="compareWith" [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
+          <ion-select [compareWith]="compareWith" [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
             <ion-select-option *ngFor="let project of projects$ | async" [value]="project">{{ project.name }}</ion-select-option>
           </ion-select>
         </ion-item>
