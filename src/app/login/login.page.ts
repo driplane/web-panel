@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { logIn } from '../auth.actions';
 import { isLoggedIn } from '../auth.selectors';
 import { DriplaneService } from '../driplane.service';
+import { IonModal } from '@ionic/angular';
 import Logger from '../logger.service';
 const log = Logger('page:login');
 
@@ -17,6 +18,8 @@ const log = Logger('page:login');
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit, OnDestroy {
+  @ViewChild(IonModal) modal: IonModal;
+
   isOpen = true;
 
   username = '';
@@ -36,7 +39,7 @@ export class LoginPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loginSuccess$.subscribe(loggedIn => {
       if (loggedIn) {
-        this.isOpen = false;
+        this.modal.dismiss();
         this.router.navigate(['/'], {
           replaceUrl: true
         });

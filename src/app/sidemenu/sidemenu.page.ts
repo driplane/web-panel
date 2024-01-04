@@ -38,8 +38,13 @@ export class SidemenuPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isLoggedIn$.subscribe(() => {
-      this.store.dispatch(loadProjects());
+    this.isLoggedIn$.subscribe((loggedIn) => {
+      console.log(loggedIn);
+      if (loggedIn) {
+        this.store.dispatch(loadProjects());
+      } else {
+        location.reload();
+      }
     });
 
     // this.isLoggedIn$.subscribe((loggedIn) => {
