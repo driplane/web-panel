@@ -1,21 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
-import { select, Store } from '@ngrx/store';
-import * as dayjs from 'dayjs';
-import * as tz from 'dayjs/plugin/timezone';
-import * as utc from 'dayjs/plugin/utc';
-import { combineLatest, from, iif, of, Subject, timer } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import { endOfDay, endOfMinute, endOfToday, formatISO, startOfDay, startOfToday, subDays, subMinutes } from 'date-fns';
+import { combineLatest, from, iif, of, timer } from 'rxjs';
 import {
-  concatAll, map, share, shareReplay, switchMap, switchMapTo, tap, debounceTime, distinctUntilChanged, mergeMap
+  concatAll,
+  distinctUntilChanged,
+  map, share, shareReplay, switchMap, switchMapTo, tap
 } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
-import { Project } from '../driplane.types';
 import { addFilter, clearFilter } from '../project.actions';
 import { activeFilters, activeProject } from '../project.selectors';
-
-dayjs.extend(utc);
-dayjs.extend(tz);
 
 type Range = 'live'|'today'|'day'|'week'|'month';
 @Component({
@@ -35,29 +31,22 @@ export class ProjectPage implements OnInit {
       of(range)
     )),
     map((range) => {
+      const now = new Date();
+      const endOfYesterday = endOfDay(subDays(now, 1));
+
       const diffMap = {
-        live: [0, -30], // minutes
-        today: [0, 0],
-        day: [-1, -1],
-        week: [-1, -7],
-        month: [-1, -30],
+        live: [endOfMinute(now), endOfMinute(subMinutes(now, -30))],
+        today: [endOfToday(), startOfToday()],
+        day: [endOfYesterday, startOfDay(subDays(now, 1))],
+        week: [endOfYesterday, startOfDay(subDays(now, 7))],
+        month: [endOfYesterday, startOfDay(subDays(now, 30))],
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        'previous-month': [-31, -60],
+        'previous-month': [startOfDay(subDays(now, 31)), startOfDay(subDays(now, 60))],
       };
-      const [untilDiff, sinceDiff] = diffMap[range];
+      const [untilDate, sinceDate] = diffMap[range];
 
-      const unit = range === 'live' ? 'minute' : 'day';
-
-      const until = dayjs()
-        // .utc()
-        .add(untilDiff, unit)
-        .endOf(unit)
-        .toISOString();
-      const since = dayjs()
-        // .utc()
-        .add(sinceDiff, unit)
-        .startOf(unit)
-        .toISOString();
+      const until = formatISO(untilDate);
+      const since = formatISO(sinceDate);
 
       return {
         until,
@@ -107,7 +96,7 @@ export class ProjectPage implements OnInit {
         week: 'day',
         month: 'day'
       }[range]),
-      timezone: dayjs.tz.guess(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       ...filters
     })),
     map((items) => items.map(item => ({

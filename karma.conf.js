@@ -1,6 +1,5 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
-process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = function (config) {
   config.set({
@@ -26,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/ngv'),
+      dir: require('path').join(__dirname, './coverage/app'),
       subdir: '.',
       reporters: [
         { type: 'html' },
@@ -36,11 +35,8 @@ module.exports = function (config) {
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_ERROR,
-    autoWatch: false,
-    singleRun: true,
-    browserNoActivityTimeout: 40000,
-
+    logLevel: config.LOG_INFO,
+    // autoWatch: false,
     // browsers: ['Chrome'],
     browsers: ['ChromeHeadlessCI'],
     customLaunchers: {
@@ -49,6 +45,8 @@ module.exports = function (config) {
         flags: ['--no-sandbox']
       }
     },
+
+    singleRun: true,
     restartOnFileChange: true
   });
 };

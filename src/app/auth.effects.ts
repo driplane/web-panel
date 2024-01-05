@@ -5,6 +5,7 @@ import { of, EMPTY } from 'rxjs';
 import { logIn, logInFailed, logInSuccess, restoreLastSession, setSession, signOut, signOutSuccess, tokenInvalid } from './auth.actions';
 import { DriplaneService } from './driplane.service';
 import * as dayjs from 'dayjs';
+import { loadProjects } from './project.actions';
 
 export const LS_TOKEN_KEY = 'auth';
 export const LS_TOKEN_EXPIRE_KEY = 'auth_expire';
@@ -20,6 +21,7 @@ export class AuthEffects {
         this.driplane.setToken(token);
         return setSession({ token, expiresAt });
       }
+      return EMPTY;
     })
   ), { dispatch: false });
 
@@ -40,7 +42,8 @@ export class AuthEffects {
       localStorage.setItem(LS_TOKEN_EXPIRE_KEY, dayjs(expiresAt).toISOString());
       this.driplane.setToken(token);
     }),
-  ), { dispatch: false });
+    map(_ => loadProjects())
+  ));
 
   tokenInvalid$ = createEffect(() => this.actions$.pipe(
     ofType(tokenInvalid),

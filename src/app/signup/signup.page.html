@@ -1,6 +1,6 @@
 <div class="ion-page">
   <ion-content class="ion-padding">
-    <ion-modal #modal trigger="open-modal" [isOpen]="true" [canDismiss]="false">
+    <ion-modal #modal [isOpen]="true" [canDismiss]="false">
       <ng-template>
         <ion-header>
           <ion-toolbar>
@@ -11,8 +11,9 @@
           <form #form="ngForm" *ngIf="!success" (ngSubmit)="signUp(form)">
             <ion-list>
               <ion-item>
-                <ion-label position="stacked">E-mail</ion-label>
                 <ion-input
+                  label="E-mail"
+                  labelPlacement="stacked"
                   autocomplete="email"
                   type="email"
                   email
@@ -27,8 +28,9 @@
               </ion-text>
 
               <ion-item>
-                <ion-label position="stacked">Password</ion-label>
                 <ion-input
+                  label="New Password"
+                  labelPlacement="stacked"
                   type="password"
                   name="password"
                   [(ngModel)]="password"
@@ -41,8 +43,9 @@
                 <p>Write your pasword</p>
               </ion-text>
               <ion-item>
-                <ion-label position="stacked">Verify Password</ion-label>
                 <ion-input
+                  label="Verify Password"
+                  labelPlacement="stacked"
                   type="password"
                   name="password2"
                   [(ngModel)]="password2"

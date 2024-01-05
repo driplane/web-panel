@@ -43,7 +43,7 @@ export class SidemenuPage implements OnInit, OnDestroy {
       if (loggedIn) {
         this.store.dispatch(loadProjects());
       } else {
-        location.reload();
+        // location.reload();
       }
     });
 

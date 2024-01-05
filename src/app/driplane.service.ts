@@ -9,12 +9,13 @@ import {
   HistogramItem, HistogramResponseItem, Project, ProjectKey, QueryResponse, RequestOptions, Response,
   TopListItem
 } from './driplane.types';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DriplaneService {
-  private baseUrl = 'https://driplane.io';
+  private baseUrl = environment.apiBaseUrl;
   private token = '';
 
   constructor(private http: HttpClient, private store: Store) {
