@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { EMPTY, merge } from 'rxjs';
+import { EMPTY, merge, of } from 'rxjs';
 import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { DriplaneService } from './driplane.service';
 import { loadProjects, loadProjectSuccess, loadProjectKeys, loadProjectKeysSuccess, switchProject } from './project.actions';
@@ -13,7 +13,7 @@ export class ProjectEffects {
     mergeMap(() => this.driplane.getProjects()
       .pipe(
         map(projects => loadProjectSuccess({ projects })),
-        catchError(() => EMPTY)
+        catchError(() => of({ type: 'loadProjectsFailed' }))
       )
     )
   ));

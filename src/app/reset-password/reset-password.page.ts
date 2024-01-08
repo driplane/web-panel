@@ -38,6 +38,7 @@ export class ResetPasswordPage implements OnInit {
 
   resetPassword(form: NgForm) {
     if (form.valid) {
+      console.log(this.email);
       this.driplane.passwordReset(this.email)
         .subscribe(() => {
           this.mailSent = true;

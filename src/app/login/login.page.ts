@@ -1,14 +1,8 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { logIn } from '../auth.actions';
-import { isLoggedIn } from '../auth.selectors';
-import { DriplaneService } from '../driplane.service';
-import { IonModal } from '@ionic/angular';
 import Logger from '../logger.service';
 const log = Logger('page:login');
 
@@ -17,9 +11,7 @@ const log = Logger('page:login');
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit, OnDestroy {
-  @ViewChild(IonModal) modal: IonModal;
-
+export class LoginPage implements OnDestroy {
   isOpen = true;
 
   username = '';
@@ -27,24 +19,8 @@ export class LoginPage implements OnInit, OnDestroy {
 
   unsubscribe: Subject<void> = new Subject();
 
-  loginSuccess$ = this.store.pipe(
-    select(isLoggedIn),
-    takeUntil(this.unsubscribe)
-  );
-
-  constructor(private router: Router, private store: Store) {
+  constructor(private store: Store) {
     log('construction');
-  }
-
-  ngOnInit() {
-    this.loginSuccess$.subscribe(loggedIn => {
-      if (loggedIn) {
-        this.modal.dismiss();
-        this.router.navigate(['/'], {
-          replaceUrl: true
-        });
-      }
-    });
   }
 
   signIn(form: NgForm) {

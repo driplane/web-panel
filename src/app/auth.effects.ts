@@ -6,6 +6,7 @@ import { logIn, logInFailed, logInSuccess, restoreLastSession, setSession, signO
 import { DriplaneService } from './driplane.service';
 import * as dayjs from 'dayjs';
 import { loadProjects } from './project.actions';
+import { Router } from '@angular/router';
 
 export const LS_TOKEN_KEY = 'auth';
 export const LS_TOKEN_EXPIRE_KEY = 'auth_expire';
@@ -15,12 +16,15 @@ export class AuthEffects {
   restoreLastSession$ = createEffect(() => this.actions$.pipe(
     ofType(restoreLastSession),
     map(() => {
+      console.log('restoreLastSession');
       if (localStorage.getItem(LS_TOKEN_KEY)) {
         const token = localStorage.getItem(LS_TOKEN_KEY);
         const expiresAt = dayjs(localStorage.getItem(LS_TOKEN_EXPIRE_KEY)).toDate();
         this.driplane.setToken(token);
+        console.log('session restored');
         return setSession({ token, expiresAt });
       }
+      console.log('Nothing to restore;')
       return EMPTY;
     })
   ), { dispatch: false });
@@ -41,6 +45,7 @@ export class AuthEffects {
       localStorage.setItem(LS_TOKEN_KEY, token);
       localStorage.setItem(LS_TOKEN_EXPIRE_KEY, dayjs(expiresAt).toISOString());
       this.driplane.setToken(token);
+      this.router.navigate(['/']);
     }),
     map(_ => loadProjects())
   ));
@@ -56,6 +61,7 @@ export class AuthEffects {
   signOut$ = createEffect(() => this.actions$.pipe(
     ofType(signOut),
     tap(() => {
+      console.log('sign out');
       localStorage.removeItem(LS_TOKEN_KEY);
       localStorage.removeItem(LS_TOKEN_EXPIRE_KEY);
       this.driplane.setToken(null);
@@ -63,9 +69,18 @@ export class AuthEffects {
     map(() => signOutSuccess()),
   ));
 
+  signOutSuccess$ = createEffect(() => this.actions$.pipe(
+    ofType(signOutSuccess),
+    tap(() => {
+      console.log('sign out success');
+      this.router.navigate(['/login']);
+    })
+  ), { dispatch: false });
+
   constructor(
     private actions$: Actions,
-    private driplane: DriplaneService
+    private driplane: DriplaneService,
+    private router: Router
   ) {}
 
   ngrxOnInitEffects() {
