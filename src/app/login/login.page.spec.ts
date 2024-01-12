@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
@@ -20,7 +20,7 @@ describe('LoginPage', () => {
 
     await TestBed.configureTestingModule({
       declarations: [LoginPage],
-      imports: [IonicModule.forRoot(), FormsModule, RouterTestingModule],
+      imports: [IonicModule.forRoot(), FormsModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
         { provide: DriplaneService, useValue: mockDriplaneService },
         provideMockStore({ initialState }),
