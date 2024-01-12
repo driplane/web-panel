@@ -34,7 +34,7 @@ export class AuthEffects {
     mergeMap(({ username, password }) => this.driplane.login(username, password)
       .pipe(
         map(({ token }) => logInSuccess({ token, expiresAt: dayjs().add(7, 'day').toDate()})),
-        catchError((error) => of(logInFailed({ message: 'Login failed' })))
+        catchError((error) => of(logInFailed({ message: 'Login failed. Please check your e-mail address and password.' })))
       )
     ),
   ), { useEffectsErrorHandler: false });

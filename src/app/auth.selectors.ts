@@ -16,3 +16,8 @@ export const token = createSelector(
   selectAuthState,
   (state: AuthState) => state?.token || false,
 );
+
+export const loginFailed = createSelector(
+  selectAuthState,
+  (state: AuthState) => state?.errorMessage || false,
+);

@@ -26,7 +26,7 @@ export class ProjectPage implements OnInit {
     switchMap((range) => iif(
       () => range === 'live',
       timer(0, 5000).pipe(
-        switchMapTo(of(range))
+        switchMap(() => of(range))
       ),
       of(range)
     )),
@@ -40,8 +40,7 @@ export class ProjectPage implements OnInit {
         day: [endOfYesterday, startOfDay(subDays(now, 1))],
         week: [endOfYesterday, startOfDay(subDays(now, 7))],
         month: [endOfYesterday, startOfDay(subDays(now, 30))],
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'previous-month': [startOfDay(subDays(now, 31)), startOfDay(subDays(now, 60))],
+        previousMonth: [startOfDay(subDays(now, 31)), startOfDay(subDays(now, 60))],
       };
       const [untilDate, sinceDate] = diffMap[range];
 

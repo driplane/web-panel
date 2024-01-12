@@ -1,9 +1,11 @@
-import { Component, OnDestroy } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Store } from '@ngrx/store';
-import { Subject } from 'rxjs';
-import { logIn } from '../auth.actions';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Store, select } from '@ngrx/store';
+import { distinctUntilChanged, filter, repeatWhen, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { logIn, logInFailedClear } from '../auth.actions';
+import { loginFailed } from '../auth.selectors';
 import Logger from '../logger.service';
+import { EMPTY, iif, of } from 'rxjs';
 const log = Logger('page:login');
 
 @Component({
@@ -11,26 +13,45 @@ const log = Logger('page:login');
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnDestroy {
+export class LoginPage {
   isOpen = true;
 
-  username = '';
-  password = '';
+  loginForm = new FormGroup({
+    username: new FormControl(),
+    password: new FormControl(),
+  });
 
-  unsubscribe: Subject<void> = new Subject();
+  logInFailed$ = this.store.pipe(
+    select(loginFailed),
+    distinctUntilChanged(),
+    tap((error) => {
+      log('Setting loginFailed', error);
+      this.loginForm.controls.username.setErrors({ loginFailed: !!error });
+    })
+  );
 
   constructor(private store: Store) {
     log('construction');
+
+    this.logInFailed$.pipe(
+      tap((error) => log('loginFailed', error)),
+      filter((error) => !!error),
+      tap((error) => log('after filter', error)),
+      switchMap(() => this.loginForm.valueChanges.pipe(
+        takeUntil(this.logInFailed$)
+      )),
+      repeatWhen(() => this.logInFailed$)
+    ).subscribe((value) => {
+      log('value changed', value);
+      this.store.dispatch(logInFailedClear());
+    });
   }
 
-  signIn(form: NgForm) {
-    if (form.valid) {
-      this.store.dispatch(logIn({ username: this.username, password: this.password }));
+  signIn() {
+    if (this.loginForm.valid) {
+      this.store.dispatch(
+        logIn({ username: this.loginForm.value.username, password: this.loginForm.value.password })
+      );
     }
   }
-
-  ngOnDestroy() {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
-   }
 }

@@ -17,3 +17,11 @@
 form > button {
     visibility: hidden;
 }
+
+.error-message {
+  display: none;
+}
+
+.ng-submitted .ion-invalid + .error-message {
+  display: block;
+}

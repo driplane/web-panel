@@ -12,7 +12,6 @@ const log = (context: string, ...args) => {
   // page
   const pass = rules.some((rule) => {
     const rgx = new RegExp(rule.replace('*', '.*'));
-    console.log(rgx);
     return rgx.test(context);
   });
 

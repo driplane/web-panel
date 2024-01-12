@@ -6,7 +6,7 @@
           <div class="logo-container">
             <h1>Driplane</h1>
           </div>
-        <form #form="ngForm" (ngSubmit)="signIn(form)">
+        <form [formGroup]="loginForm" (ngSubmit)="signIn()">
           <ion-list>
             <ion-item>
               <ion-input
@@ -16,13 +16,16 @@
                 type="email"
                 email
                 name="username"
-                [(ngModel)]="username"
+                formControlName="username"
                 required
-                #email="ngModel"
               ></ion-input>
             </ion-item>
-            <ion-text *ngIf="form.submitted && email.invalid" color="danger">
+            <ion-text class="error-message" *ngIf="loginForm.status" color="danger">
               <p>Please write a valid email address</p>
+            </ion-text>
+
+            <ion-text class="error-message" *ngIf="logInFailed$ | async" color="danger">
+              <p>{{ logInFailed$ | async }}</p>
             </ion-text>
 
             <ion-item>
@@ -31,13 +34,12 @@
                 labelPlacement="stacked"
                 type="password"
                 name="password"
-                [(ngModel)]="password"
+                formControlName="password"
                 required
-                #pass="ngModel"
               ></ion-input>
             </ion-item>
-            <ion-text *ngIf="form.submitted && pass.invalid" color="danger">
-              <p>Write your pasword</p>
+            <ion-text class="error-message" color="danger">
+              <p>Write your password</p>
             </ion-text>
           </ion-list>
           <button type="submit"></button>
