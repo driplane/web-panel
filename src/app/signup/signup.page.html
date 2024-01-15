@@ -1,83 +1,70 @@
-<div class="ion-page">
-  <ion-content class="ion-padding">
-    <ion-modal #modal [isOpen]="true" [canDismiss]="false">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Driplane Signup</ion-title>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <form #form="ngForm" *ngIf="!success" (ngSubmit)="signUp(form)">
-            <ion-list>
-              <ion-item>
-                <ion-input
-                  label="E-mail"
-                  labelPlacement="stacked"
-                  autocomplete="email"
-                  type="email"
-                  email
-                  name="username"
-                  [(ngModel)]="username"
-                  required
-                  #email="ngModel"
-                ></ion-input>
-              </ion-item>
-              <ion-text *ngIf="form.submitted && email.invalid" color="danger">
-                <p>Please write a valid email address</p>
-              </ion-text>
+<app-modal-view>
+  <ion-title>Driplane Signup</ion-title>
+  <form #form="ngForm" *ngIf="!success" (ngSubmit)="signUp(form)">
+    <ion-list>
+      <ion-item>
+        <ion-input
+          label="E-mail"
+          labelPlacement="stacked"
+          autocomplete="email"
+          type="email"
+          email
+          name="username"
+          [(ngModel)]="username"
+          required
+          #email="ngModel"
+        ></ion-input>
+      </ion-item>
+      <ion-text *ngIf="form.submitted && email.invalid" color="danger">
+        <p>Please write a valid email address</p>
+      </ion-text>
 
-              <ion-item>
-                <ion-input
-                  label="New Password"
-                  labelPlacement="stacked"
-                  type="password"
-                  name="password"
-                  [(ngModel)]="password"
-                  required
-                  autocomplete="new-password"
-                  #pass="ngModel"
-                ></ion-input>
-              </ion-item>
-              <ion-text *ngIf="form.submitted && pass.invalid" color="danger">
-                <p>Write your pasword</p>
-              </ion-text>
-              <ion-item>
-                <ion-input
-                  label="Verify Password"
-                  labelPlacement="stacked"
-                  type="password"
-                  name="password2"
-                  [(ngModel)]="password2"
-                  required
-                  autocomplete="new-password"
-                  #pass2="ngModel"
-                ></ion-input>
-              </ion-item>
-              <ion-text *ngIf="form.submitted && password !== password2" color="danger">
-                <p>Passwords don't match</p>
-              </ion-text>
-            </ion-list>
-            <button type="submit"></button>
-            <ion-button
-              type="submit"
-              expand="block"
-              share="round"
-              color="success"
-              >Register</ion-button
-            >
+      <ion-item>
+        <ion-input
+          label="New Password"
+          labelPlacement="stacked"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          autocomplete="new-password"
+          #pass="ngModel"
+        ></ion-input>
+      </ion-item>
+      <ion-text *ngIf="form.submitted && pass.invalid" color="danger">
+        <p>Write your pasword</p>
+      </ion-text>
+      <ion-item>
+        <ion-input
+          label="Verify Password"
+          labelPlacement="stacked"
+          type="password"
+          name="password2"
+          [(ngModel)]="password2"
+          required
+          autocomplete="new-password"
+          #pass2="ngModel"
+        ></ion-input>
+      </ion-item>
+      <ion-text *ngIf="form.submitted && password !== password2" color="danger">
+        <p>Passwords don't match</p>
+      </ion-text>
+    </ion-list>
+    <button type="submit"></button>
+    <ion-button type="submit" expand="block" share="round" color="success"
+      >Register</ion-button
+    >
 
-            <ion-item lines="none">
-              <p>Do you already have an account?</p>
-              <p>
-                <ion-button routerLink="/login">Login</ion-button>
-              </p></ion-item
-            >
-          </form>
+    <ion-item lines="none">
+      <p>Do you already have an account?</p>
+      <p>
+        <ion-button routerLink="/login">Login</ion-button>
+      </p></ion-item
+    >
+  </form>
 
-          <ion-text *ngIf="success" class="success">Please check your email and click the link to verify your registration.</ion-text>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-  </ion-content>
-</div>
+  <ion-text *ngIf="success" class="success"
+    >Please check your email and click the link to verify your
+    registration.</ion-text
+  >
+</app-modal-view>

@@ -1,63 +1,59 @@
-<ion-content scrollY="false">
-  <ion-grid>
-    <ion-row class="login-container-row">
-      <ion-col>
-        <div class="login-container">
-          <div class="logo-container">
-            <h1>Driplane</h1>
-          </div>
-        <form [formGroup]="loginForm" (ngSubmit)="signIn()">
-          <ion-list>
-            <ion-item>
-              <ion-input
-                label="E-mail"
-                labelPlacement="stacked"
-                autocomplete="email"
-                type="email"
-                email
-                name="username"
-                formControlName="username"
-                required
-              ></ion-input>
-            </ion-item>
-            <ion-text class="error-message" *ngIf="loginForm.status" color="danger">
-              <p>Please write a valid email address</p>
-            </ion-text>
+<app-modal-view>
+  <div class="logo-container">
+    <h1>Driplane</h1>
+  </div>
+  <form [formGroup]="loginForm" (ngSubmit)="signIn()">
+    <ion-list>
+      <ion-item>
+        <ion-input
+          label="E-mail"
+          labelPlacement="stacked"
+          autocomplete="email"
+          type="email"
+          email
+          name="username"
+          formControlName="username"
+          required
+        ></ion-input>
+      </ion-item>
 
-            <ion-text class="error-message" *ngIf="logInFailed$ | async" color="danger">
-              <p>{{ logInFailed$ | async }}</p>
-            </ion-text>
+      <ion-text class="error-message" color="danger">
+        <p *ngIf="(logInFailed$ | async); else clientSideErrors">{{ logInFailed$ | async }}</p>
 
-            <ion-item>
-              <ion-input
-                label="Password"
-                labelPlacement="stacked"
-                type="password"
-                name="password"
-                formControlName="password"
-                required
-              ></ion-input>
-            </ion-item>
-            <ion-text class="error-message" color="danger">
-              <p>Write your password</p>
-            </ion-text>
-          </ion-list>
-          <button type="submit"></button>
-          <ion-button
-            type="submit"
-            expand="block"
-            share="round"
-            color="success"
-            >Login</ion-button
-          >
+        <ng-template #clientSideErrors>
+          <p *ngIf="loginForm.controls.username.errors?.['email']">Please write a valid email address</p>
+          <p *ngIf="loginForm.controls.username.errors?.['required']">Please write a valid email address</p>
+        </ng-template>
+      </ion-text>
 
-          <ion-item lines="none">
-            <ion-button slot="start" routerLink="/password-reset" fill="clear" size="small">Reset Password</ion-button>
-            <ion-button slot="end" routerLink="/signup">Create Account</ion-button>
-          </ion-item>
-        </form>
-      </div>
-    </ion-col>
-  </ion-row>
-</ion-grid>
-</ion-content>
+      <ion-item>
+        <ion-input
+          label="Password"
+          labelPlacement="stacked"
+          type="password"
+          name="password"
+          formControlName="password"
+          required
+        ></ion-input>
+      </ion-item>
+      <ion-text class="error-message" color="danger">
+        <p>Write your password</p>
+      </ion-text>
+    </ion-list>
+    <button type="submit"></button>
+    <ion-button type="submit" expand="block" share="round" color="success"
+      >Login</ion-button
+    >
+
+    <ion-item lines="none">
+      <ion-button
+        slot="start"
+        routerLink="/password-reset"
+        fill="clear"
+        size="small"
+        >Reset Password</ion-button
+      >
+      <ion-button slot="end" routerLink="/signup">Create Account</ion-button>
+    </ion-item>
+  </form>
+</app-modal-view>

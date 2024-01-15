@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
-import { distinctUntilChanged, filter, repeatWhen, switchMap, takeUntil, tap } from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { logIn, logInFailedClear } from '../auth.actions';
 import { loginFailed } from '../auth.selectors';
 import Logger from '../logger.service';
-import { EMPTY, iif, of } from 'rxjs';
 const log = Logger('page:login');
 
 @Component({
@@ -26,7 +30,19 @@ export class LoginPage {
     distinctUntilChanged(),
     tap((error) => {
       log('Setting loginFailed', error);
-      this.loginForm.controls.username.setErrors({ loginFailed: !!error });
+      const errors = this.loginForm.controls.username.errors || {};
+      if (error) {
+        errors['loginFailed'] = true;
+      } else {
+        delete errors['loginFailed'];
+      }
+
+      // check if errors is empty object
+      if (Object.keys(errors).length === 0) {
+        this.loginForm.controls.username.setErrors(null);
+      } else {
+        this.loginForm.controls.username.setErrors({ ...errors });
+      }
     })
   );
 
@@ -34,23 +50,22 @@ export class LoginPage {
     log('construction');
 
     this.logInFailed$.pipe(
-      tap((error) => log('loginFailed', error)),
-      filter((error) => !!error),
-      tap((error) => log('after filter', error)),
-      switchMap(() => this.loginForm.valueChanges.pipe(
-        takeUntil(this.logInFailed$)
-      )),
-      repeatWhen(() => this.logInFailed$)
+      filter((failed) => !!failed),
+      switchMap(() => this.loginForm.valueChanges)
     ).subscribe((value) => {
-      log('value changed', value);
-      this.store.dispatch(logInFailedClear());
-    });
+        log('value changed', value);
+        this.store.dispatch(logInFailedClear());
+      });
   }
 
   signIn() {
     if (this.loginForm.valid) {
+      this.store.dispatch(logInFailedClear());
       this.store.dispatch(
-        logIn({ username: this.loginForm.value.username, password: this.loginForm.value.password })
+        logIn({
+          username: this.loginForm.value.username,
+          password: this.loginForm.value.password,
+        })
       );
     }
   }

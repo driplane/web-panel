@@ -7,7 +7,7 @@ import { DriplaneService } from '../driplane.service';
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
 })
-export class SignupPage implements OnInit {
+export class SignupPage {
   username = '';
   password = '';
   password2 = '';
@@ -15,9 +15,6 @@ export class SignupPage implements OnInit {
   success = false;
 
   constructor(private driplane: DriplaneService) { }
-
-  ngOnInit() {
-  }
 
   signUp(form: NgForm) {
     if (form.valid) {

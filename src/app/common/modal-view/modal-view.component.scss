@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+.modal-view-container-row {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-view-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
