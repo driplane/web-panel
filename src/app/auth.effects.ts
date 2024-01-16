@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, mergeMap, catchError, tap } from 'rxjs/operators';
-import { of, EMPTY } from 'rxjs';
+import { addDays, formatISO, parseISO } from 'date-fns';
+import { EMPTY, of } from 'rxjs';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { logIn, logInFailed, logInSuccess, restoreLastSession, setSession, signOut, signOutSuccess, tokenInvalid } from './auth.actions';
 import { DriplaneService } from './driplane.service';
-import * as dayjs from 'dayjs';
 import { loadProjects } from './project.actions';
-import { Router } from '@angular/router';
+import Logger from './logger.service';
+const log = Logger('effects:auth');
 
 export const LS_TOKEN_KEY = 'auth';
 export const LS_TOKEN_EXPIRE_KEY = 'auth_expire';
@@ -16,15 +18,15 @@ export class AuthEffects {
   restoreLastSession$ = createEffect(() => this.actions$.pipe(
     ofType(restoreLastSession),
     map(() => {
-      console.log('restoreLastSession');
+      log('restoreLastSession');
       if (localStorage.getItem(LS_TOKEN_KEY)) {
         const token = localStorage.getItem(LS_TOKEN_KEY);
-        const expiresAt = dayjs(localStorage.getItem(LS_TOKEN_EXPIRE_KEY)).toDate();
+        const expiresAt = parseISO(localStorage.getItem(LS_TOKEN_EXPIRE_KEY));
         this.driplane.setToken(token);
-        console.log('session restored');
+        log('session restored');
         return setSession({ token, expiresAt });
       }
-      console.log('Nothing to restore;')
+      log('Nothing to restore;')
       return EMPTY;
     })
   ), { dispatch: false });
@@ -33,9 +35,9 @@ export class AuthEffects {
     ofType(logIn),
     mergeMap(({ username, password }) => this.driplane.login(username, password)
       .pipe(
-        map(({ token }) => logInSuccess({ token, expiresAt: dayjs().add(7, 'day').toDate()})),
+        map(({ token }) => logInSuccess({ token, expiresAt: addDays(Date(), 7) })),
         catchError((error) => {
-          console.log('login failed', error);
+          log('login failed', error);
           return of(logInFailed({ message: 'Login failed. Please check your e-mail address and password.' }))
         })
       )
@@ -46,7 +48,7 @@ export class AuthEffects {
     ofType(logInSuccess),
     tap(({ token, expiresAt }) => {
       localStorage.setItem(LS_TOKEN_KEY, token);
-      localStorage.setItem(LS_TOKEN_EXPIRE_KEY, dayjs(expiresAt).toISOString());
+      localStorage.setItem(LS_TOKEN_EXPIRE_KEY, formatISO(expiresAt));
       this.driplane.setToken(token);
       this.router.navigate(['/']);
     }),
@@ -64,7 +66,7 @@ export class AuthEffects {
   signOut$ = createEffect(() => this.actions$.pipe(
     ofType(signOut),
     tap(() => {
-      console.log('sign out');
+      log('sign out');
       localStorage.removeItem(LS_TOKEN_KEY);
       localStorage.removeItem(LS_TOKEN_EXPIRE_KEY);
       this.driplane.setToken(null);
@@ -75,7 +77,7 @@ export class AuthEffects {
   signOutSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(signOutSuccess),
     tap(() => {
-      console.log('sign out success');
+      log('sign out success');
       this.router.navigate(['/login']);
     })
   ), { dispatch: false });

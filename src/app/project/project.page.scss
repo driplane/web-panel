@@ -1,6 +1,14 @@
+ion-card {
+  min-width: 200px;
+}
+
 .main-card {
   min-width: 600px;
   max-width: 90vw;
+}
+
+.no-data-card {
+  min-width: 90vw;
 }
 
 .bar-chart-list {

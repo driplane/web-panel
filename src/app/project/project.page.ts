@@ -5,6 +5,7 @@ import { Store, select } from '@ngrx/store';
 import { endOfDay, endOfMinute, endOfToday, formatISO, startOfDay, startOfToday, subDays, subMinutes } from 'date-fns';
 import { combineLatest, from, iif, of, timer } from 'rxjs';
 import {
+  catchError,
   concatAll,
   distinctUntilChanged,
   map, share, shareReplay, switchMap, switchMapTo, tap
@@ -12,6 +13,8 @@ import {
 import { DriplaneService } from '../driplane.service';
 import { addFilter, clearFilter } from '../project.actions';
 import { activeFilters, activeProject } from '../project.selectors';
+import Logger from '../logger.service';
+const log = Logger('page:project');
 
 type Range = 'live'|'today'|'day'|'week'|'month';
 @Component({
@@ -157,6 +160,10 @@ export class ProjectPage implements OnInit {
           ...extraFilters
         })
       ),
+      catchError((error) => {
+        log(error.status);
+        return of([]);
+      }),
       map((list) => list.map(item => ({
         count: item.count,
         label: item[tag]

@@ -1,17 +1,14 @@
-<div class="ion-page">
+<app-modal-view>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Driplane Email Verify</ion-title>
+    </ion-toolbar>
+  </ion-header>
   <ion-content class="ion-padding">
-    <ion-modal #modal [isOpen]="true" [canDismiss]="false">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Driplane Email Verify</ion-title>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <ion-spinner *ngIf="!success"></ion-spinner>
-          <ion-text *ngIf="success" class="success">Your E-mail is verified. You can now <a href="/login">login</a>.</ion-text>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
+    <ion-spinner *ngIf="!success"></ion-spinner>
+    <ion-text *ngIf="success" class="success"
+      >Your E-mail is verified. You can now
+      <a href="/login">login</a>.</ion-text
+    >
   </ion-content>
-</div>
+</app-modal-view>

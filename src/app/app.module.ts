@@ -13,9 +13,18 @@ import { authReducer } from './auth.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './auth.effects';
 import { ProjectEffects } from './project.effects';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { environment } from '../environments/environment';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { ActionReducer } from '@ngrx/store';
+import Logger from './logger.service';
+const log = Logger('rx:actions');
+
+export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
+  return (state, action) => {
+    log(action.type);
+
+    return reducer(state, action);
+  };
+}
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,9 +33,8 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    StoreModule.forRoot({ project: projectReducer, auth: authReducer }, {}),
+    StoreModule.forRoot({ project: projectReducer, auth: authReducer }, {metaReducers: [logger]}),
     EffectsModule.forRoot([AuthEffects, ProjectEffects]),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
   ],
   providers: [
