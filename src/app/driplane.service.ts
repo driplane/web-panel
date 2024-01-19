@@ -1,15 +1,29 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { tokenInvalid } from './auth.actions';
 import {
-  AuthResponse, CountItem,
-  HistogramItem, HistogramResponseItem, Project, ProjectKey, QueryResponse, RequestOptions, Response,
-  TopListItem
+  AuthResponse,
+  CountItem,
+  HistogramItem,
+  HistogramResponseItem,
+  Project,
+  ProjectKey,
+  ProjectKeyConfig,
+  QueryResponse,
+  RequestOptions,
+  Response,
+  TopListItem,
 } from './driplane.types';
 import { environment } from '../environments/environment';
+import Logger from './logger.service';
+const log = Logger('service:driplane');
 
 @Injectable({
   providedIn: 'root',
@@ -18,8 +32,7 @@ export class DriplaneService {
   private baseUrl = environment.apiBaseUrl;
   private token = '';
 
-  constructor(private http: HttpClient, private store: Store) {
-  }
+  constructor(private http: HttpClient, private store: Store) {}
 
   setToken(token: string) {
     this.token = token;
@@ -74,6 +87,14 @@ export class DriplaneService {
       );
   }
 
+  createProject(name: string) {
+    return this.tokenReq<Project>('post', 'projects', {
+      body: {
+        name,
+      },
+    });
+  }
+
   getProjects(): Observable<Project[]> {
     return this.tokenReq<Response<Project[]>>('get', 'projects').pipe(
       map((res) => res.response),
@@ -84,6 +105,20 @@ export class DriplaneService {
   getProject(projectId: string): Observable<Project> {
     return this.getProjects().pipe(
       map((projects) => projects.find((p) => p.id === projectId))
+    );
+  }
+
+  createProjectKey(project: Project, keyConfig: ProjectKeyConfig) {
+    return this.projectAuthRequest<Response<ProjectKey>>(
+      project,
+      'post',
+      `projects/${project.id}/keys`,
+      {
+        body: keyConfig,
+      }
+    ).pipe(
+      tap((res) => log(res)),
+      map((res) => res.response)
     );
   }
 
@@ -120,30 +155,38 @@ export class DriplaneService {
       'histogram',
       params
     ).pipe(
-      map((res) => Array.isArray(res.result) ? res.result : [] ),
-      map((result) => result.map((item => ({
-        ...item,
-        count: parseInt(item.count, 10)
-      }))))
+      map((res) => (Array.isArray(res.result) ? res.result : [])),
+      map((result) =>
+        result.map((item) => ({
+          ...item,
+          count: parseInt(item.count, 10),
+        }))
+      )
     );
   }
 
-
-  getUniqueTagCounts(project: Project, event: string, tag: string, params): Observable<HistogramItem[]> {
+  getUniqueTagCounts(
+    project: Project,
+    event: string,
+    tag: string,
+    params
+  ): Observable<HistogramItem[]> {
     return this.projectEventRequest<HistogramResponseItem[]>(
       project,
       event,
       'unique',
       {
         ...params,
-        tag
+        tag,
       }
     ).pipe(
-      map((res) => Array.isArray(res.result) ? res.result : [] ),
-      map((result) => result.map((item => ({
-        ...item,
-        count: parseInt(item.count, 10)
-      }))))
+      map((res) => (Array.isArray(res.result) ? res.result : [])),
+      map((result) =>
+        result.map((item) => ({
+          ...item,
+          count: parseInt(item.count, 10),
+        }))
+      )
     );
   }
 
@@ -159,21 +202,26 @@ export class DriplaneService {
     endpoint: string,
     options?: RequestOptions
   ): Observable<T> {
-    return this.http.request<T>(method, `${this.baseUrl}/${endpoint}`, {
-      headers: {
-        authorization: `Bearer ${this.token}`,
-      },
-      observe: 'body',
-      responseType: 'json',
-      ...options,
-    }).pipe(
-      catchError((response: any) => {
-        if (response instanceof HttpErrorResponse && response.status === 401) {
-          this.store.dispatch(tokenInvalid());
-        }
-        return throwError(response);
+    return this.http
+      .request<T>(method, `${this.baseUrl}/${endpoint}`, {
+        headers: {
+          authorization: `Bearer ${this.token}`,
+        },
+        observe: 'body',
+        responseType: 'json',
+        ...options,
       })
-    );
+      .pipe(
+        catchError((response: any) => {
+          if (
+            response instanceof HttpErrorResponse &&
+            response.status === 401
+          ) {
+            this.store.dispatch(tokenInvalid());
+          }
+          return throwError(response);
+        })
+      );
   }
 
   private projectAuthRequest<T>(

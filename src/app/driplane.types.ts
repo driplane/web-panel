@@ -32,14 +32,18 @@ export interface Project {
   keys: ProjectKey[];
 }
 
-export interface ProjectKey {
-  key: string;
+export interface ProjectKeyConfig {
   name: string;
   read: boolean;
   write: boolean;
-  created_at: string;
   auto_fill: object;
 }
+
+export interface ProjectKey extends ProjectKeyConfig {
+  key: string;
+  created_at: string;
+}
+
 export interface TopListItem {
   tag: string;
   count: number;

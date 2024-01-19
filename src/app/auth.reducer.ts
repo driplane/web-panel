@@ -17,6 +17,7 @@ function log(reducer: (state: AuthState) => AuthState) {
     return reducer(state);
   }
 }
+
 export interface AuthState {
   loggedIn: boolean;
   token: string;

@@ -3,7 +3,7 @@
     <ion-content>
       <ion-list id="inbox-list">
         <ion-list-header>Driplane</ion-list-header>
-        <ion-note>{{ ( activeProject$ | async )?.name }}</ion-note>
+        <ion-note>user&#64;domain.com</ion-note>
 
         <ion-menu-toggle auto-hide="false">
           <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async )?.id]" lines="none" detail="false" routerLinkActive="active">
@@ -16,12 +16,12 @@
             <ion-label>Settings</ion-label>
           </ion-item>
         </ion-menu-toggle>
-
+<!--
         <ion-item>
           <ion-select [compareWith]="compareWith" [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
             <ion-select-option *ngFor="let project of projects$ | async" [value]="project">{{ project.name }}</ion-select-option>
           </ion-select>
-        </ion-item>
+        </ion-item> -->
 
       </ion-list>
     </ion-content>
