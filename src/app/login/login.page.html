@@ -13,11 +13,12 @@
           email
           name="username"
           formControlName="username"
+          data-testid="usernameInput"
           required
         ></ion-input>
       </ion-item>
 
-      <ion-text class="error-message" color="danger">
+      <ion-text class="error-message" color="danger" data-testid="usernameErrorMessage">
         <p *ngIf="(logInFailed$ | async); else clientSideErrors">{{ logInFailed$ | async }}</p>
 
         <ng-template #clientSideErrors>
@@ -33,15 +34,16 @@
           type="password"
           name="password"
           formControlName="password"
+          data-testid="passwordInput"
           required
         ></ion-input>
       </ion-item>
-      <ion-text class="error-message" color="danger">
+      <ion-text class="error-message" color="danger" data-testid="passwordErrorMessage">
         <p>Write your password</p>
       </ion-text>
     </ion-list>
     <button type="submit"></button>
-    <ion-button type="submit" expand="block" share="round" color="success"
+    <ion-button type="submit" expand="block" share="round" color="success" data-testid="loginButton"
       >Login</ion-button
     >
 
@@ -51,9 +53,10 @@
         routerLink="/password-reset"
         fill="clear"
         size="small"
+        data-testid="resetPasswordButton"
         >Reset Password</ion-button
       >
-      <ion-button slot="end" routerLink="/signup">Create Account</ion-button>
+      <ion-button slot="end" data-testid="signupButton" routerLink="/signup">Create Account</ion-button>
     </ion-item>
   </form>
 </app-modal-view>
