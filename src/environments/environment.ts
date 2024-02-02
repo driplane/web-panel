@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:9090',
+  // apiBaseUrl: 'http://localhost:9090',
+  apiBaseUrl: 'https://beta-api.driplane.io',
 };
 
 /*

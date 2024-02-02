@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://driplane.fly.dev',
+  apiBaseUrl: 'https://api.driplane.io',
 };
