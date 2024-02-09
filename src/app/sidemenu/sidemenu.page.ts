@@ -3,12 +3,11 @@ import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { catchError, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { signOut } from '../auth.actions';
-import { loadProjects, switchProject } from '../project.actions';
+import { addProject, loadProjects, switchProject } from '../project.actions';
 import { activeProject, projects } from '../project.selectors';
 import { Subject } from 'rxjs';
 import { isLoggedIn } from '../auth.selectors';
 import Logger from '../logger.service';
-import { DriplaneService } from '../driplane.service';
 const log = Logger('page:sidemenu');
 
 @Component({
@@ -37,7 +36,6 @@ export class SidemenuPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private store: Store,
-    private service: DriplaneService,
   ) {
   }
 
@@ -66,25 +64,7 @@ export class SidemenuPage implements OnInit, OnDestroy {
     this.projects$.subscribe((projectList) => {
       if (projectList.length === 0) {
         log('No projects found. Creating default project...');
-        this.service.createProject('Default Project').pipe(
-          tap((newProject) => log('Created default project', newProject)),
-          switchMap((newProject) => this.service.createProjectKey(newProject, {
-            name: 'Default Key',
-            read: true,
-            write: true,
-            auto_fill: {}
-          })),
-          catchError((error) => {
-            log('Error creating default project', error);
-            return [];
-          }),
-        ).subscribe({
-          next: (key) => log('Created default key', key),
-          complete: () => {
-            this.store.dispatch(loadProjects());
-          }
-        });
-
+        this.store.dispatch(addProject({project: {name: 'Default Project'}}));
         return;
       }
 

@@ -6,8 +6,9 @@ import {
   loadProjectKeysSuccess,
   addFilter,
   clearFilter,
+  addProjectSuccess,
 } from './project.actions';
-import { Project } from './driplane.types';
+import { Project, ProjectKey } from './driplane.types';
 
 export const PROJECT_FEATURE_KEY = 'project';
 
@@ -20,21 +21,24 @@ export interface ProjectState {
   projects: Project[];
   activeProject: string;
   activeFilters: Filter[];
+  activeProjectKeys: ProjectKey[]
 }
 
 export const initialState: ProjectState = {
   projects: [],
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
+  activeProjectKeys: []
 };
 
 export const projectReducer = createReducer(
   initialState,
   on(switchProject, (state, { activeProject }) => ({
     ...state,
+    activeProjectKeys: [],
     activeProject,
   })),
-  on(addProject, (state, { project }) => ({
+  on(addProjectSuccess, (state, { project }) => ({
     ...state,
     projects: [...state.projects, project],
   })),
@@ -52,11 +56,6 @@ export const projectReducer = createReducer(
   })),
   on(loadProjectKeysSuccess, (state, { project, projectKeys }) => ({
     ...state,
-    projects: [
-      ...state.projects.map((p) => ({
-        ...p,
-        keys: p.id === project.id ? projectKeys : [],
-      })),
-    ],
+    activeProjectKeys: projectKeys,
   }))
 );

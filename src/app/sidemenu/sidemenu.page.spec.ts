@@ -37,8 +37,7 @@ describe('SidemenuPage', () => {
       name: 'Test',
       // eslint-disable-next-line @typescript-eslint/naming-convention
       created_at: '',
-      secret: '',
-      keys: []
+      secret: ''
     };
 
     mockActiveProjectSelector = store.overrideSelector(activeProject, mockProject);

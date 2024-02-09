@@ -24,12 +24,14 @@ export interface QueryResponse<T> {
   result: T;
 }
 
-export interface Project {
+export interface ProjectConfig {
+  name: string;
+}
+
+export interface Project extends ProjectConfig {
   created_at: string;
   id: string;
-  name: string;
   secret: string;
-  keys: ProjectKey[];
 }
 
 export interface ProjectKeyConfig {

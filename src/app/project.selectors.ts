@@ -19,6 +19,11 @@ export const activeProject = createSelector(
   (state: ProjectState, projectList: Project[]) => projectList.find(p => p.id === state.activeProject)
 );
 
+export const activeProjectKeys = createSelector(
+  selectProjectState,
+  (state: ProjectState) => state.activeProjectKeys || []
+);
+
 export const activeFilters = createSelector(
   selectProjectState,
   (state: ProjectState) => state?.activeFilters || [],

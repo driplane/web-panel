@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { activeProject } from '../project.selectors';
-import { distinctUntilKeyChanged, shareReplay, startWith, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
-import { loadProjectKeys } from '../project.actions';
+import { activeProject, activeProjectKeys } from '../project.selectors';
+import { distinctUntilKeyChanged, filter, shareReplay, startWith, switchMap, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
+import { addProjectKey, loadProjectKeys } from '../project.actions';
 import { pipe, Subject } from 'rxjs';
+import { Project } from '../driplane.types';
 
 @Component({
   selector: 'app-settings',
@@ -13,8 +14,18 @@ import { pipe, Subject } from 'rxjs';
 export class SettingsPage implements OnInit, OnDestroy {
   destroyed$ = new Subject<boolean>();
 
+  activeProject: Project;
+
   activeProject$ = this.store.pipe(
     select(activeProject),
+    takeUntil(this.destroyed$),
+    shareReplay(1),
+    filter(p => !!p?.id),
+    tap((project) => this.store.dispatch(loadProjectKeys({ project }))),
+  );
+
+  activeProjectKeys$ = this.store.pipe(
+    select(activeProjectKeys),
     takeUntil(this.destroyed$),
     shareReplay(1),
   );
@@ -22,18 +33,28 @@ export class SettingsPage implements OnInit, OnDestroy {
   constructor(private store: Store) { }
 
   ngOnInit() {
+    // this.store.dispatch(loadProjectKeys({ project }));
     let a = false;
-    this.activeProject$.pipe(
-      // takeWhile(p => !!p?.id),
-      // distinctUntilKeyChanged('id')
-    ).subscribe((project) => {
-      console.log('Load project keys');
-      // FIXME:
-      if (project?.id && !a) {
-        a = true;
-        this.store.dispatch(loadProjectKeys({ project }));
-      }
-    });
+    // this.activeProject$.pipe(
+    //   // takeWhile(p => !!p?.id),
+    //   // distinctUntilKeyChanged('id')
+    // ).subscribe((project) => {
+    //   this.activeProject = project;
+    //   console.log('Load project keys');
+
+    //   if (project?.id) {
+    //     this.store.dispatch(loadProjectKeys({ project }));
+    //   }
+    // });
+  }
+
+  addProjectKey() {
+    this.store.dispatch(addProjectKey({ project: this.activeProject, projectKey: {
+      name: 'Main',
+      read: true,
+      write: true,
+      auto_fill: {}
+    }}))
   }
 
   ngOnDestroy() {

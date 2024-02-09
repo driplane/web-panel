@@ -14,6 +14,7 @@ import {
   HistogramItem,
   HistogramResponseItem,
   Project,
+  ProjectConfig,
   ProjectKey,
   ProjectKeyConfig,
   QueryResponse,
@@ -87,7 +88,7 @@ export class DriplaneService {
       );
   }
 
-  createProject(name: string) {
+  createProject({ name }: ProjectConfig) {
     return this.tokenReq<Project>('post', 'projects', {
       body: {
         name,
@@ -98,7 +99,8 @@ export class DriplaneService {
   getProjects(): Observable<Project[]> {
     return this.tokenReq<Response<Project[]>>('get', 'projects').pipe(
       map((res) => res.response),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({ bufferSize: 1, refCount: true }),
+
     );
   }
 

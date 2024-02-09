@@ -22,13 +22,13 @@
         <ion-item lines="none">
           <ion-label>
             <h2>Project Client ID:</h2>
-            <p>{{ ( activeProject$ | async )?.id }}</p>
+            <p>{{ ( activeProject$ | async )?.id }} <sl-copy-button value="{{ ( activeProject$ | async )?.id }}"></sl-copy-button></p>
           </ion-label>
         </ion-item>
         <ion-item lines="none">
           <ion-label>
             <h2>Project Client Secret:</h2>
-            <p>{{ ( activeProject$ | async )?.secret }}</p>
+            <p>{{ ( activeProject$ | async )?.secret }} <sl-copy-button value="{{ ( activeProject$ | async )?.secret }}"></sl-copy-button></p>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -42,24 +42,21 @@
     <ion-card-content>
 
       <ion-list>
-        <ion-item *ngFor="let key of (activeProject$ | async )?.keys">
+        <ion-item *ngFor="let key of activeProjectKeys$ | async">
           <ion-label>
-            <h2>Name:</h2>
-            <p>{{ key.name }}</p>
-          </ion-label>
-          <ion-label>
-            <details>
-              <caption>Show Code</caption>
+            <h2>{{ key.name }}</h2>
 
+            <sl-details summary="Show Code">
               <p>You can put code below to before <code>&lt;/head&gt;</code> tag in your website:</p>
+              <code>&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;</code>
+              <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
+            </sl-details>
 
-              <p>
-                &lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;eta/dist/driplane.js"&gt;&lt;/script&gt;
-              </p>
-            </details>
           </ion-label>
         </ion-item>
       </ion-list>
+
+      <ion-button expand="block" (click)="addProjectKey()">Add Key</ion-button>
 
     </ion-card-content>
   </ion-card>
