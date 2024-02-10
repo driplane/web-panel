@@ -6,22 +6,22 @@
         <ion-note>user&#64;domain.com</ion-note>
 
         <ion-menu-toggle auto-hide="false">
-          <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async )?.id]" lines="none" detail="false" routerLinkActive="active">
+          <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async ) ]" lines="none" detail="false" routerLinkActive="active">
             <ion-icon slot="start" ios="speedometer-outline" md="speedometer-sharp"></ion-icon>
             <ion-label>Dashboard</ion-label>
           </ion-item>
 
-          <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async )?.id, 'settings']" lines="none" detail="false" routerLinkActive="active">
+          <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async ), 'settings']" lines="none" detail="false" routerLinkActive="active">
             <ion-icon slot="start" ios="cog-outline" md="cog-sharp"></ion-icon>
             <ion-label>Settings</ion-label>
           </ion-item>
         </ion-menu-toggle>
-<!--
+
         <ion-item>
-          <ion-select [compareWith]="compareWith" [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
-            <ion-select-option *ngFor="let project of projects$ | async" [value]="project">{{ project.name }}</ion-select-option>
+          <ion-select [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
+            <ion-select-option *ngFor="let project of projects$ | async" [value]="project.id">{{ project.name }}</ion-select-option>
           </ion-select>
-        </ion-item> -->
+        </ion-item>
 
       </ion-list>
     </ion-content>

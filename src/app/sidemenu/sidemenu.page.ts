@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { select, Store } from '@ngrx/store';
-import { catchError, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { signOut } from '../auth.actions';
-import { addProject, loadProjects, switchProject } from '../project.actions';
-import { activeProject, projects } from '../project.selectors';
+import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
+import { filter, shareReplay, takeUntil } from 'rxjs/operators';
+import { signOut } from '../auth.actions';
 import { isLoggedIn } from '../auth.selectors';
 import Logger from '../logger.service';
+import { loadProjects, switchProject } from '../project.actions';
+import { activeProjectId, projects } from '../project.selectors';
 const log = Logger('page:sidemenu');
 
 @Component({
@@ -17,12 +17,13 @@ const log = Logger('page:sidemenu');
 })
 export class SidemenuPage implements OnInit, OnDestroy {
   activeProject$ = this.store.pipe(
-    select(activeProject),
+    select(activeProjectId),
     shareReplay(1),
   );
 
   projects$ = this.store.pipe(
     select(projects),
+    filter((projects) => projects !== null),
     shareReplay(1),
   );
 
@@ -40,43 +41,18 @@ export class SidemenuPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    log('init');
     this.isLoggedIn$.subscribe((loggedIn) => {
       if (loggedIn) {
         this.store.dispatch(loadProjects());
       }
     });
 
-
     let activeProjectSelected = false;
 
     this.activeProject$.subscribe((currentProject) => {
       if (currentProject) {
         activeProjectSelected = true;
-      }
-    });
-
-    // if(this.route.firstChild) {
-    //   this.route.firstChild.params.subscribe((params) => {
-    //     console.log(params);
-    //   });
-    // }
-
-    this.projects$.subscribe((projectList) => {
-      if (projectList.length === 0) {
-        log('No projects found. Creating default project...');
-        this.store.dispatch(addProject({project: {name: 'Default Project'}}));
-        return;
-      }
-
-      if (!activeProjectSelected) {
-        this.store.dispatch(switchProject({activeProject: projectList[0].id}));
-        this.router.navigate([`/projects/${projectList[0].id}`]);
-      }
-    });
-
-    this.activeProject$.subscribe((p) => {
-      if (p) {
-        this.router.navigate([`/projects/${p.id}`]);
       }
     });
   }
@@ -90,8 +66,7 @@ export class SidemenuPage implements OnInit, OnDestroy {
   }
 
   switchProject(event) {
-    this.router.navigate([`/projects/${event.target.value.id}`]);
-    // this.store.dispatch(switchProject({activeProject: event.target.value}));
+    this.store.dispatch(switchProject({activeProject: event.target.value}));
   }
 
   ngOnDestroy() {

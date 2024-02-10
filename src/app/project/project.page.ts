@@ -58,7 +58,11 @@ export class ProjectPage implements OnInit {
     })
   );
 
-  activeProject$ = this.store.pipe(select(activeProject), shareReplay(1));
+  activeProject$ = this.store.pipe(
+    select(activeProject),
+    tap((project) => { log('activeProject', project); }),
+    shareReplay(1)
+  );
 
   filters$ = this.store.pipe(select(activeFilters), shareReplay(1));
 
@@ -146,7 +150,9 @@ export class ProjectPage implements OnInit {
     private store: Store,
     private driplane: DriplaneService,
     private loadingCtrl: LoadingController
-  ) {}
+  ) {
+    log('constructo');
+  }
 
   topList(tag: string, extraFilters = {}) {
     return this.selection$.pipe(
@@ -161,7 +167,7 @@ export class ProjectPage implements OnInit {
         })
       ),
       catchError((error) => {
-        log(error.status);
+        log(error);
         return of([]);
       }),
       map((list) => list.map(item => ({

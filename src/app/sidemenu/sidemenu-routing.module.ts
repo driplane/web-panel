@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { ProjectIdResolverService } from '../project.resolver';
 
 import { SidemenuPage } from './sidemenu.page';
+import { defaultProjectGuard } from '../default-project.guard';
 
 const routes: Routes = [
   {
@@ -10,25 +11,57 @@ const routes: Routes = [
     component: SidemenuPage,
     children: [
       {
-        path: 'projects/:projectId',
-        resolve: {
-          project: ProjectIdResolverService
-        },
+        path: '',
+        redirectTo: 'projects/auto',
+        pathMatch: 'full',
+      },
+      {
+        path: 'projects',
+        pathMatch: 'full',
+        redirectTo: 'projects/auto',
+      },
+      {
+        path: 'project-not-found',
+        pathMatch: 'full',
+        loadChildren: () =>
+          import('../not-found/not-found.module').then(
+            (m) => m.NotFoundPageModule
+          ),
+      },
+      {
+        path: 'projects',
         children: [
           {
-            path: '',
+            path: 'auto',
+            pathMatch: 'full',
+            canActivate: [defaultProjectGuard],
             loadChildren: () =>
               import('../project/project.module').then(
                 (m) => m.ProjectPageModule
               ),
           },
           {
-            path: 'settings',
-            title: 'Settings',
-            loadChildren: () =>
-              import('../settings/settings.module').then(
-                (m) => m.SettingsPageModule
-              ),
+            path: ':projectId',
+            resolve: {
+              project: ProjectIdResolverService,
+            },
+            children: [
+              {
+                path: '',
+                loadChildren: () =>
+                  import('../project/project.module').then(
+                    (m) => m.ProjectPageModule
+                  ),
+              },
+              {
+                path: 'settings',
+                title: 'Settings',
+                loadChildren: () =>
+                  import('../settings/settings.module').then(
+                    (m) => m.SettingsPageModule
+                  ),
+              },
+            ],
           },
         ],
       },

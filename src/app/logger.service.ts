@@ -16,7 +16,7 @@ const log = (context: string, ...args) => {
   });
 
   if (pass) {
-    console.log(...args);
+    console.log(`${context}`, ...args);
   }
 };
 

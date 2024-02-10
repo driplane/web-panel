@@ -106,7 +106,13 @@ export class DriplaneService {
 
   getProject(projectId: string): Observable<Project> {
     return this.getProjects().pipe(
-      map((projects) => projects.find((p) => p.id === projectId))
+      map((projects) => projects.find((p) => p.id === projectId)),
+      map((project) => {
+        if (!project) {
+          throw new Error(`Project ${projectId} not found`);
+        }
+        return project;
+      })
     );
   }
 

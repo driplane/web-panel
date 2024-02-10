@@ -5,6 +5,7 @@ import { Filter } from './project.reducer';
 const _ = log => `[Project] ${log}`;
 
 export const switchProject = createAction(_('Switch Project'),  props<{ activeProject: string}>());
+export const switchProjectSuccess = createAction(_('Switch Project success'),  props<{ activeProject: string}>());
 export const addProject = createAction(_('Add Project'),  props<{ project: ProjectConfig}>());
 export const addProjectSuccess = createAction(_('Add Project success'),  props<{ project: Project}>());
 

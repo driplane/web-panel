@@ -1,20 +1,20 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { LS_TOKEN_KEY } from './auth.effects';
+import Logger from './logger.service';
+const log = Logger('guard:auth');
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard implements CanActivate {
+export const AuthGuard: CanActivateFn = async (
+  route,
+  state
+) => {
+  log('checking auth...');
 
-  constructor(public router: Router) {}
-  canActivate(): Promise<boolean> {
-    return new Promise(resolve => {
-      if (localStorage.getItem(LS_TOKEN_KEY)) {
-        resolve(true);
-      } else {
-        this.router.navigate(['/login']);
-      }
-    });
+  if (localStorage.getItem(LS_TOKEN_KEY)) {
+    return true;
+  } else {
+    const router = inject(Router);
+    router.navigate(['/login']);
+    return false;
   }
-}
+};

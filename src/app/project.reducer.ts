@@ -1,14 +1,13 @@
 import { createReducer, on } from '@ngrx/store';
-import {
-  switchProject,
-  addProject,
-  loadProjectSuccess,
-  loadProjectKeysSuccess,
-  addFilter,
-  clearFilter,
-  addProjectSuccess,
-} from './project.actions';
 import { Project, ProjectKey } from './driplane.types';
+import {
+  addFilter,
+  addProjectSuccess,
+  clearFilter,
+  loadProjectKeysSuccess,
+  loadProjectSuccess,
+  switchProjectSuccess
+} from './project.actions';
 
 export const PROJECT_FEATURE_KEY = 'project';
 
@@ -25,7 +24,7 @@ export interface ProjectState {
 }
 
 export const initialState: ProjectState = {
-  projects: [],
+  projects: null,
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
   activeProjectKeys: []
@@ -33,7 +32,7 @@ export const initialState: ProjectState = {
 
 export const projectReducer = createReducer(
   initialState,
-  on(switchProject, (state, { activeProject }) => ({
+  on(switchProjectSuccess, (state, { activeProject }) => ({
     ...state,
     activeProjectKeys: [],
     activeProject,

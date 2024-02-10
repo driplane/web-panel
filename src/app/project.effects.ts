@@ -3,7 +3,11 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { EMPTY, merge, of } from 'rxjs';
 import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { DriplaneService } from './driplane.service';
-import { loadProjects, loadProjectSuccess, loadProjectKeys, loadProjectKeysSuccess, switchProject, addProjectKey, addProject } from './project.actions';
+import { loadProjects, loadProjectSuccess, loadProjectKeys, loadProjectKeysSuccess, switchProject, addProjectKey, addProject, switchProjectSuccess } from './project.actions';
+import Logger from './logger.service';
+import { routerNavigationAction } from '@ngrx/router-store';
+import { Router } from '@angular/router';
+const log = Logger('effects:project');
 
 @Injectable()
 export class ProjectEffects {
@@ -17,13 +21,19 @@ export class ProjectEffects {
         catchError(() => EMPTY)
       )
     )
-  ), { dispatch: false });
+  ));
 
   loadProjects$ = createEffect(() => this.actions$.pipe(
     ofType(loadProjects),
     mergeMap(() => this.driplane.getProjects()
       .pipe(
-        map(projects => loadProjectSuccess({ projects })),
+        map(projects => {
+          if (projects.length === 0) {
+            log('No projects found. Creating default project...');
+            addProject({ project: { name: 'Default Project' } });
+          }
+          return loadProjectSuccess({ projects })
+        }),
         catchError(() => of({ type: 'loadProjectsFailed' }))
       )
     )
@@ -43,8 +53,10 @@ export class ProjectEffects {
     ofType(switchProject),
     tap(({activeProject}) => {
       localStorage.setItem('lastProjectId', activeProject);
-    })
-  ), { dispatch: false });
+      this.router.navigate(['/projects', activeProject]);
+    }),
+    map(({activeProject}) => switchProjectSuccess({ activeProject: activeProject }))
+  ));
 
   addProjectKey$ = createEffect(() => this.actions$.pipe(
     ofType(addProjectKey),
@@ -54,10 +66,11 @@ export class ProjectEffects {
         catchError(() => EMPTY)
       )
     )
-  ), { dispatch: false });
+  ));
 
   constructor(
     private actions$: Actions,
-    private driplane: DriplaneService
+    private driplane: DriplaneService,
+    private router: Router
   ) {}
 }

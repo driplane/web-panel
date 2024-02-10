@@ -13,7 +13,7 @@ import { authReducer } from './auth.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './auth.effects';
 import { ProjectEffects } from './project.effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { ActionReducer } from '@ngrx/store';
 import Logger from './logger.service';
 const log = Logger('rx:actions');
@@ -33,7 +33,11 @@ export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    StoreModule.forRoot({ project: projectReducer, auth: authReducer }, {metaReducers: [logger]}),
+    StoreModule.forRoot({
+      project: projectReducer,
+      auth: authReducer,
+      router: routerReducer
+    }, {metaReducers: [logger]}),
     EffectsModule.forRoot([AuthEffects, ProjectEffects]),
     StoreRouterConnectingModule.forRoot(),
   ],

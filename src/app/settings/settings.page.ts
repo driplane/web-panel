@@ -1,17 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { activeProject, activeProjectKeys } from '../project.selectors';
-import { distinctUntilKeyChanged, filter, shareReplay, startWith, switchMap, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
-import { addProjectKey, loadProjectKeys } from '../project.actions';
-import { pipe, Subject } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import { Store, select } from '@ngrx/store';
+import { Subject } from 'rxjs';
+import { filter, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { Project } from '../driplane.types';
+import { addProjectKey, loadProjectKeys } from '../project.actions';
+import { activeProject, activeProjectKeys } from '../project.selectors';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
 })
-export class SettingsPage implements OnInit, OnDestroy {
+export class SettingsPage implements OnDestroy {
   destroyed$ = new Subject<boolean>();
 
   activeProject: Project;
@@ -31,22 +31,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   );
 
   constructor(private store: Store) { }
-
-  ngOnInit() {
-    // this.store.dispatch(loadProjectKeys({ project }));
-    let a = false;
-    // this.activeProject$.pipe(
-    //   // takeWhile(p => !!p?.id),
-    //   // distinctUntilKeyChanged('id')
-    // ).subscribe((project) => {
-    //   this.activeProject = project;
-    //   console.log('Load project keys');
-
-    //   if (project?.id) {
-    //     this.store.dispatch(loadProjectKeys({ project }));
-    //   }
-    // });
-  }
 
   addProjectKey() {
     this.store.dispatch(addProjectKey({ project: this.activeProject, projectKey: {
