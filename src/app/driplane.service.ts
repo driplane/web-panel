@@ -6,7 +6,7 @@ import {
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, shareReplay, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { tokenInvalid } from './auth.actions';
 import {
   AuthResponse,
@@ -88,19 +88,23 @@ export class DriplaneService {
       );
   }
 
-  createProject({ name }: ProjectConfig) {
+  createProject({ name }: ProjectConfig): Observable<Project> {
     return this.tokenReq<Project>('post', 'projects', {
       body: {
         name,
       },
-    });
+    })
+    // FIXME: This is a workaround for not having created project form API as the response
+    .pipe(
+      switchMap(() => this.getProjects()),
+      map((projects) => projects.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0])
+    );
   }
 
   getProjects(): Observable<Project[]> {
     return this.tokenReq<Response<Project[]>>('get', 'projects').pipe(
       map((res) => res.response),
       shareReplay({ bufferSize: 1, refCount: true }),
-
     );
   }
 
@@ -117,6 +121,7 @@ export class DriplaneService {
   }
 
   createProjectKey(project: Project, keyConfig: ProjectKeyConfig) {
+    log('createProjectKey');
     return this.projectAuthRequest<Response<ProjectKey>>(
       project,
       'post',

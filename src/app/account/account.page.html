@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Account Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Account Settings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Project Management</ion-card-title>
+      <ion-card-subtitle>
+        <ion-button id="create-project">Add new project</ion-button>
+      </ion-card-subtitle>
+      <ion-modal trigger="create-project" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button (click)="cancel()">Cancel</ion-button>
+              </ion-buttons>
+              <ion-title>Create New Project</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-item>
+              <ion-input
+                label="Give your project a name"
+                labelPlacement="stacked"
+                type="text"
+                placeholder="My website"
+                [(ngModel)]="name"
+              ></ion-input>
+            </ion-item>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+    </ion-card-header>
+    <ion-list>
+      
+      <ion-item *ngFor="let project of projects$ | async">
+        <ion-label>
+          <h2>{{ project.name }}</h2>
+          <ion-note>{{ project.created_at }}</ion-note>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+  </ion-card>
+
+</ion-content>

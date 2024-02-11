@@ -11,6 +11,7 @@ export const addProjectSuccess = createAction(_('Add Project success'),  props<{
 
 export const loadProjects = createAction(_('Load Projects'));
 export const loadProjectSuccess = createAction(_('Projects loaded'), props<{ projects: Project[] }>());
+export const loadProjectFailed = createAction(_('Project list loading failed'));
 
 export const addProjectKey = createAction(_('Add project key'), props<{ project: Project, projectKey: ProjectKeyConfig }>());
 export const loadProjectKeys = createAction(_('Load project keys'),props<{ project: Project }>());

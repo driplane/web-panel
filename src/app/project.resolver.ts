@@ -4,33 +4,42 @@ import {
   ResolveFn,
   Router
 } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { EMPTY } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { DriplaneService } from './driplane.service';
+import { catchError, filter, map } from 'rxjs/operators';
 import { Project } from './driplane.types';
-import { switchProject, switchProjectSuccess } from './project.actions';
 import Logger from './logger.service';
+import { loadProjects, switchProjectSuccess } from './project.actions';
+import { projects } from './project.selectors';
 const log = Logger('resolver:projectId');
 
 export const ProjectIdResolverService: ResolveFn<Project> = (
   route: ActivatedRouteSnapshot
 ) => {
   log('resolving project');
-  const apiService = inject(DriplaneService);
   const router = inject(Router);
   const store = inject(Store);
   const urlId = route.paramMap.get('projectId');
 
-  return apiService.getProject(urlId).pipe(
+  store.dispatch(loadProjects());
+
+  return store.pipe(
+    select(projects),
+    filter((projects) => projects !== null),
+    map((projects) => {
+      log(urlId, projects);
+      const project = projects.find((p) => p.id === urlId);
+      if (project) {
+        store.dispatch(switchProjectSuccess({ activeProject: project.id }));
+        return project;
+      }
+
+      throw Error("projcet not found");
+    }),
     catchError(() => {
       console.error('project not found');
       router.navigate(['/project-not-found'], { skipLocationChange: true });
       return EMPTY;
-    }),
-    map((project: Project) => {
-      store.dispatch(switchProjectSuccess({ activeProject: project.id }));
-      return project;
     })
   );
 };

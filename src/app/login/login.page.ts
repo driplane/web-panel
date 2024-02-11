@@ -53,9 +53,9 @@ export class LoginPage {
       filter((failed) => !!failed),
       switchMap(() => this.loginForm.valueChanges)
     ).subscribe((value) => {
-        log('value changed', value);
-        this.store.dispatch(logInFailedClear());
-      });
+      log('value changed', value);
+      this.store.dispatch(logInFailedClear());
+    });
   }
 
   signIn() {

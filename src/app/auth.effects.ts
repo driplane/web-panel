@@ -52,8 +52,7 @@ export class AuthEffects {
       this.driplane.setToken(token);
       this.router.navigate(['/']);
     }),
-    map(_ => loadProjects())
-  ));
+  ), { dispatch: false });
 
   tokenInvalid$ = createEffect(() => this.actions$.pipe(
     ofType(tokenInvalid),

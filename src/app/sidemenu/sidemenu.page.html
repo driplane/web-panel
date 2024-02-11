@@ -17,17 +17,25 @@
           </ion-item>
         </ion-menu-toggle>
 
-        <ion-item>
-          <ion-select [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
-            <ion-select-option *ngFor="let project of projects$ | async" [value]="project.id">{{ project.name }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-
       </ion-list>
     </ion-content>
     <ion-footer>
       <ion-list>
-        <ion-item (click)="signOut()">
+
+        <ion-item *ngIf="hasMultipleProjects$ | async">
+          <!-- <ion-label>Switch Project</ion-label> -->
+          <ion-select label="Switch Project" label-placement="floating" [value]="activeProject$ | async" (ionChange)="switchProject($event)" placeholder="Switch project">
+            <ion-select-option *ngFor="let project of projects$ | async" [value]="project.id">{{ project.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item routerDirection="root" [routerLink]="['/account']" lines="none" detail="false" routerLinkActive="active">
+          <ion-icon slot="start" ios="person-outline" md="person-sharp"></ion-icon>
+          <ion-label>Account Settings</ion-label>
+        </ion-item>
+
+        <ion-item button (click)="signOut()">
+          <ion-icon slot="start" ios="log-out-outline" md="log-out-sharp"></ion-icon>
           <ion-label>Sign out</ion-label>
         </ion-item>
       </ion-list>

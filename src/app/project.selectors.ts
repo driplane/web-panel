@@ -9,7 +9,7 @@ export const selectProjectState = createFeatureSelector<ProjectState>(
 
 export const projects = createSelector(
   selectProjectState,
-  (state: ProjectState) => state?.projects || [],
+  (state: ProjectState) => state?.projects,
 );
 
 

@@ -47,8 +47,8 @@
             <h2>{{ key.name }}</h2>
 
             <sl-details summary="Show Code">
-              <p>You can put code below to before <code>&lt;/head&gt;</code> tag in your website:</p>
-              <code>&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;</code>
+              <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
+              <pre><code class="language-html">&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;</code></pre>
               <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
             </sl-details>
 
@@ -56,7 +56,17 @@
         </ion-item>
       </ion-list>
 
-      <ion-button expand="block" (click)="addProjectKey()">Add Key</ion-button>
+
+      <sl-details summary="Add New Key">
+        <ion-item>
+          <ion-label position="stacked">Key Name</ion-label>
+          <ion-input type="text"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" (click)="addProjectKey()">Add Key</ion-button>
+      </sl-details>
+
+
 
     </ion-card-content>
   </ion-card>

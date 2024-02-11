@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
-import { filter, shareReplay, takeUntil } from 'rxjs/operators';
+import { filter, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { signOut } from '../auth.actions';
 import { isLoggedIn } from '../auth.selectors';
 import Logger from '../logger.service';
@@ -26,6 +26,10 @@ export class SidemenuPage implements OnInit, OnDestroy {
     filter((projects) => projects !== null),
     shareReplay(1),
   );
+
+  hasMultipleProjects$ = this.projects$.pipe(
+    map((projects) => projects.length > 1)
+  )
 
   unsubscribe: Subject<void> = new Subject();
 
