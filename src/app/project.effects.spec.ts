@@ -1,7 +1,7 @@
 import { Observable, throwError } from 'rxjs';
 import { DriplaneService } from './driplane.service';
 import { ProjectEffects } from './project.effects';
-import { loadProjects, loadProjectSuccess } from './project.actions';
+import { loadProjectFailed, loadProjects, loadProjectSuccess } from './project.actions';
 import { hot, cold } from 'jasmine-marbles';
 import { TestBed } from '@angular/core/testing';
 import { Action } from '@ngrx/store';
@@ -55,7 +55,7 @@ describe('ProjectEffects', () => {
     actions$ = hot('-a', { a: action });
     driplaneService.getProjects.and.returnValue(response);
 
-    const expected = cold('--b', { b: { type: 'loadProjectsFailed' } });
+    const expected = cold('--b', { b: loadProjectFailed() });
     expect(effects.loadProjects$).toBeObservable(expected);
   });
 });
