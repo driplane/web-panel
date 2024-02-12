@@ -3,12 +3,12 @@ ion-card {
 }
 
 .main-card {
-  min-width: 600px;
+  min-width: min(600px, 90vw);
   max-width: 90vw;
 }
 
 .no-data-card {
-  min-width: 90vw;
+  min-width: 90%;
 }
 
 .bar-chart-list {
