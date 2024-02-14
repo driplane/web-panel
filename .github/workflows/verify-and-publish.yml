@@ -40,8 +40,12 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Build
+      - name: Build for Production
+        if: github.ref == 'refs/heads/main'
         run: npm run build
+      - name: Build for Beta
+        if: github.ref == 'refs/heads/next'
+        run: npm run build:beta
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@1
         with:
