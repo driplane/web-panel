@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { filter, shareReplay, takeUntil, tap } from 'rxjs/operators';
-import { Project } from '../driplane.types';
+import { Project, ProjectKey } from '../driplane.types';
 import { addProjectKey, loadProjectKeys } from '../project.actions';
 import { activeProject, activeProjectKeys } from '../project.selectors';
 
@@ -34,10 +34,11 @@ export class SettingsPage implements OnDestroy {
 
   addProjectKey() {
     this.store.dispatch(addProjectKey({ project: this.activeProject, projectKey: {
-      name: 'Main',
-      read: true,
+      name: 'Main Key',
+      read: false,
       write: true,
-      auto_fill: {}
+      auto_fill: {},
+      auto_filter: {},
     }}))
   }
 
