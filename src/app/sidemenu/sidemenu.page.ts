@@ -4,7 +4,7 @@ import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { filter, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { signOut } from '../auth.actions';
-import { isLoggedIn } from '../auth.selectors';
+import { isLoggedIn, loggedInUser } from '../auth.selectors';
 import Logger from '../logger.service';
 import { loadProjects, switchProject } from '../project.actions';
 import { activeProjectId, projects } from '../project.selectors';
@@ -16,6 +16,11 @@ const log = Logger('page:sidemenu');
   styleUrls: ['./sidemenu.page.scss'],
 })
 export class SidemenuPage implements OnInit, OnDestroy {
+  loggedInUser$ = this.store.pipe(
+    select(loggedInUser),
+    shareReplay(1),
+  );
+  
   activeProject$ = this.store.pipe(
     select(activeProjectId),
     shareReplay(1),

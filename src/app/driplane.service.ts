@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { tokenInvalid } from './auth.actions';
+import { signOut, tokenInvalid } from './auth.actions';
 import {
   AuthResponse,
   CountItem,
@@ -21,6 +21,7 @@ import {
   RequestOptions,
   Response,
   TopListItem,
+  User,
 } from './driplane.types';
 import { environment } from '../environments/environment';
 import Logger from './logger.service';
@@ -88,6 +89,10 @@ export class DriplaneService {
       );
   }
 
+  me() {
+    return this.tokenReq<User>('get', 'users/me');
+  }
+
   createProject({ name }: ProjectConfig): Observable<Project> {
     return this.tokenReq<Project>('post', 'projects', {
       body: {
@@ -118,6 +123,10 @@ export class DriplaneService {
         return project;
       })
     );
+  }
+
+  deleteProject(projectId: string) {
+    return this.tokenReq<Response<boolean>>('delete', `projects/${projectId}`);
   }
 
   createProjectKey(project: Project, keyConfig: ProjectKeyConfig) {
@@ -230,9 +239,9 @@ export class DriplaneService {
             response instanceof HttpErrorResponse &&
             response.status === 401
           ) {
-            this.store.dispatch(tokenInvalid());
+            this.store.dispatch(signOut());
           }
-          return throwError(response);
+          return throwError(() => response);
         })
       );
   }

@@ -4,7 +4,7 @@ import { projects } from '../project.selectors';
 import { filter, shareReplay } from 'rxjs';
 import { IonModal } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
-import { addProject } from '../project.actions';
+import { addProject, deleteProject } from '../project.actions';
 import Logger from '../logger.service';
 const log = Logger('page:account');
 
@@ -14,7 +14,6 @@ const log = Logger('page:account');
   styleUrls: ['./account.page.scss'],
 })
 export class AccountPage implements OnInit {
-  @ViewChild(IonModal) modal: IonModal;
   
   projects$ = this.store.pipe(
     select(projects),
@@ -32,12 +31,16 @@ export class AccountPage implements OnInit {
   message = 'This modal example uses triggers to automatically open a modal when the button is clicked.';
   name: string;
 
-  cancel() {
-    this.modal.dismiss(null, 'cancel');
+  cancel(modal: IonModal) {
+    modal.dismiss(null, 'cancel');
   }
 
-  confirm() {
-    this.modal.dismiss(this.name, 'confirm');
+  confirm(modal: IonModal) {
+    modal.dismiss(this.name, 'confirm');
+  }
+
+  confirmDelete(modal: IonModal, projectId: string) {
+    modal.dismiss(projectId, 'confirm');
   }
 
   onWillDismiss(event: Event) {
@@ -46,6 +49,15 @@ export class AccountPage implements OnInit {
       log(ev.detail);
 
       this.store.dispatch(addProject({ project: { name: ev.detail.data } }));
+    }
+  }
+
+  onWillDismissDelete(event: Event) {
+    const ev = event as CustomEvent<OverlayEventDetail<string>>;
+    if (ev.detail.role === 'confirm') {
+      log(ev.detail);
+
+      this.store.dispatch(deleteProject({ projectId: ev.detail.data }));
     }
   }
 

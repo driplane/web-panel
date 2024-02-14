@@ -3,7 +3,7 @@
     <ion-content>
       <ion-list id="inbox-list">
         <ion-list-header>Driplane</ion-list-header>
-        <ion-note>user&#64;domain.com</ion-note>
+        <ion-note>{{ ( loggedInUser$ | async )?.email }}</ion-note>
 
         <ion-menu-toggle auto-hide="false">
           <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async ) ]" lines="none" detail="false" routerLinkActive="active">

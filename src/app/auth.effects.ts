@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { addDays, formatISO, parseISO } from 'date-fns';
 import { EMPTY, of } from 'rxjs';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { logIn, logInFailed, logInSuccess, restoreLastSession, setSession, signOut, signOutSuccess, tokenInvalid } from './auth.actions';
 import { DriplaneService } from './driplane.service';
 import { loadProjects } from './project.actions';
@@ -17,19 +17,27 @@ export const LS_TOKEN_EXPIRE_KEY = 'auth_expire';
 export class AuthEffects {
   restoreLastSession$ = createEffect(() => this.actions$.pipe(
     ofType(restoreLastSession),
-    map(() => {
+    switchMap(() => {
       log('restoreLastSession');
       if (localStorage.getItem(LS_TOKEN_KEY)) {
         const token = localStorage.getItem(LS_TOKEN_KEY);
         const expiresAt = parseISO(localStorage.getItem(LS_TOKEN_EXPIRE_KEY));
+
+        if (expiresAt && expiresAt < new Date()) {
+          return of(signOut());
+        }
+
         this.driplane.setToken(token);
-        log('session restored');
-        return setSession({ token, expiresAt });
+        return this.driplane.me().pipe(
+          tap((user) => log('restored user', user)),
+          map((user) => setSession({ token, expiresAt, user })),
+          catchError(() => of(signOut()))
+        );
       }
       log('Nothing to restore;')
-      return EMPTY;
-    })
-  ), { dispatch: false });
+      return of(signOut());
+    }),
+  ));
 
   logIn$ = createEffect(() => this.actions$.pipe(
     ofType(logIn),
@@ -85,7 +93,7 @@ export class AuthEffects {
     private actions$: Actions,
     private driplane: DriplaneService,
     private router: Router
-  ) {}
+  ) { }
 
   ngrxOnInitEffects() {
     return restoreLastSession();

@@ -5,7 +5,7 @@ import { EMPTY, of } from 'rxjs';
 import { catchError, exhaustMap, flatMap, map, mergeMap, tap, throttleTime } from 'rxjs/operators';
 import { DriplaneService } from './driplane.service';
 import Logger from './logger.service';
-import { addProject, addProjectKey, loadProjectFailed, loadProjectKeys, loadProjectKeysSuccess, loadProjectSuccess, loadProjects, switchProject, switchProjectSuccess } from './project.actions';
+import { addProject, addProjectKey, deleteProject, deleteProjectFailed, deleteProjectSuccess, loadProjectFailed, loadProjectKeys, loadProjectKeysSuccess, loadProjectSuccess, loadProjects, switchProject, switchProjectSuccess } from './project.actions';
 const log = Logger('effects:project');
 
 @Injectable()
@@ -22,6 +22,22 @@ export class ProjectEffects {
         catchError(() => EMPTY)
       )
     )
+  ));
+
+  deleteProject$ = createEffect(() => this.actions$.pipe(
+    ofType(deleteProject),
+    exhaustMap(({ projectId }) => this.driplane.deleteProject(projectId)
+    .pipe(
+        map(() => deleteProjectSuccess()),
+        catchError(() => of(deleteProjectFailed()))
+      )
+    )
+  ));
+
+  deleteProjectSuccess$ = createEffect(() => this.actions$.pipe(
+    ofType(deleteProjectSuccess),
+    // tap(() => this.router.navigate(['/projects'])),
+    map(() => loadProjects())
   ));
 
   loadProjects$ = createEffect(() => this.actions$.pipe(

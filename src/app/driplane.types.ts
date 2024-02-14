@@ -10,6 +10,11 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+}
+
 export interface Query {
   since?: string;
   until?: string;

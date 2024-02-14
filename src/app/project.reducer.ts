@@ -18,6 +18,7 @@ export interface Filter {
 }
 export interface ProjectState {
   projects: Project[];
+  projectListFetched: boolean;
   activeProject: string;
   activeFilters: Filter[];
   activeProjectKeys: ProjectKey[]
@@ -25,6 +26,7 @@ export interface ProjectState {
 
 export const initialState: ProjectState = {
   projects: null,
+  projectListFetched: false,
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
   activeProjectKeys: []
