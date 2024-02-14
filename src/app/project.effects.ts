@@ -16,7 +16,7 @@ export class ProjectEffects {
     exhaustMap(({ project }) => this.driplane.createProject(project)
       .pipe(
         mergeMap((project) => [
-          addProjectKey({ project, projectKey: { name: "Main Key", read: true, write: true, auto_fill: {}} }),
+          addProjectKey({ project, projectKey: { name: "Main Key", read: false, write: true, auto_filter: {}, auto_fill: {}} }),
           loadProjects(),
         ]),
         catchError(() => EMPTY)

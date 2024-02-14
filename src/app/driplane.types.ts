@@ -44,6 +44,7 @@ export interface ProjectKeyConfig {
   read: boolean;
   write: boolean;
   auto_fill: object;
+  auto_filter: object;
 }
 
 export interface ProjectKey extends ProjectKeyConfig {
