@@ -1,32 +1,28 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { map, of, shareReplay, tap } from 'rxjs';
+import { map, shareReplay, tap } from 'rxjs';
 import { restoreLastSession } from './auth.actions';
-import { LS_TOKEN_KEY } from './auth.effects';
-import Logger from './logger.service';
 import { loggedInUser } from './auth.selectors';
+import Logger from './logger.service';
 const log = Logger('guard:auth');
 
-export const AuthGuard: CanActivateFn = (
-  route,
-  state
-) => {
+export const AuthGuard: CanActivateFn = () => {
   log('checking auth...');
 
-  if (localStorage.getItem(LS_TOKEN_KEY)) {
-    const store = inject(Store);
-    store.dispatch(restoreLastSession());
+  const store = inject(Store);
+  const router = inject(Router);
+  store.dispatch(restoreLastSession());
 
-    return store.pipe(
-      select(loggedInUser),
-      tap((user) => log('user', user)),
-      shareReplay(1),
-      map((user) => !!user),
-    );
-  } else {
-    const router = inject(Router);
-    router.navigate(['/login']);
-    return of(false);
-  }
+  return store.pipe(
+    select(loggedInUser),
+    tap((user) => log('user', user)),
+    shareReplay(1),
+    map((user) => !!user),
+    tap((loggedIn) => {
+      if (loggedIn === false) {
+        router.navigate(['/login']);
+      }
+    })
+  );
 };

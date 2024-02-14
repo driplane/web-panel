@@ -10,15 +10,6 @@ import { User } from './driplane.types';
 
 export const AUTH_FEATURE_KEY = 'auth';
 
-function log(reducer: (state: AuthState) => AuthState) {
-
-  return (state: AuthState) => {
-    console.log(state);
-
-    return reducer(state);
-  }
-}
-
 export interface AuthState {
   loggedIn: boolean;
   token: string;
@@ -63,7 +54,7 @@ export const authReducer = createReducer(
     errorMessage: message
   })),
 
-  on(logInFailedClear, log((state) => ({
+  on(logInFailedClear, ((state) => ({
     ...state,
     errorMessage: ''
   }))),
