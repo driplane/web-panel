@@ -109,7 +109,7 @@ export class DriplaneService {
   getProjects(): Observable<Project[]> {
     return this.tokenReq<Response<Project[]>>('get', 'projects').pipe(
       map((res) => res.response),
-      shareReplay({ bufferSize: 1, refCount: true }),
+      shareReplay(1, 3000),
     );
   }
 

@@ -3,16 +3,17 @@ import { CanActivateFn, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap } from 'rxjs';
 import Logger from './logger.service';
-import { loadProjects } from './state/project/project.actions';
+import { loadProjects, switchProject } from './state/project/project.actions';
 import { projects } from './state/project/project.selectors';
 const log = Logger('guard:defaultProject');
+
+export const LAST_PROJECT_ID = 'lastProjectId';
 
 export const defaultProjectGuard: CanActivateFn = () => {
   log('here');
   const router: Router = inject(Router);
   const store = inject(Store)
 
-  const lastProjectId = localStorage.getItem('lastProjectId');
   const notFound = router.createUrlTree(['/project-not-found/']);
 
   store.dispatch(loadProjects());
@@ -23,6 +24,8 @@ export const defaultProjectGuard: CanActivateFn = () => {
     switchMap((projects) => {
       log('projects', projects);
 
+      const lastProjectId = localStorage.getItem(LAST_PROJECT_ID);
+
       if (projects.find((project) => project.id === lastProjectId)) {
         return of(projects.find((project) => project.id === lastProjectId));
       }
@@ -31,7 +34,7 @@ export const defaultProjectGuard: CanActivateFn = () => {
     }),
     map((project) => {
       log('navigating to', project);
-      router.navigate(['/projects', project.id], { replaceUrl: true });
+      store.dispatch(switchProject({ activeProject: project.id }));
       return false;
     }),
     catchError(() => of(notFound))

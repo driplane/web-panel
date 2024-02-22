@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Store, select } from '@ngrx/store';
-import { projects } from '../state/project/project.selectors';
-import { filter, shareReplay } from 'rxjs';
+import { Component } from '@angular/core';
 import { IonModal } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
-import { addProject, deleteProject } from '../state/project/project.actions';
+import { Store, select } from '@ngrx/store';
+import { filter } from 'rxjs';
 import Logger from '../logger.service';
+import { addProject, deleteProject } from '../state/project/project.actions';
+import { projects } from '../state/project/project.selectors';
 const log = Logger('page:account');
 
 @Component({
@@ -13,20 +13,16 @@ const log = Logger('page:account');
   templateUrl: './account.page.html',
   styleUrls: ['./account.page.scss'],
 })
-export class AccountPage implements OnInit {
+export class AccountPage {
 
   projects$ = this.store.pipe(
     select(projects),
     filter((projects) => projects !== null),
-    shareReplay(1),
   );
 
   constructor(
     private store: Store
   ) { }
-
-  ngOnInit() {
-  }
 
   message = 'This modal example uses triggers to automatically open a modal when the button is clicked.';
   name: string;

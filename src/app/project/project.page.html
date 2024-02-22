@@ -28,7 +28,7 @@
 <ion-content>
   <ion-grid>
     <ion-row>
-      <ion-col *ngIf="(topHosts$ | async)?.length === 0">
+      <ion-col *ngIf="onboardingMode$ | async">
         <ion-card class="no-data-card">
           <ion-card-header>
             <ion-card-title>No Data</ion-card-title>
@@ -36,7 +36,31 @@
 
           <ion-card-content>
             <p>Did you add your tracker code to your website?</p>
-            <ion-button>Add now</ion-button>
+            <ion-button id="add-tracker-code">Add now</ion-button>
+
+            <ion-modal #trackerModal trigger="add-tracker-code">
+              <ng-template>
+                <ion-header>
+                  <ion-toolbar>
+                    <ion-title>Add tracking code</ion-title>
+                    <ion-buttons slot="end">
+                      <ion-button (click)="trackerModal.dismiss()" [strong]="true">Close</ion-button>
+                    </ion-buttons>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content class="ion-padding">
+                  <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
+                  <div class="code-example">
+                    <pre class="hljs" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ activeProjectKey$ | async }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
+
+                    <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ activeProjectKey$ | async }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
+                  </div>
+
+                  <p>Then you will start to see your visitor insights in this dashboard.</p>
+                </ion-content>
+              </ng-template>
+
+            </ion-modal>
           </ion-card-content>
         </ion-card>
       </ion-col>

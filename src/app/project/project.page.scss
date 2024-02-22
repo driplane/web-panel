@@ -34,6 +34,16 @@ ion-card {
   animation: blinker .8s cubic-bezier(0.5, 0, 1, 1) infinite alternate;
 }
 
+.code-example {
+  position: relative;
+
+  sl-copy-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+  }
+}
+
 @keyframes blinker {
   from {
     opacity: 1;

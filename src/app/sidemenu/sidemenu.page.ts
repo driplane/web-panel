@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
-import { filter, map, shareReplay, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
+import Logger from '../logger.service';
 import { signOut } from '../state/auth/auth.actions';
 import { isLoggedIn, loggedInUser } from '../state/auth/auth.selectors';
-import Logger from '../logger.service';
 import { loadProjects, switchProject } from '../state/project/project.actions';
 import { activeProjectId, projects } from '../state/project/project.selectors';
 const log = Logger('page:sidemenu');
@@ -18,18 +18,15 @@ const log = Logger('page:sidemenu');
 export class SidemenuPage implements OnInit, OnDestroy {
   loggedInUser$ = this.store.pipe(
     select(loggedInUser),
-    shareReplay(1),
   );
 
   activeProject$ = this.store.pipe(
     select(activeProjectId),
-    shareReplay(1),
   );
 
   projects$ = this.store.pipe(
     select(projects),
     filter((projects) => projects !== null),
-    shareReplay(1),
   );
 
   hasMultipleProjects$ = this.projects$.pipe(

@@ -8,12 +8,14 @@ import {
   catchError,
   concatAll,
   distinctUntilChanged,
-  map, share, shareReplay, switchMap, switchMapTo, tap
+  filter,
+  map, share,
+  switchMap, switchMapTo, tap
 } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
-import { addFilter, clearFilter } from '../state/project/project.actions';
-import { activeFilters, activeProject } from '../state/project/project.selectors';
 import Logger from '../logger.service';
+import { addFilter, clearFilter, loadProjectKeys } from '../state/project/project.actions';
+import { activeFilters, activeProject, activeProjectKeys } from '../state/project/project.selectors';
 const log = Logger('page:project');
 
 type Range = 'live'|'today'|'day'|'week'|'month';
@@ -61,10 +63,17 @@ export class ProjectPage implements OnInit {
   activeProject$ = this.store.pipe(
     select(activeProject),
     tap((project) => { log('activeProject', project); }),
-    shareReplay(1)
+    filter((project) => !!project),
   );
 
-  filters$ = this.store.pipe(select(activeFilters), shareReplay(1));
+  activeProjectKey$ = this.store.pipe(
+    select(activeProjectKeys),
+    tap((keys) => { log('activeProjectKeys', keys); }),
+    filter((keys) => keys.length > 0),
+    map((keys) => keys[0].key)
+  );
+
+  filters$ = this.store.pipe(select(activeFilters));
 
   selection$ = combineLatest([this.dateRange$, this.activeProject$, this.filters$]).pipe(
     map(([{ since, until, range }, project, filters]) => ({
@@ -109,7 +118,6 @@ export class ProjectPage implements OnInit {
       name: item.time,
       value: item.count
     }))),
-    shareReplay(1)
   );
 
   users$ = this.selection$.pipe(
@@ -129,7 +137,6 @@ export class ProjectPage implements OnInit {
       name: item.time,
       value: item.count
     }))),
-    shareReplay(1)
   );
 
   loading: HTMLIonLoadingElement;
@@ -146,12 +153,38 @@ export class ProjectPage implements OnInit {
     share()
   );
 
+  onboardingMode$ = this.selection$.pipe(
+    switchMap(({ project }) => this.driplane
+      .getTotalCounts(project, 'page_view', {
+        since: '-3M'
+      }).pipe(
+        catchError((error) => {
+          log('No data', error);
+          return of("0");
+        })
+      )),
+    tap((result) => log('onboardingMode', result)),
+    map((count) => ~~(count) === 0),
+    distinctUntilChanged(),
+    switchMap((onboarding) => iif(
+      () => onboarding,
+      this.activeProject$.pipe(
+        tap((project) => {
+          if (project) {
+            this.store.dispatch(loadProjectKeys({ project }));
+          }
+        }),
+        map(() => true)
+      ), of(false))
+    )
+  );
+
   constructor(
     private store: Store,
     private driplane: DriplaneService,
     private loadingCtrl: LoadingController
   ) {
-    log('constructo');
+
   }
 
   topList(tag: string, extraFilters = {}) {
@@ -162,6 +195,7 @@ export class ProjectPage implements OnInit {
           until,
           limit: 10,
           tag,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           ...filters,
           ...extraFilters
         })
@@ -174,7 +208,6 @@ export class ProjectPage implements OnInit {
         count: item.count,
         label: item[tag]
       }))),
-      shareReplay(1)
     );
   }
 
