@@ -8,14 +8,15 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
-import { projectReducer } from './project.reducer';
-import { authReducer } from './auth.reducer';
+import { projectReducer } from './state/project/project.reducer';
+import { authReducer } from './state/auth/auth.reducer';
 import { EffectsModule } from '@ngrx/effects';
-import { AuthEffects } from './auth.effects';
-import { ProjectEffects } from './project.effects';
+import { AuthEffects } from './state/auth/auth.effects';
+import { ProjectEffects } from './state/project/project.effects';
 import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { ActionReducer } from '@ngrx/store';
 import Logger from './logger.service';
+import { ToastEffects } from './state/toast/taoast.effects';
 const log = Logger('rx:actions');
 
 export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -38,7 +39,7 @@ export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
       auth: authReducer,
       router: routerReducer
     }, {metaReducers: [logger]}),
-    EffectsModule.forRoot([AuthEffects, ProjectEffects]),
+    EffectsModule.forRoot([AuthEffects, ProjectEffects, ToastEffects]),
     StoreRouterConnectingModule.forRoot(),
   ],
   providers: [

@@ -11,8 +11,8 @@ import {
   map, share, shareReplay, switchMap, switchMapTo, tap
 } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
-import { addFilter, clearFilter } from '../project.actions';
-import { activeFilters, activeProject } from '../project.selectors';
+import { addFilter, clearFilter } from '../state/project/project.actions';
+import { activeFilters, activeProject } from '../state/project/project.selectors';
 import Logger from '../logger.service';
 const log = Logger('page:project');
 

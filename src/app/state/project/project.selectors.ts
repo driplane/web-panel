@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { Project } from './driplane.types';
+import { Project } from '../../driplane.types';
 import { ProjectState, PROJECT_FEATURE_KEY } from './project.reducer';
 
 export const selectProjectState = createFeatureSelector<ProjectState>(

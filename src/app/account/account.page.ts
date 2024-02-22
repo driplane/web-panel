@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { projects } from '../project.selectors';
+import { projects } from '../state/project/project.selectors';
 import { filter, shareReplay } from 'rxjs';
 import { IonModal } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
-import { addProject, deleteProject } from '../project.actions';
+import { addProject, deleteProject } from '../state/project/project.actions';
 import Logger from '../logger.service';
 const log = Logger('page:account');
 
@@ -14,7 +14,7 @@ const log = Logger('page:account');
   styleUrls: ['./account.page.scss'],
 })
 export class AccountPage implements OnInit {
-  
+
   projects$ = this.store.pipe(
     select(projects),
     filter((projects) => projects !== null),

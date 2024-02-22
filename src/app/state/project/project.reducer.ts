@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { Project, ProjectKey } from './driplane.types';
+import { Project, ProjectKey } from '../../driplane.types';
 import {
   addFilter,
   addProjectSuccess,

@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { EMPTY, of } from 'rxjs';
 import { catchError, exhaustMap, flatMap, map, mergeMap, tap, throttleTime } from 'rxjs/operators';
-import { DriplaneService } from './driplane.service';
-import Logger from './logger.service';
+import { DriplaneService } from '../../driplane.service';
+import Logger from '../../logger.service';
 import { addProject, addProjectKey, deleteProject, deleteProjectFailed, deleteProjectSuccess, loadProjectFailed, loadProjectKeys, loadProjectKeysSuccess, loadProjectSuccess, loadProjects, switchProject, switchProjectSuccess } from './project.actions';
 const log = Logger('effects:project');
 

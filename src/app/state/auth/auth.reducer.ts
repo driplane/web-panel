@@ -6,12 +6,12 @@ import {
   setSession,
   signOutSuccess
 } from './auth.actions';
-import { User } from './driplane.types';
+import { User } from '../../driplane.types';
 
 export const AUTH_FEATURE_KEY = 'auth';
 
 export interface AuthState {
-  loggedIn: boolean;
+  loggedIn: boolean | null;
   token: string;
   expiresAt: Date;
   errorMessage: string;
@@ -19,7 +19,7 @@ export interface AuthState {
 }
 
 export const initialState: AuthState = {
-  loggedIn: localStorage.getItem('auth') ? true : false,
+  loggedIn: null,
   token: '',
   expiresAt: null,
   errorMessage: '',
@@ -30,6 +30,7 @@ export const authReducer = createReducer(
   initialState,
   on(setSession, (state, { token, expiresAt, user }) => ({
     ...state,
+    loggedIn: true,
     token,
     expiresAt,
     me: user

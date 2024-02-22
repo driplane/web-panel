@@ -9,8 +9,8 @@ import { EMPTY } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import { Project } from './driplane.types';
 import Logger from './logger.service';
-import { loadProjects, switchProjectSuccess } from './project.actions';
-import { projects } from './project.selectors';
+import { loadProjects, switchProjectSuccess } from './state/project/project.actions';
+import { projects } from './state/project/project.selectors';
 const log = Logger('resolver:projectId');
 
 export const ProjectIdResolverService: ResolveFn<Project> = (

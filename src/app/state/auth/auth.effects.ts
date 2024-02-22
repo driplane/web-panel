@@ -4,10 +4,11 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { addDays, formatISO, parseISO } from 'date-fns';
 import { EMPTY, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { logIn, logInFailed, logInSuccess, restoreLastSession, setSession, signOut, signOutSuccess, tokenInvalid } from './auth.actions';
-import { DriplaneService } from './driplane.service';
-import { loadProjects } from './project.actions';
-import Logger from './logger.service';
+import { logIn, logInFailed, logInSuccess, restoreLastSession, setSession, signOut, signOutSuccess, tokenExpired, tokenInvalid } from './auth.actions';
+import { DriplaneService } from '../../driplane.service';
+import { loadProjects } from '../project/project.actions';
+import Logger from '../../logger.service';
+import { showToast } from '../toast/toast.actions';
 const log = Logger('effects:auth');
 
 export const LS_TOKEN_KEY = 'auth';
@@ -24,18 +25,19 @@ export class AuthEffects {
         const expiresAt = parseISO(localStorage.getItem(LS_TOKEN_EXPIRE_KEY));
 
         if (expiresAt && expiresAt < new Date()) {
-          return of(signOut());
+          return of(tokenExpired());
         }
 
         this.driplane.setToken(token);
+
         return this.driplane.me().pipe(
           tap((user) => log('restored user', user)),
           map((user) => setSession({ token, expiresAt, user })),
-          catchError(() => of(signOut()))
+          catchError(() => of(tokenInvalid()))
         );
       }
       log('Nothing to restore;')
-      return of(signOut());
+      return of(tokenInvalid());
     }),
   ));
 
@@ -50,7 +52,7 @@ export class AuthEffects {
         })
       )
     ),
-  ), { useEffectsErrorHandler: false });
+  ));
 
   loginSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(logInSuccess),
@@ -62,32 +64,37 @@ export class AuthEffects {
     }),
   ), { dispatch: false });
 
-  tokenInvalid$ = createEffect(() => this.actions$.pipe(
-    ofType(tokenInvalid),
+  tokenExpiredMessage$ = createEffect(() => this.actions$.pipe(
+    ofType(tokenExpired),
+    map(() => showToast({ message: 'Your session has expired. Please log in again.' })),
+  ));
+
+  cleanupToken$ = createEffect(() => this.actions$.pipe(
+    ofType(tokenExpired, tokenInvalid, signOut),
     tap(() => {
       localStorage.removeItem(LS_TOKEN_KEY);
       localStorage.removeItem(LS_TOKEN_EXPIRE_KEY);
+      this.driplane.setToken(null);
     }),
-  ), { dispatch: false });
+    map(() => signOutSuccess())
+  ));
 
   signOut$ = createEffect(() => this.actions$.pipe(
     ofType(signOut),
     tap(() => {
       log('sign out');
-      localStorage.removeItem(LS_TOKEN_KEY);
-      localStorage.removeItem(LS_TOKEN_EXPIRE_KEY);
-      this.driplane.setToken(null);
+      this.router.navigate(['/login']);
     }),
-    map(() => signOutSuccess()),
+    map(() => showToast({ message: 'You signed out successfully!' })),
   ));
 
-  signOutSuccess$ = createEffect(() => this.actions$.pipe(
-    ofType(signOutSuccess),
-    tap(() => {
-      log('sign out success');
-      this.router.navigate(['/login']);
-    })
-  ), { dispatch: false });
+  // signOutSuccess$ = createEffect(() => this.actions$.pipe(
+  //   ofType(signOutSuccess),
+  //   tap(() => {
+  //     log('sign out success');
+  //     // this.router.navigate(['/login']);
+  //   })
+  // ), { dispatch: false });
 
   constructor(
     private actions$: Actions,

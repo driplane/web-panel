@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { filter, map, shareReplay, takeUntil } from 'rxjs/operators';
-import { signOut } from '../auth.actions';
-import { isLoggedIn, loggedInUser } from '../auth.selectors';
+import { signOut } from '../state/auth/auth.actions';
+import { isLoggedIn, loggedInUser } from '../state/auth/auth.selectors';
 import Logger from '../logger.service';
-import { loadProjects, switchProject } from '../project.actions';
-import { activeProjectId, projects } from '../project.selectors';
+import { loadProjects, switchProject } from '../state/project/project.actions';
+import { activeProjectId, projects } from '../state/project/project.selectors';
 const log = Logger('page:sidemenu');
 
 @Component({
@@ -20,7 +20,7 @@ export class SidemenuPage implements OnInit, OnDestroy {
     select(loggedInUser),
     shareReplay(1),
   );
-  
+
   activeProject$ = this.store.pipe(
     select(activeProjectId),
     shareReplay(1),

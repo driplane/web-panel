@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Project, ProjectConfig, ProjectKey, ProjectKeyConfig } from './driplane.types';
+import { Project, ProjectConfig, ProjectKey, ProjectKeyConfig } from '../../driplane.types';
 import { Filter } from './project.reducer';
 
 const _ = log => `[Project] ${log}`;

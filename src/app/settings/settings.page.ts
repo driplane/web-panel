@@ -3,22 +3,19 @@ import { Store, select } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { filter, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { Project, ProjectKey } from '../driplane.types';
-import { addProjectKey, loadProjectKeys } from '../project.actions';
-import { activeProject, activeProjectKeys } from '../project.selectors';
+import { addProjectKey, loadProjectKeys } from '../state/project/project.actions';
+import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
 })
-export class SettingsPage implements OnDestroy {
-  destroyed$ = new Subject<boolean>();
-
+export class SettingsPage {
   activeProject: Project;
 
   activeProject$ = this.store.pipe(
     select(activeProject),
-    takeUntil(this.destroyed$),
     shareReplay(1),
     filter(p => !!p?.id),
     tap((project) => this.store.dispatch(loadProjectKeys({ project }))),
@@ -26,7 +23,6 @@ export class SettingsPage implements OnDestroy {
 
   activeProjectKeys$ = this.store.pipe(
     select(activeProjectKeys),
-    takeUntil(this.destroyed$),
     shareReplay(1),
   );
 
@@ -40,11 +36,6 @@ export class SettingsPage implements OnDestroy {
       auto_fill: {},
       auto_filter: {},
     }}))
-  }
-
-  ngOnDestroy() {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
   }
 
 }

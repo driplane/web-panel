@@ -2,10 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MemoizedSelector, Store } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { LS_TOKEN_KEY } from './auth.effects';
+import { LS_TOKEN_KEY } from './state/auth/auth.effects';
 import { AuthGuard } from './auth.guard';
-import { AuthState } from './auth.reducer';
-import { loggedInUser } from './auth.selectors';
+import { AuthState } from './state/auth/auth.reducer';
+import { isLoggedIn, loggedInUser } from './state/auth/auth.selectors';
 import { DriplaneService } from './driplane.service';
 import { User } from './driplane.types';
 import { Observable } from 'rxjs';
@@ -14,7 +14,7 @@ describe('AuthGuard', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let driplaneServiceSpy: jasmine.SpyObj<DriplaneService>;
   let mockStore: MockStore<AuthState>;
-  let mockLoggedInUserSelector: MemoizedSelector<AuthState, User>;
+  let mockIsLoggedInSelector: MemoizedSelector<AuthState, boolean>;
 
   const next = jasmine.createSpyObj('ActivatedRouteSnapshot', ['']);
   const state = jasmine.createSpyObj('RouterStateSnapshot', ['']);
@@ -38,7 +38,7 @@ describe('AuthGuard', () => {
 
   it('should allow the authenticated user', (done) => {
     // given
-    mockLoggedInUserSelector = mockStore.overrideSelector(loggedInUser, { id: 'dummy-id', email: 'name@test.com' } as User);
+    mockIsLoggedInSelector = mockStore.overrideSelector(isLoggedIn, true);
 
     // when
     const result = TestBed.runInInjectionContext(() => AuthGuard(next, state));
@@ -53,7 +53,7 @@ describe('AuthGuard', () => {
 
   it('should redirect an unauthenticated user to the login page', (done) => {
     // given
-    mockLoggedInUserSelector = mockStore.overrideSelector(loggedInUser, null);
+    mockIsLoggedInSelector = mockStore.overrideSelector(isLoggedIn, false);
 
     // when
     const result = TestBed.runInInjectionContext(() => AuthGuard(next, state));

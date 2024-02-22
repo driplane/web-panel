@@ -7,7 +7,8 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { signOut, tokenInvalid } from './auth.actions';
+import { environment } from '../environments/environment';
+import { signOut, tokenInvalid } from './state/auth/auth.actions';
 import {
   AuthResponse,
   CountItem,
@@ -23,7 +24,6 @@ import {
   TopListItem,
   User,
 } from './driplane.types';
-import { environment } from '../environments/environment';
 import Logger from './logger.service';
 const log = Logger('service:driplane');
 
@@ -239,7 +239,7 @@ export class DriplaneService {
             response instanceof HttpErrorResponse &&
             response.status === 401
           ) {
-            this.store.dispatch(signOut());
+            this.store.dispatch(tokenInvalid());
           }
           return throwError(() => response);
         })

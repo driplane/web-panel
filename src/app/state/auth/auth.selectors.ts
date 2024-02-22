@@ -8,7 +8,7 @@ export const selectAuthState = createFeatureSelector<AuthState>(
 
 export const isLoggedIn = createSelector(
   selectAuthState,
-  (state: AuthState) => state?.loggedIn || false,
+  (state: AuthState) => state?.loggedIn,
 );
 
 export const loggedInUser = createSelector(

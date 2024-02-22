@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { AUTH_FEATURE_KEY } from '../auth.reducer';
+import { AUTH_FEATURE_KEY } from '../state/auth/auth.reducer';
 import { DriplaneService } from '../driplane.service';
 
 import { LoginPage } from './login.page';

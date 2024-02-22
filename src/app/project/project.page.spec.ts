@@ -5,7 +5,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { DriplaneService } from '../driplane.service';
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { PROJECT_FEATURE_KEY } from '../project.reducer';
+import { PROJECT_FEATURE_KEY } from '../state/project/project.reducer';
 import { ProjectPage } from './project.page';
 
 describe('ProjectPage', () => {

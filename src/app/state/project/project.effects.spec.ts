@@ -1,5 +1,5 @@
 import { Observable, throwError } from 'rxjs';
-import { DriplaneService } from './driplane.service';
+import { DriplaneService } from '../../driplane.service';
 import { ProjectEffects } from './project.effects';
 import { loadProjectFailed, loadProjects, loadProjectSuccess } from './project.actions';
 import { hot, cold } from 'jasmine-marbles';

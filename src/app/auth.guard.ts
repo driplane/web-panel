@@ -1,9 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { map, shareReplay, tap } from 'rxjs';
-import { restoreLastSession } from './auth.actions';
-import { loggedInUser } from './auth.selectors';
+import { filter, map, shareReplay, tap } from 'rxjs';
+import { isLoggedIn } from './state/auth/auth.selectors';
 import Logger from './logger.service';
 const log = Logger('guard:auth');
 
@@ -12,15 +11,14 @@ export const AuthGuard: CanActivateFn = () => {
 
   const store = inject(Store);
   const router = inject(Router);
-  store.dispatch(restoreLastSession());
 
   return store.pipe(
-    select(loggedInUser),
-    tap((user) => log('user', user)),
-    shareReplay(1),
-    map((user) => !!user),
+    select(isLoggedIn),
+    filter((loggedIn) => loggedIn !== null),
     tap((loggedIn) => {
+      log('loggedIn', loggedIn)
       if (loggedIn === false) {
+        log('not logged in; redirecting to login');
         router.navigate(['/login']);
       }
     })

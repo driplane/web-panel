@@ -7,8 +7,8 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators';
-import { logIn, logInFailedClear } from '../auth.actions';
-import { loginFailed } from '../auth.selectors';
+import { logIn, logInFailedClear } from '../state/auth/auth.actions';
+import { loginFailed } from '../state/auth/auth.selectors';
 import Logger from '../logger.service';
 const log = Logger('page:login');
 

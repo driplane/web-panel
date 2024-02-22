@@ -5,9 +5,9 @@ import { IonicModule } from '@ionic/angular';
 import { MemoizedSelector } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { Project } from '../driplane.types';
-import { loadProjects } from '../project.actions';
-import { ProjectState } from '../project.reducer';
-import { activeProject, projects } from '../project.selectors';
+import { loadProjects } from '../state/project/project.actions';
+import { ProjectState } from '../state/project/project.reducer';
+import { activeProject, projects } from '../state/project/project.selectors';
 
 import { SidemenuPage } from './sidemenu.page';
 

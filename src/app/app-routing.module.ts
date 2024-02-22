@@ -4,11 +4,6 @@ import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   {
-    path: '',
-    canActivate: [AuthGuard],
-    loadChildren: () => import('./sidemenu/sidemenu.module').then( m => m.SidemenuPageModule)
-  },
-  {
     path: 'login',
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
   },
@@ -23,6 +18,16 @@ const routes: Routes = [
   {
     path: 'password-reset',
     loadChildren: () => import('./reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
+  },
+  {
+    path: '',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./sidemenu/sidemenu.module').then( m => m.SidemenuPageModule)
+  },
+  {
+    path: '**',
+    pathMatch: 'full',
+    loadChildren: () => import('./not-found/not-found.module').then( m => m.NotFoundPageModule)
   }
 ];
 

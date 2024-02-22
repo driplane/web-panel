@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { DriplaneService } from '../driplane.service';
-import { ProjectState, PROJECT_FEATURE_KEY } from '../project.reducer';
+import { ProjectState, PROJECT_FEATURE_KEY } from '../state/project/project.reducer';
 
 import { SettingsPage } from './settings.page';
 

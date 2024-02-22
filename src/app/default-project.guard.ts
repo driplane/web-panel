@@ -3,8 +3,8 @@ import { CanActivateFn, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { catchError, filter, map, of, switchMap } from 'rxjs';
 import Logger from './logger.service';
-import { loadProjects } from './project.actions';
-import { projects } from './project.selectors';
+import { loadProjects } from './state/project/project.actions';
+import { projects } from './state/project/project.selectors';
 const log = Logger('guard:defaultProject');
 
 export const defaultProjectGuard: CanActivateFn = () => {
