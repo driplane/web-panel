@@ -11,6 +11,7 @@ import {
   distinctUntilChanged,
   filter,
   map, share,
+  shareReplay,
   switchMap, switchMapTo, tap
 } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
@@ -58,7 +59,8 @@ export class ProjectPage implements OnInit {
         since,
         range
       };
-    })
+    }),
+    shareReplay(),
   );
 
   activeProject$ = this.store.pipe(
@@ -123,6 +125,7 @@ export class ProjectPage implements OnInit {
   );
 
   users$ = this.selection$.pipe(
+    tap((l) => log('users Call')),
     switchMap(({ since, until, range, project, filters }) => this.driplane.getUniqueTagCounts(project, 'page_view', 'cid', {
       since,
       until,
@@ -133,8 +136,11 @@ export class ProjectPage implements OnInit {
         week: 'day',
         month: 'day'
       }[range]),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       ...filters
-    })),
+    }).pipe(
+      tap((result) => log('users', result)),
+    )),
     map((items) => items.map(item => ({
       name: item.time,
       value: item.count
@@ -150,11 +156,11 @@ export class ProjectPage implements OnInit {
       }).pipe(
         catchError((error) => {
           log('No data', error);
-          return of("0");
+          return of({name: '', count: "0" });
         })
       )),
     tap((result) => log('onboardingMode', result)),
-    map((count) => ~~(count) === 0),
+    map((result) => ~~(result.count) === 0),
     distinctUntilChanged(),
     switchMap((onboarding) => iif(
       () => onboarding,
@@ -166,7 +172,8 @@ export class ProjectPage implements OnInit {
         }),
         map(() => true)
       ), of(false))
-    )
+    ),
+    tap((result) => log('onboardingMode', result)),
   );
 
   constructor(
