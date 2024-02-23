@@ -3,10 +3,11 @@ import { FormControl } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
 import { endOfDay, endOfMinute, endOfToday, formatISO, startOfDay, startOfToday, subDays, subMinutes } from 'date-fns';
-import { combineLatest, from, iif, of, timer } from 'rxjs';
+import { combineLatest, forkJoin, from, iif, of, timer } from 'rxjs';
 import {
   catchError,
   concatAll,
+  concatMap,
   distinctUntilChanged,
   filter,
   map, share,
@@ -62,8 +63,9 @@ export class ProjectPage implements OnInit {
 
   activeProject$ = this.store.pipe(
     select(activeProject),
-    tap((project) => { log('activeProject', project); }),
     filter((project) => !!project),
+    distinctUntilChanged((prev, next) => prev.id === next.id),
+    tap((project) => { log('activeProject', project); }),
   );
 
   activeProjectKey$ = this.store.pipe(
@@ -141,18 +143,6 @@ export class ProjectPage implements OnInit {
 
   loading: HTMLIonLoadingElement;
 
-  progress$ = this.selection$.pipe(
-    tap((l) => this.loading.present() ),
-    switchMapTo(from([
-        this.pageViews$,
-        this.users$
-      ]).pipe(
-        concatAll()
-      )
-    ),
-    share()
-  );
-
   onboardingMode$ = this.selection$.pipe(
     switchMap(({ project }) => this.driplane
       .getTotalCounts(project, 'page_view', {
@@ -211,26 +201,41 @@ export class ProjectPage implements OnInit {
     );
   }
 
-  hasFilter(key: string) {
-    return this.filters$.pipe(
-      map((filters) => filters.some(filter => filter.key === key)),
-      distinctUntilChanged(),
-    );
-  }
+
+  progress$ = this.selection$.pipe(
+    tap((l) => this.loading.present() ),
+    map(() => forkJoin([
+        this.pageViews$,
+        this.users$
+      ])
+    ),
+    tap((values) => log('progress', values)),
+    share()
+  );
 
   async ngOnInit() {
     this.loading = await this.loadingCtrl.create({
       message: 'Loading...',
     });
 
-    this.progress$.subscribe(() => {
-      this.loading.dismiss();
-    }, (error) => {
-      console.log(error);
-      this.loading.dismiss('', 'error');
+    this.progress$.subscribe({
+      next: () => {
+        this.loading.dismiss();
+      },
+      error: (error) => {
+        console.log(error);
+        this.loading.dismiss('', 'error');
+      }
     });
 
     this.range.setValue('today');
+  }
+
+  hasFilter(key: string) {
+    return this.filters$.pipe(
+      map((filters) => filters.some(filter => filter.key === key)),
+      distinctUntilChanged(),
+    );
   }
 
   addFilter(key: string, value: string, label?: string) {

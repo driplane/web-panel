@@ -3,7 +3,7 @@
     <ion-content>
       <ion-list id="inbox-list">
         <ion-list-header>Driplane</ion-list-header>
-        <ion-note>{{ ( loggedInUser$ | async )?.email }}</ion-note>
+        <ion-note data-testid="loggedInUser">{{ ( loggedInUser$ | async )?.email }}</ion-note>
 
         <ion-menu-toggle auto-hide="false">
           <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async ) ]" lines="none" routerLinkActive="active">
@@ -28,7 +28,7 @@
             <ion-select-option *ngFor="let project of projects$ | async" [value]="project.id">{{ project.name }}</ion-select-option>
           </ion-select>
         </ion-item>
-        
+
         <ion-item routerDirection="root" [routerLink]="['/account']" lines="none" routerLinkActive="active">
           <ion-icon slot="start" ios="person-outline" md="person-sharp"></ion-icon>
           <ion-label>Account Settings</ion-label>

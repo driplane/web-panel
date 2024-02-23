@@ -193,6 +193,7 @@ export class DriplaneService {
     tag: string,
     params
   ): Observable<HistogramItem[]> {
+    log('getUniqueTagCounts', project, event, tag, params)
     return this.projectEventRequest<HistogramResponseItem[]>(
       project,
       event,
@@ -202,6 +203,7 @@ export class DriplaneService {
         tag,
       }
     ).pipe(
+      tap((result) => log('getUniqueTagCounts', result)),
       map((res) => (Array.isArray(res.result) ? res.result : [])),
       map((result) =>
         result.map((item) => ({
@@ -269,6 +271,7 @@ export class DriplaneService {
     endpoint,
     queryParams?: HttpParams
   ): Observable<QueryResponse<T>> {
+    log('projectEventRequest', project, event, endpoint, queryParams);
     for (const key in queryParams) {
       if (queryParams[key] === undefined) {
         delete queryParams[key];
