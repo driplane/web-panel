@@ -1,15 +1,15 @@
-ion-card {
-  min-width: 200px;
-}
+// ion-card {
+//   min-width: 200px;
+// }
 
-.main-card {
-  min-width: min(600px, 90vw);
-  max-width: 90vw;
-}
+// .main-card {
+//   min-width: min(600px, 90vw);
+//   max-width: 90vw;
+// }
 
-.no-data-card {
-  min-width: 90%;
-}
+// .no-data-card {
+//   min-width: 90%;
+// }
 
 .bar-chart-list {
   list-style: none;
@@ -19,7 +19,10 @@ ion-card {
     display: flex;
 
     a {
-      flex: 1;
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }

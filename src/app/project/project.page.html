@@ -28,7 +28,7 @@
 <ion-content>
   <ion-grid>
     <ion-row>
-      <ion-col *ngIf="onboardingMode$ | async">
+      <ion-col size="12" *ngIf="onboardingMode$ | async">
         <ion-card class="no-data-card">
           <ion-card-header>
             <ion-card-title>No Data</ion-card-title>
@@ -64,7 +64,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-      <ion-col *ngIf="(pageViews$ | async)?.length > 0">
+      <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(pageViews$ | async)?.length > 0">
         <ion-card class="main-card">
           <ion-card-header>
             <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
@@ -77,7 +77,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col *ngIf="(hasFilter('url_host') | async) === false && (topHosts$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('url_host') | async) === false && (topHosts$ | async)?.length > 0">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Domains</ion-card-subtitle>
@@ -94,7 +94,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col *ngIf="(hasFilter('url_path') | async) === false && (topUrls$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('url_path') | async) === false && (topUrls$ | async)?.length > 0">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top URLs</ion-card-subtitle>
@@ -111,7 +111,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col *ngIf="(hasFilter('ref_host') | async) === false && (topSources$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ref_host') | async) === false && (topSources$ | async)?.length > 0">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Sources</ion-card-subtitle>
@@ -128,7 +128,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col *ngIf="(topSourcesUrls$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(topSourcesUrls$ | async)?.length > 0">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Source URLs</ion-card-subtitle>
@@ -145,7 +145,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col *ngIf="(hasFilter('ua_br') | async) === false && (topBrowsers$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_br') | async) === false && (topBrowsers$ | async)?.length > 0">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Browsers</ion-card-subtitle>
@@ -163,7 +163,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col *ngIf="(hasFilter('ua_dv_t') | async) === false && (topDevices$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_dv_t') | async) === false && (topDevices$ | async)?.length > 0">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Top Devices</ion-card-subtitle>
