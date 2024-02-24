@@ -26,7 +26,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
+  <ion-grid [style]="{ '--total-page-view': totalPageCount$ | async,  '--total-user-count': totalUserCount$ | async }">
     <ion-row>
       <ion-col size="12" *ngIf="onboardingMode$ | async">
         <ion-card class="no-data-card">
@@ -78,14 +78,14 @@
       </ion-col>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('url_host') | async) === false && (topHosts$ | async)?.length > 0">
-        <ion-card>
+        <ion-card class="bar-chart-card">
           <ion-card-header>
             <ion-card-subtitle>Top Domains</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <ul class="bar-chart-list">
-              <li *ngFor="let item of topHosts$ | async">
+            <ul>
+              <li *ngFor="let item of topHosts$ | async" [style]="{ '--item-value': item.count}">
                 <a class="label" (click)="addFilter('url_host', item.label, 'Domain')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
@@ -95,14 +95,14 @@
       </ion-col>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('url_path') | async) === false && (topUrls$ | async)?.length > 0">
-        <ion-card>
+        <ion-card class="bar-chart-card">
           <ion-card-header>
             <ion-card-subtitle>Top URLs</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <ul class="bar-chart-list">
-              <li *ngFor="let item of topUrls$ | async">
+            <ul>
+              <li *ngFor="let item of topUrls$ | async" [style]="{ '--item-value': item.count}">
                 <a class="label" (click)="addFilter('url_path', item.label, 'URL')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
@@ -112,14 +112,14 @@
       </ion-col>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ref_host') | async) === false && (topSources$ | async)?.length > 0">
-        <ion-card>
+        <ion-card class="bar-chart-card">
           <ion-card-header>
             <ion-card-subtitle>Top Sources</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <ul class="bar-chart-list">
-              <li *ngFor="let item of topSources$ | async">
+            <ul>
+              <li *ngFor="let item of topSources$ | async" [style]="{ '--item-value': item.count}">
                 <a class="label" (click)="addFilter('ref_host', item.label, 'Source')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
@@ -129,14 +129,14 @@
       </ion-col>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(topSourcesUrls$ | async)?.length > 0">
-        <ion-card>
+        <ion-card class="bar-chart-card">
           <ion-card-header>
             <ion-card-subtitle>Source URLs</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <ul class="bar-chart-list">
-              <li *ngFor="let item of topSourcesUrls$ | async">
+            <ul>
+              <li *ngFor="let item of topSourcesUrls$ | async" [style]="{ '--item-value': item.count}">
                 <a class="label">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
@@ -145,17 +145,20 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_br') | async) === false && (topBrowsers$ | async)?.length > 0">
-        <ion-card>
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_br', 'ua_os') | async) === false && (topEnvType$ | async)?.length > 0">
+        <ion-card class="bar-chart-card">
           <ion-card-header>
-            <ion-card-subtitle>Top Browsers</ion-card-subtitle>
-            <!-- <ion-card-title>Top Browsers</ion-card-title> -->
+            <ion-select interface="popover" value="ua_br" [formControl]="envType" placeholder="Visitor Software">
+              <ion-select-option value="ua_br">Top Browsers</ion-select-option>
+              <ion-select-option value="ua_os">Top Operating Systems</ion-select-option>
+            </ion-select>
+
           </ion-card-header>
 
           <ion-card-content>
-            <ul class="bar-chart-list">
-              <li *ngFor="let item of topBrowsers$ | async">
-                <a class="label" (click)="addFilter('ua_br', item.label, 'Browser')">{{ item.label }}</a>
+            <ul>
+              <li *ngFor="let item of topEnvType$ | async" [style]="{ '--item-value': item.count}">
+                <a class="label" (click)="addFilter(envType.value, item.label, envType.value === 'ua_br' ? 'Browser' : 'OS')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
             </ul>
@@ -164,14 +167,14 @@
       </ion-col>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_dv_t') | async) === false && (topDevices$ | async)?.length > 0">
-        <ion-card>
+        <ion-card class="bar-chart-card">
           <ion-card-header>
             <ion-card-subtitle>Top Devices</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <ul class="bar-chart-list">
-              <li *ngFor="let item of topDevices$ | async">
+            <ul>
+              <li *ngFor="let item of topDevices$ | async" [style]="{ '--item-value': item.count}">
                 <a class="label" (click)="addFilter('ua_dv_t', item.label, 'Device')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>

@@ -12,6 +12,7 @@ import {
   filter,
   map, share,
   shareReplay,
+  startWith,
   switchMap, switchMapTo, tap
 } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
@@ -21,6 +22,8 @@ import { activeFilters, activeProject, activeProjectKeys } from '../state/projec
 const log = Logger('page:project');
 
 type Range = 'live'|'today'|'day'|'week'|'month';
+type EnvType = 'ua_br'|'ua_os';
+
 @Component({
   selector: 'app-project',
   templateUrl: './project.page.html',
@@ -28,6 +31,7 @@ type Range = 'live'|'today'|'day'|'week'|'month';
 })
 export class ProjectPage implements OnInit {
   range = new FormControl<Range>('today');
+
 
   dateRange$ = this.range.valueChanges.pipe(
     switchMap((range) => iif(
@@ -92,16 +96,35 @@ export class ProjectPage implements OnInit {
     })),
   );
 
-  topUrls$ = this.topList('url_path');
-  topHosts$ = this.topList('url_host');
-  topBrowsers$ = this.topList('ua_br');
+  topUrls$ = this.topList('url_path').pipe(
+    shareReplay(),
+  );
+  topHosts$ = this.topList('url_host').pipe(
+    shareReplay(),
+  );
+
+  envType = new FormControl<EnvType>('ua_br');
+
+  topEnvType$ = this.envType.valueChanges.pipe(
+    startWith('ua_br'),
+    switchMap((envType) => this.topList(envType)),
+    shareReplay(),
+  )
+  topBrowsers$ = this.topList('ua_br').pipe(
+    shareReplay(),
+  );
+
   topSources$ = this.topList('ref_host', { ref_ext: 1 }).pipe(
-    map((result) => result.filter(({ label }) => !!label))
+    map((result) => result.filter(({ label }) => !!label)),
+    shareReplay(),
   );
   topSourcesUrls$ = this.topList('ref').pipe(
-    map((result) => result.filter(({ label }) => !!label))
+    map((result) => result.filter(({ label }) => !!label)),
+    shareReplay(),
   );
-  topDevices$ = this.topList('ua_dv_t');
+  topDevices$ = this.topList('ua_dv_t').pipe(
+    shareReplay(),
+  );
 
   pageViews$ = this.selection$.pipe(
     switchMap(({ since, until, range, project, filters }) => this.driplane.getHistogram(project, 'page_view', {
@@ -122,6 +145,12 @@ export class ProjectPage implements OnInit {
       name: item.time,
       value: item.count
     }))),
+    shareReplay(),
+  );
+
+  totalPageCount$ = this.pageViews$.pipe(
+    map((items) => items.reduce((acc, item) => acc + item.value, 0)),
+    tap((result) => log('totalPageCount', result)),
   );
 
   users$ = this.selection$.pipe(
@@ -145,6 +174,12 @@ export class ProjectPage implements OnInit {
       name: item.time,
       value: item.count
     }))),
+    shareReplay(),
+  );
+
+  totalUserCount$ = this.users$.pipe(
+    map((items) => items.reduce((acc, item) => acc + item.value, 0)),
+    tap((result) => log('totalUserCount', result)),
   );
 
   loading: HTMLIonLoadingElement;
@@ -174,15 +209,8 @@ export class ProjectPage implements OnInit {
       ), of(false))
     ),
     tap((result) => log('onboardingMode', result)),
+    shareReplay(),
   );
-
-  constructor(
-    private store: Store,
-    private driplane: DriplaneService,
-    private loadingCtrl: LoadingController
-  ) {
-
-  }
 
   topList(tag: string, extraFilters = {}) {
     return this.selection$.pipe(
@@ -220,6 +248,14 @@ export class ProjectPage implements OnInit {
     share()
   );
 
+  constructor(
+    private store: Store,
+    private driplane: DriplaneService,
+    private loadingCtrl: LoadingController
+  ) {
+
+  }
+
   async ngOnInit() {
     this.loading = await this.loadingCtrl.create({
       message: 'Loading...',
@@ -238,9 +274,9 @@ export class ProjectPage implements OnInit {
     this.range.setValue('today');
   }
 
-  hasFilter(key: string) {
+  hasFilter(...keys: string[]) {
     return this.filters$.pipe(
-      map((filters) => filters.some(filter => filter.key === key)),
+      map((filters) => filters.some(filter => keys.includes(filter.key))),
       distinctUntilChanged(),
     );
   }

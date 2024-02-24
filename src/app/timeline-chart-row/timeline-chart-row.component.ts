@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
+import { Component, Input, ViewChild } from '@angular/core';
+import { ChartConfiguration, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
@@ -7,7 +7,7 @@ import { BaseChartDirective } from 'ng2-charts';
   templateUrl: './timeline-chart-row.component.html',
   styleUrls: ['./timeline-chart-row.component.scss'],
 })
-export class TimelineChartRowComponent implements OnInit {
+export class TimelineChartRowComponent {
   @Input() label = '';
   @Input() unit: 'number' | 'filesize' | 'percent' = 'number';
 
@@ -74,6 +74,4 @@ export class TimelineChartRowComponent implements OnInit {
       this.yScaleMax = 100;
     }
   }
-
-  ngOnInit() {}
 }
