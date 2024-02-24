@@ -85,7 +85,6 @@
 
           <ion-card-content>
             <ul class="bar-chart-list">
-              <li>Test - {{ (topHosts$ | async)?.length }} </li>
               <li *ngFor="let item of topHosts$ | async">
                 <a class="label" (click)="addFilter('url_host', item.label, 'Domain')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>

@@ -59,8 +59,7 @@ export class AuthEffects {
     tap(({ token, expiresAt }) => {
       localStorage.setItem(LS_TOKEN_KEY, token);
       localStorage.setItem(LS_TOKEN_EXPIRE_KEY, formatISO(expiresAt));
-      this.driplane.setToken(token);
-      this.router.navigate(['/']);
+      location.href = '/';
     }),
   ), { dispatch: false });
 
