@@ -8,12 +8,9 @@ import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
-import { signOut, tokenInvalid } from './state/auth/auth.actions';
 import {
   AuthResponse,
-  CountItem,
-  HistogramItem,
-  HistogramResponseItem,
+  IntervalItem,
   Project,
   ProjectConfig,
   ProjectKey,
@@ -21,10 +18,12 @@ import {
   QueryResponse,
   RequestOptions,
   Response,
+  Result,
   TopListItem,
-  User,
+  User
 } from './driplane.types';
 import Logger from './logger.service';
+import { tokenInvalid } from './state/auth/auth.actions';
 const log = Logger('service:driplane');
 
 @Injectable({
@@ -158,43 +157,42 @@ export class DriplaneService {
       event,
       'toplist',
       params
-    ).pipe(map((res) => res.result));
+    );
   }
 
-  getTotalCounts(project: Project, event, params): Observable<CountItem> {
-    return this.projectEventRequest<CountItem>(
+  getTotalCounts<T extends Result = IntervalItem[]>(project: Project, event, params): Observable<T> {
+    return this.projectEventRequest<T>(
       project,
       event,
       'count',
       params
-    ).pipe(map((res) => res.result));
+    );
   }
 
-  getHistogram(project: Project, event, params): Observable<HistogramItem[]> {
-    return this.projectEventRequest<HistogramResponseItem[]>(
+  getHistogram(project: Project, event, params): Observable<IntervalItem[]> {
+    return this.projectEventRequest<IntervalItem[]>(
       project,
       event,
       'histogram',
       params
     ).pipe(
-      map((res) => (Array.isArray(res.result) ? res.result : [])),
       map((result) =>
         result.map((item) => ({
           ...item,
-          count: parseInt(item.count, 10),
+          count: parseInt(item.result, 10),
         }))
       )
     );
   }
 
-  getUniqueTagCounts(
+  getUniqueTagCounts<T extends Result = IntervalItem[]>(
     project: Project,
     event: string,
     tag: string,
     params
-  ): Observable<HistogramItem[]> {
+  ): Observable<T> {
     log('getUniqueTagCounts', project, event, tag, params)
-    return this.projectEventRequest<HistogramResponseItem[]>(
+    return this.projectEventRequest<T>(
       project,
       event,
       'unique',
@@ -204,21 +202,35 @@ export class DriplaneService {
       }
     ).pipe(
       tap((result) => log('getUniqueTagCounts', result)),
-      map((res) => (Array.isArray(res.result) ? res.result : [])),
-      map((result) =>
-        result.map((item) => ({
-          ...item,
-          count: parseInt(item.count, 10),
-        }))
-      )
+      // map((res) => (Array.isArray(res.result) ? res.result : [])),
+      // map((result) =>
+      //   result.map((item) => ({
+      //     ...item,
+      //     count: parseInt(item.count, 10),
+      //   }))
+      // )
     );
   }
 
-  getTotals(project: Project, event, tag, params): Observable<TopListItem[]> {
-    return this.projectEventRequest<TopListItem[]>(project, event, 'total', {
+  getAverage<T extends Result = IntervalItem[]>(project: Project, event, tag, params): Observable<T> {
+    return this.projectEventRequest<T>(project, event, 'average', {
       ...params,
       tag,
-    }).pipe(map((res) => res.result));
+    });
+  }
+
+  getTotals<T extends Result = IntervalItem[]>(project: Project, event, tag, params): Observable<T> {
+    return this.projectEventRequest<T>(project, event, 'total', {
+      ...params,
+      tag,
+    });
+  }
+
+  getEventResult<T extends Result = IntervalItem[]>(project: Project, event, endpoint, tag, params): Observable<T> {
+    return this.projectEventRequest<T>(project, event, endpoint, {
+      ...params,
+      tag
+    });
   }
 
   private tokenReq<T>(
@@ -270,7 +282,7 @@ export class DriplaneService {
     event,
     endpoint,
     queryParams?: HttpParams
-  ): Observable<QueryResponse<T>> {
+  ): Observable<T> {
     log('projectEventRequest', project, event, endpoint, queryParams);
     for (const key in queryParams) {
       if (queryParams[key] === undefined) {
@@ -285,6 +297,8 @@ export class DriplaneService {
       {
         params: queryParams,
       }
+    ).pipe(
+      map((res) => res.result),
     );
   }
 }

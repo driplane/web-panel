@@ -143,10 +143,33 @@ export class ProjectPage implements OnInit {
     })),
     map((items) => items.map(item => ({
       name: item.time,
-      value: item.count
+      value: ~~item.result
     }))),
     shareReplay(),
   );
+
+  private perf(vital: 'ttfb' | 'fcp' | 'fid' | 'inp' | 'cls' | 'lcp', op: 'average' | 'min' | 'max' | 'median') {
+    return this.selection$.pipe(
+      switchMap(({ since, until, range, project, filters }) => this.driplane.getEventResult<string>(project, 'page_view', op, vital, {
+        since,
+        until,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        ...filters
+      })),
+      shareReplay(),
+    );
+  }
+
+  perfTTFBMin$ = this.perf('ttfb', 'min');
+  perfTTFBMax$ = this.perf('ttfb', 'max');
+  perfTTFBMed$ = this.perf('ttfb', 'median');
+
+  perfTTFBAvg$ = this.perf('ttfb', 'average');
+  perfFCPAvg$ = this.perf('fcp', 'average');
+  perfFIDAvg$ = this.perf('fid', 'average');
+  perfINPAvg$ = this.perf('inp', 'average');
+  perfCLSAvg$ = this.perf('cls', 'average');
+  perfLCPAvg$ = this.perf('lcp', 'average');
 
   totalPageCount$ = this.pageViews$.pipe(
     map((items) => items.reduce((acc, item) => acc + item.value, 0)),
@@ -172,7 +195,7 @@ export class ProjectPage implements OnInit {
     )),
     map((items) => items.map(item => ({
       name: item.time,
-      value: item.count
+      value: ~~item.result
     }))),
     shareReplay(),
   );
@@ -186,16 +209,16 @@ export class ProjectPage implements OnInit {
 
   onboardingMode$ = this.selection$.pipe(
     switchMap(({ project }) => this.driplane
-      .getTotalCounts(project, 'page_view', {
+      .getTotalCounts<string>(project, 'page_view', {
         since: '-3M'
       }).pipe(
         catchError((error) => {
           log('No data', error);
-          return of({name: '', count: "0" });
+          return of("0");
         })
       )),
     tap((result) => log('onboardingMode', result)),
-    map((result) => ~~(result.count) === 0),
+    map((result) => ~~(result) === 0),
     distinctUntilChanged(),
     switchMap((onboarding) => iif(
       () => onboarding,
@@ -230,7 +253,7 @@ export class ProjectPage implements OnInit {
         return of([]);
       }),
       map((list) => list.map(item => ({
-        count: item.count,
+        count: item.result,
         label: item[tag]
       }))),
     );

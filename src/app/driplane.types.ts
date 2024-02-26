@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import {
   HttpContext,
   HttpHeaders,
@@ -54,12 +53,7 @@ export interface ProjectKey extends ProjectKeyConfig {
 
 export interface TopListItem {
   tag: string;
-  count: number;
-}
-
-export interface CountItem {
-  name: string;
-  count: number;
+  result: number;
 }
 
 export interface HistogramItem {
@@ -67,15 +61,14 @@ export interface HistogramItem {
   count: number;
 }
 
-export interface HistogramResponseItem {
+export interface IntervalItem {
   time: string;
-  count: string;
+  result: string;
 }
 
-export interface TotalItem {
-  time: string;
-  total: number;
-}
+export type Result = string | IntervalItem[];
+export interface IntervalResponse extends QueryResponse<IntervalItem[]> {}
+export interface SingleResponse extends QueryResponse<string> {}
 
 export interface RequestOptions {
   body?: any;

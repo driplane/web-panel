@@ -64,6 +64,7 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
+
       <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(pageViews$ | async)?.length > 0">
         <ion-card class="main-card">
           <ion-card-header>
@@ -179,6 +180,42 @@
                 <span>{{ item.count | number }}</span>
               </li>
             </ul>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(perfTTFVAvg$ | async)?.length > 0">
+        <ion-card class="main-card">
+          <ion-card-header>
+            <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <app-timeline-chart-row label="TTFB" *ngIf="perfTTFVAvg$ | async" [chartData]="perfTTFVAvg$ | async"></app-timeline-chart-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col> -->
+
+      <ion-col class="perf-stats">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Performance</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <h1 class=""><abbr title="Time To First Byte">TTFB</abbr>: {{ perfTTFBAvg$ | async | number: '1.0-0' }}ms</h1>
+            <h1><abbr title="First Contentful Paint">FCP</abbr>: {{ perfFCPAvg$ | async | number: '1.0-0' }}ms</h1>
+            <h1><abbr title="Largest Contentful Paint">LCP</abbr>: {{ perfLCPAvg$ | async | number: '1.0-0' }}ms</h1>
+            <h1><abbr title="First Input Delay">FID</abbr>: {{ perfFIDAvg$ | async | number: '1.0-0' }}ms</h1>
+            <h1><abbr title="Cumulative Layout Shift">CLS</abbr>: {{ perfCLSAvg$ | async | number: '1.1-4' }}ms</h1>
+            <h1><abbr title="Interaction to Next Point">INP</abbr>: {{ perfINPAvg$ | async | number: '1.0-0' }}ms</h1>
+
+<!--
+            <meter min="0" max="5000" low="800" high="1800" optimum="20" [value]="perfTTFBAvg$ | async | number: '1.0-0'">50/100</meter> -->
+
+            <!-- <h1>Min: {{ perfTTFBMin$ | async }}ms</h1>
+            <h1>Max: {{ perfTTFBMax$ | async }}ms</h1>
+            <h1>Median: {{ perfTTFBMed$ | async | number: '1.0-0' }}ms</h1> -->
           </ion-card-content>
         </ion-card>
       </ion-col>
