@@ -184,10 +184,13 @@ export class ProjectPage implements OnInit {
         ...filters
       })),
       map((result) => {
-        const value = parseFloat(result);
+        let value = parseFloat(result);
+        if (vital === 'cls') {
+          value = value / 10000;
+        }
         return {
           value,
-          state: value < perfRanges.ttfb.improve ? 'good' : value > perfRanges.ttfb.poor ? 'poor' : 'improve'
+          state: value < perfRanges[vital].improve ? 'good' : value > perfRanges[vital].poor ? 'poor' : 'improve'
         };
       }),
       shareReplay(),
