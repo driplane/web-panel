@@ -24,6 +24,33 @@ const log = Logger('page:project');
 type Range = 'live'|'today'|'day'|'week'|'month';
 type EnvType = 'ua_br'|'ua_os';
 
+const perfRanges = {
+  ttfb: {
+    improve: 800,
+    poor: 1800,
+  },
+  fcp: {
+    improve: 1800,
+    poor: 3000,
+  },
+  fid: {
+    improve: 100,
+    poor: 300,
+  },
+  inp: {
+    improve: 200,
+    poor: 500,
+  },
+  cls: {
+    improve: 0.1,
+    poor: 0.25,
+  },
+  lcp: {
+    improve: 2500,
+    poor: 4000,
+  },
+}
+
 @Component({
   selector: 'app-project',
   templateUrl: './project.page.html',
@@ -156,6 +183,13 @@ export class ProjectPage implements OnInit {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         ...filters
       })),
+      map((result) => {
+        const value = parseFloat(result);
+        return {
+          value,
+          state: value < perfRanges.ttfb.improve ? 'good' : value > perfRanges.ttfb.poor ? 'poor' : 'improve'
+        };
+      }),
       shareReplay(),
     );
   }

@@ -32,7 +32,9 @@ export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
   imports: [
     BrowserModule,
     HttpClientModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({
+      mode: 'ios'
+    }),
     AppRoutingModule,
     StoreModule.forRoot({
       project: projectReducer,
