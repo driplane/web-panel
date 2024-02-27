@@ -24,33 +24,6 @@ const log = Logger('page:project');
 type Range = 'live'|'today'|'day'|'week'|'month';
 type EnvType = 'ua_br'|'ua_os';
 
-const perfRanges = {
-  ttfb: {
-    improve: 800,
-    poor: 1800,
-  },
-  fcp: {
-    improve: 1800,
-    poor: 3000,
-  },
-  fid: {
-    improve: 100,
-    poor: 300,
-  },
-  inp: {
-    improve: 200,
-    poor: 500,
-  },
-  cls: {
-    improve: 0.1,
-    poor: 0.25,
-  },
-  lcp: {
-    improve: 2500,
-    poor: 4000,
-  },
-}
-
 @Component({
   selector: 'app-project',
   templateUrl: './project.page.html',
@@ -188,11 +161,50 @@ export class ProjectPage implements OnInit {
         if (vital === 'cls') {
           value = value / 10000;
         }
+
+
+        const perfRanges = {
+          ttfb: {
+            improve: 800,
+            poor: 1800,
+          },
+          fcp: {
+            improve: 1800,
+            poor: 3000,
+          },
+          fid: {
+            improve: 100,
+            poor: 300,
+          },
+          inp: {
+            improve: 200,
+            poor: 500,
+          },
+          cls: {
+            improve: 0.1,
+            poor: 0.25,
+          },
+          lcp: {
+            improve: 2500,
+            poor: 4000,
+          },
+        }
+
+        const { improve, poor } = perfRanges[vital];
+        const poorRange = 10;
+        const rate = poor / (100 - poorRange);
         return {
           value,
-          state: value < perfRanges[vital].improve ? 'good' : value > perfRanges[vital].poor ? 'poor' : 'improve'
+          state: value < improve ? 'good' : value > poor ? 'poor' : 'improve',
+          percentages: {
+            good: improve / rate,
+            improve: 90 - (improve / rate),
+            poor: 10,
+            value: Math.min(value / rate, 100)
+          }
         };
       }),
+      tap((result) => log('perf', vital, op, result)),
       shareReplay(),
     );
   }

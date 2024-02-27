@@ -88,46 +88,50 @@
   }
 }
 
-
-.chart-text {
-  /*font: 16px/1.4em "Montserrat", Arial, sans-serif;*/
-  fill: #000;
-  -moz-transform: translateY(0.25em);
-  -ms-transform: translateY(0.25em);
-  -webkit-transform: translateY(0.25em);
-  transform: translateY(0.25em);
-
-  &.poor {
-    fill: var(--ion-color-danger);
+.gauge {
+  circle {
+    fill: transparent;
+    stroke-width: 3;
   }
 
-  &.good {
-    fill: var(--ion-color-success);
+  .pointer {
+    stroke-width: 4;
+    stroke-dashoffset: calc(-.74 * var(--value));
+    transform: rotate(-225deg);
+    transform-origin: center center;
+    transition: stroke-dashoffset ease .3s;
   }
 
-  &.improve {
-    fill: var(--ion-color-warning);
+  .chart-text {
+    fill: #000;
+    transform: translateY(0.25em);
+
+    &.poor {
+      fill: var(--ion-color-danger);
+    }
+
+    &.good {
+      fill: var(--ion-color-success);
+    }
+
+    &.improve {
+      fill: var(--ion-color-warning);
+    }
   }
-}
 
-.chart-number {
-  font-size: 0.4em;
-  line-height: 1;
-  text-anchor: middle;
-  -moz-transform: translateY(-0.35em);
-  -ms-transform: translateY(-0.35em);
-  -webkit-transform: translateY(-0.35em);
-  transform: translateY(-0.35em);
-}
+  .chart-number {
+    font-size: 0.4em;
+    line-height: 1;
+    text-anchor: middle;
+    transform: translateY(-0.35em);
+  }
 
-.chart-label {
-  font-size: 0.3em;
-  text-transform: uppercase;
-  text-anchor: middle;
-  -moz-transform: translateY(0.7em);
-  -ms-transform: translateY(0.7em);
-  -webkit-transform: translateY(0.7em);
-  transform: translateY(0.7em);
+  .chart-label {
+    font-size: 0.3em;
+    text-transform: uppercase;
+    text-anchor: middle;
+    transform: translateY(0.7em);
+  }
 }
 
 figure {
@@ -138,14 +142,14 @@ figure {
   margin-right: -15px;
 }
 
-.donut-segment-poor {
+.gauge-segment-poor {
   stroke: var(--ion-color-danger);
 }
 
-.donut-segment-good {
+.gauge-segment-good {
   stroke: var(--ion-color-success);
 }
 
-.donut-segment-improve {
+.gauge-segment-improve {
   stroke: var(--ion-color-warning);
 }

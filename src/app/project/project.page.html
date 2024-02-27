@@ -216,18 +216,21 @@
             <h1>Max: {{ perfTTFBMax$ | async }}ms</h1>
             <h1>Median: {{ perfTTFBMed$ | async | number: '1.0-0' }}ms</h1> -->
 
-            <ng-template #donutChart let-item>
-              <figure class="donut-chart">
-                <svg width="100%" height="100%" viewBox="0 0 42 42" class="donut" aria-labelledby="beers-title beers-desc" role="img">
-                  <circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke-width="3" role="presentation"></circle>
-                  stroke="#d2d3d4"
-                  <circle class="donut-segment-poor" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="red" stroke-width="3" stroke-dasharray="25 75" stroke-dashoffset="12.5" aria-labelledby="donut-segment-1-title donut-segment-1-desc"></circle>
-                  <circle class="donut-segment-improve" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="yellow" stroke-width="3" stroke-dasharray="25 75" stroke-dashoffset="37.5"></circle>
-                  <circle class="donut-segment-good" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="green" stroke-width="3" stroke-dasharray="25 75" stroke-dashoffset="62.5"></circle>
-                  <!-- unused 10% -->
-                  <g class="chart-text {{ item.state }}">
-                    <text x="50%" y="50%" class="chart-number">
-                      {{ item.value }}{{ item.label === 'CLS' ? '' : 'ms' }}
+            <ng-template #gauge let-item>
+              <figure>
+                <svg class="gauge" [style.--value]="item.data?.percentages.value" width="100%" height="100%" viewBox="0 0 42 42" role="img">
+                  <circle class="gauge-segment-poor" cx="21" cy="21" r="15.91549430918954" stroke-width="3" attr.stroke-dasharray="{{ item.data?.percentages.poor * .75 }} {{ 100 - item.data?.percentages.poor * .75 }}" attr.stroke-dashoffset="{{ 62.5 - item.data?.percentages.improve * .75 - item.data?.percentages.good * .75 }}"></circle>
+                  <circle class="gauge-segment-improve" cx="21" cy="21" r="15.91549430918954" stroke-width="3" attr.stroke-dasharray="{{ item.data?.percentages.improve * .75 }} {{ 100 - item.data?.percentages.improve * .75 }}" attr.stroke-dashoffset="{{ 62.5 - item.data?.percentages.good * .75}}"></circle>
+                  <circle class="gauge-segment-good" cx="21" cy="21" r="15.91549430918954" stroke-width="3" attr.stroke-dasharray="{{ item.data?.percentages.good * .75 }} {{ 100 - item.data?.percentages.good * .75 }}" stroke-dashoffset="62.5"></circle>
+
+                  <circle cx="21" cy="21" r="15.91549430918954" class="pointer" stroke="black" stroke-dasharray="1 99"></circle>
+
+                  <g class="chart-text {{ item.data?.state }}">
+                    <text x="50%" y="50%" class="chart-number" *ngIf="item.label === 'CLS'">
+                      {{ item.data?.value | number:'1.1-4' }}
+                    </text>
+                    <text x="50%" y="50%" class="chart-number" *ngIf="item.label !== 'CLS'">
+                      {{ item.data?.value | number:'1.0-0' }}ms
                     </text>
                     <text x="50%" y="50%" class="chart-label">
                       {{ item.label }}
@@ -237,12 +240,12 @@
               </figure>
             </ng-template>
 
-            <ng-container *ngTemplateOutlet="donutChart; context: { $implicit: { label: 'TTFB', state: (perfTTFBAvg$ | async)?.state, value: (perfTTFBAvg$ | async)?.value | number: '1.0-0' } }"></ng-container>
-            <ng-container *ngTemplateOutlet="donutChart; context: { $implicit: { label: 'FCP',  state: (perfFCPAvg$ | async)?.state, value: (perfFCPAvg$ | async)?.value | number: '1.0-0' } }"></ng-container>
-            <ng-container *ngTemplateOutlet="donutChart; context: { $implicit: { label: 'LCP',  state: (perfLCPAvg$ | async)?.state, value: (perfLCPAvg$ | async)?.value | number: '1.0-0' } }"></ng-container>
-            <ng-container *ngTemplateOutlet="donutChart; context: { $implicit: { label: 'FID',  state: (perfFIDAvg$ | async)?.state, value: (perfFIDAvg$ | async)?.value | number: '1.0-0' } }"></ng-container>
-            <ng-container *ngTemplateOutlet="donutChart; context: { $implicit: { label: 'CLS',  state: (perfCLSAvg$ | async)?.state, value: (perfCLSAvg$ | async)?.value | number: '1.1-4' } }"></ng-container>
-            <ng-container *ngTemplateOutlet="donutChart; context: { $implicit: { label: 'INP',  state: (perfINPAvg$ | async)?.state, value: (perfINPAvg$ | async)?.value | number: '1.0-0' } }"></ng-container>
+            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'TTFB', data: perfTTFBAvg$ | async } }"></ng-container>
+            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FCP',  data: perfFCPAvg$ | async } }"></ng-container>
+            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'LCP',  data: perfLCPAvg$ | async } }"></ng-container>
+            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FID',  data: perfFIDAvg$ | async } }"></ng-container>
+            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'CLS',  data: perfCLSAvg$ | async } }"></ng-container>
+            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'INP',  data: perfINPAvg$ | async } }"></ng-container>
 
           </ion-card-content>
         </ion-card>
