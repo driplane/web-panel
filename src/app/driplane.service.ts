@@ -10,7 +10,9 @@ import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import {
   AuthResponse,
+  GenericResponse,
   IntervalItem,
+  IntervalResponse,
   Project,
   ProjectConfig,
   ProjectKey,
@@ -151,16 +153,16 @@ export class DriplaneService {
     ).pipe(map((res) => res.response));
   }
 
-  getToplist(project: Project, event, params): Observable<TopListItem[]> {
+  getToplist(project: Project, event, params) {
     return this.projectEventRequest<TopListItem[]>(
       project,
       event,
       'toplist',
       params
-    );
+    ).pipe(map((res) => res.result));
   }
 
-  getTotalCounts<T extends Result = IntervalItem[]>(project: Project, event, params): Observable<T> {
+  getTotalCounts<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, params) {
     return this.projectEventRequest<T>(
       project,
       event,
@@ -169,28 +171,29 @@ export class DriplaneService {
     );
   }
 
-  getHistogram(project: Project, event, params): Observable<IntervalItem[]> {
+  getHistogram(project: Project, event, params) {
     return this.projectEventRequest<IntervalItem[]>(
       project,
       event,
       'histogram',
       params
     ).pipe(
-      map((result) =>
-        result.map((item) => ({
+      map((response) => ({
+        ...response,
+        result: response.result.map((item) => ({
           ...item,
           count: parseInt(item.result, 10),
         }))
-      )
+      }))
     );
   }
 
-  getUniqueTagCounts<T extends Result = IntervalItem[]>(
+  getUniqueTagCounts<T extends string | IntervalItem[] = IntervalItem[]>(
     project: Project,
     event: string,
     tag: string,
     params
-  ): Observable<T> {
+  ) {
     log('getUniqueTagCounts', project, event, tag, params)
     return this.projectEventRequest<T>(
       project,
@@ -212,21 +215,21 @@ export class DriplaneService {
     );
   }
 
-  getAverage<T extends Result = IntervalItem[]>(project: Project, event, tag, params): Observable<T> {
+  getAverage<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, tag, params) {
     return this.projectEventRequest<T>(project, event, 'average', {
       ...params,
       tag,
     });
   }
 
-  getTotals<T extends Result = IntervalItem[]>(project: Project, event, tag, params): Observable<T> {
+  getTotals<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, tag, params) {
     return this.projectEventRequest<T>(project, event, 'total', {
       ...params,
       tag,
     });
   }
 
-  getEventResult<T extends Result = IntervalItem[]>(project: Project, event, endpoint, tag, params): Observable<T> {
+  getEventResult<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, endpoint, tag, params) {
     return this.projectEventRequest<T>(project, event, endpoint, {
       ...params,
       tag
@@ -282,7 +285,7 @@ export class DriplaneService {
     event,
     endpoint,
     queryParams?: HttpParams
-  ): Observable<T> {
+  ): Observable<QueryResponse<T>> {
     log('projectEventRequest', project, event, endpoint, queryParams);
     for (const key in queryParams) {
       if (queryParams[key] === undefined) {
@@ -297,8 +300,6 @@ export class DriplaneService {
       {
         params: queryParams,
       }
-    ).pipe(
-      map((res) => res.result),
     );
   }
 }

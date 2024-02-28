@@ -153,3 +153,16 @@ figure {
 .gauge-segment-improve {
   stroke: var(--ion-color-warning);
 }
+
+
+.chart-card {
+  ion-cart-content {
+    padding: 0;
+  }
+
+  canvas {
+    height: 100px;
+    margin-left: -8px;
+    margin-bottom: -8px;
+  }
+}

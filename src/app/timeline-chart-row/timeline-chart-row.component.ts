@@ -57,6 +57,7 @@ export class TimelineChartRowComponent {
           // label: 'Series A',
           fill: true,
           tension: 0.5,
+          pointRadius: 0,
           borderColor: 'rgba(148,159,177,1)',
           backgroundColor: 'rgba(148,159,177,0.2)',
         },

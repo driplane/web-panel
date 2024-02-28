@@ -69,7 +69,7 @@ export interface IntervalItem {
 export type Result = string | IntervalItem[];
 export interface IntervalResponse extends QueryResponse<IntervalItem[]> {}
 export interface SingleResponse extends QueryResponse<string> {}
-
+export type GenericResponse = IntervalResponse | SingleResponse;
 export interface RequestOptions {
   body?: any;
   headers?: HttpHeaders |

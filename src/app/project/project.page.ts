@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
-import { endOfDay, endOfMinute, endOfToday, formatISO, startOfDay, startOfToday, subDays, subMinutes } from 'date-fns';
-import { combineLatest, forkJoin, from, iif, of, timer } from 'rxjs';
+import { ChartConfiguration, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+import { Observable, combineLatest, forkJoin, iif, of, timer } from 'rxjs';
 import {
   catchError,
-  concatAll,
-  concatMap,
   distinctUntilChanged,
   filter,
   map, share,
   shareReplay,
   startWith,
-  switchMap, switchMapTo, tap
+  switchMap,
+  tap
 } from 'rxjs/operators';
 import { DriplaneService } from '../driplane.service';
 import Logger from '../logger.service';
@@ -39,24 +39,21 @@ export class ProjectPage implements OnInit {
       timer(0, 5000).pipe(
         switchMap(() => of(range))
       ),
-      of(range)
+      timer(0, 60000).pipe(
+        switchMap(() => of(range))
+      )
     )),
     map((range) => {
-      const now = new Date();
-      const endOfYesterday = endOfDay(subDays(now, 1));
-
       const diffMap = {
-        live: [endOfMinute(now), endOfMinute(subMinutes(now, -30))],
-        today: [endOfToday(), startOfToday()],
-        day: [endOfYesterday, startOfDay(subDays(now, 1))],
-        week: [endOfYesterday, startOfDay(subDays(now, 7))],
-        month: [endOfYesterday, startOfDay(subDays(now, 30))],
-        previousMonth: [startOfDay(subDays(now, 31)), startOfDay(subDays(now, 60))],
+        live: ['now', '-30m'],
+        today: ['now', '-0d/d'],
+        day: ['-0d/d', '-1d/d'],
+        week: ['-0d/d', '-7d/d'],
+        month: ['-0d/d', '-30d/d'],
+        previousMonth: ['-30/d', '-60d/d'],
       };
-      const [untilDate, sinceDate] = diffMap[range];
 
-      const until = formatISO(untilDate);
-      const since = formatISO(sinceDate);
+      const [until, since] = diffMap[range];
 
       return {
         until,
@@ -141,11 +138,18 @@ export class ProjectPage implements OnInit {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       ...filters
     })),
-    map((items) => items.map(item => ({
+    shareReplay(),
+  );
+
+  pageViewResult$ = this.pageViews$.pipe(
+    map(({result}) => result.map(item => ({
       name: item.time,
       value: ~~item.result
     }))),
-    shareReplay(),
+  )
+
+  pageViewQuery$ = this.pageViews$.pipe(
+    map(({query}) => query),
   );
 
   private perf(vital: 'ttfb' | 'fcp' | 'fid' | 'inp' | 'cls' | 'lcp', op: 'average' | 'min' | 'max' | 'median') {
@@ -156,7 +160,7 @@ export class ProjectPage implements OnInit {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         ...filters
       })),
-      map((result) => {
+      map(({result}) => {
         let value = parseFloat(result);
         if (vital === 'cls') {
           value = value / 10000;
@@ -220,7 +224,7 @@ export class ProjectPage implements OnInit {
   perfCLSAvg$ = this.perf('cls', 'average');
   perfLCPAvg$ = this.perf('lcp', 'average');
 
-  totalPageCount$ = this.pageViews$.pipe(
+  totalPageCount$ = this.pageViewResult$.pipe(
     map((items) => items.reduce((acc, item) => acc + item.value, 0)),
     tap((result) => log('totalPageCount', result)),
   );
@@ -242,7 +246,7 @@ export class ProjectPage implements OnInit {
     }).pipe(
       tap((result) => log('users', result)),
     )),
-    map((items) => items.map(item => ({
+    map(({ result }) => result.map(item => ({
       name: item.time,
       value: ~~item.result
     }))),
@@ -263,11 +267,11 @@ export class ProjectPage implements OnInit {
       }).pipe(
         catchError((error) => {
           log('No data', error);
-          return of("0");
+          return of({result: "0" });
         })
       )),
     tap((result) => log('onboardingMode', result)),
-    map((result) => ~~(result) === 0),
+    map(({result}) => ~~(result) === 0),
     distinctUntilChanged(),
     switchMap((onboarding) => iif(
       () => onboarding,

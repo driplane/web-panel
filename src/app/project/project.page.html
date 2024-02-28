@@ -65,14 +65,14 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(pageViews$ | async)?.length > 0">
+      <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(pageViewResult$ | async)?.length > 0">
         <ion-card class="main-card">
           <ion-card-header>
-            <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
+            <ion-card-subtitle class="date-range">{{ (pageViewQuery$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (pageViewQuery$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <app-timeline-chart-row label="Total pageview" *ngIf="pageViews$ | async" [chartData]="pageViews$ | async"></app-timeline-chart-row>
+            <app-timeline-chart-row label="Total pageview" *ngIf="pageViewResult$ | async" [chartData]="pageViewResult$ | async"></app-timeline-chart-row>
             <app-timeline-chart-row label="Unique visitors" *ngIf="users$ | async" [chartData]="users$ | async"></app-timeline-chart-row>
           </ion-card-content>
         </ion-card>
