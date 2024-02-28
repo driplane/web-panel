@@ -166,16 +166,37 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_dv_t') | async) === false && (topDevices$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_br') | async) && (topBrowserVersions$ | async)?.length > 0">
         <ion-card class="bar-chart-card">
           <ion-card-header>
-            <ion-card-subtitle>Top Devices</ion-card-subtitle>
+            <ion-card-subtitle>Browser Versions</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
             <ul>
-              <li *ngFor="let item of topDevices$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter('ua_dv_t', item.label, 'Device')">{{ item.label }}</a>
+              <li *ngFor="let item of topBrowserVersions$ | async" [style]="{ '--item-value': item.count}">
+                <a class="label" (click)="addFilter('ua_br_v', item.label, 'Browser Version')">{{ item.label }}</a>
+                <span>{{ item.count | number }}</span>
+              </li>
+            </ul>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_dv_t', 'ua_dv', 'ua_dv_v') | async) === false && (topDevType$ | async)?.length > 0">
+        <ion-card class="bar-chart-card">
+          <ion-card-header>
+            <ion-select interface="popover" value="ua_dv_t" [formControl]="devType" placeholder="Visitor Device">
+              <ion-select-option value="ua_dv_t">Device Types</ion-select-option>
+              <ion-select-option value="ua_dv_v">Vendors</ion-select-option>
+              <ion-select-option value="ua_dv">Models</ion-select-option>
+            </ion-select>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ul>
+              <li *ngFor="let item of topDevType$ | async" [style]="{ '--item-value': item.count}">
+                <a class="label" (click)="addFilter(devType.value, item.label, 'Device')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
             </ul>

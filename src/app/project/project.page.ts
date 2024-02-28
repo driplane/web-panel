@@ -1,10 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
-import { ChartConfiguration, ChartType } from 'chart.js';
-import { BaseChartDirective } from 'ng2-charts';
-import { Observable, combineLatest, forkJoin, iif, of, timer } from 'rxjs';
+import { combineLatest, forkJoin, iif, of, timer } from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
@@ -23,6 +21,7 @@ const log = Logger('page:project');
 
 type Range = 'live'|'today'|'day'|'week'|'month';
 type EnvType = 'ua_br'|'ua_os';
+type DevType = 'ua_dv'|'ua_dv_t'|'ua_dv_v';
 
 @Component({
   selector: 'app-project',
@@ -31,7 +30,6 @@ type EnvType = 'ua_br'|'ua_os';
 })
 export class ProjectPage implements OnInit {
   range = new FormControl<Range>('today');
-
 
   dateRange$ = this.range.valueChanges.pipe(
     switchMap((range) => iif(
@@ -106,8 +104,10 @@ export class ProjectPage implements OnInit {
     startWith('ua_br'),
     switchMap((envType) => this.topList(envType)),
     shareReplay(),
-  )
-  topBrowsers$ = this.topList('ua_br').pipe(
+  );
+
+  topBrowserVersions$ = this.topList('ua_br_v').pipe(
+    map((result) => result.filter(({ label }) => !!label)),
     shareReplay(),
   );
 
@@ -119,9 +119,15 @@ export class ProjectPage implements OnInit {
     map((result) => result.filter(({ label }) => !!label)),
     shareReplay(),
   );
-  topDevices$ = this.topList('ua_dv_t').pipe(
+
+  devType = new FormControl<DevType>('ua_dv_t');
+
+  topDevType$ = this.devType.valueChanges.pipe(
+    startWith('ua_dv_t'),
+    switchMap((devType) => this.topList(devType)),
+    map((result) => result.filter(({ label }) => !!label)),
     shareReplay(),
-  );
+  )
 
   pageViews$ = this.selection$.pipe(
     switchMap(({ since, until, range, project, filters }) => this.driplane.getHistogram(project, 'page_view', {

@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { filter, map, shareReplay, tap } from 'rxjs';
-import { isLoggedIn } from './state/auth/auth.selectors';
+import { filter, tap } from 'rxjs';
 import Logger from './logger.service';
+import { isLoggedIn } from './state/auth/auth.selectors';
 const log = Logger('guard:auth');
 
 export const AuthGuard: CanActivateFn = () => {
