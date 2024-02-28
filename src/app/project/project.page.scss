@@ -156,13 +156,17 @@ figure {
 
 
 .chart-card {
-  ion-cart-content {
-    padding: 0;
-  }
+  position: relative;
 
-  canvas {
-    height: 100px;
-    margin-left: -8px;
-    margin-bottom: -8px;
+  p {
+    font: -apple-system, sans-serif;
+    font-size: 48px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: 0;
+    margin: 0;
+    transform: translate(-50%, -50%);
   }
 }

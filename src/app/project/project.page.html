@@ -65,16 +65,25 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(pageViewResult$ | async)?.length > 0">
-        <ion-card class="main-card">
+      <ion-col size-lg="6" size-md="6" size="12" *ngIf="(pageViewResult$ | async)?.length > 0">
+        <ion-card class="chart-card">
           <ion-card-header>
-            <ion-card-subtitle class="date-range">{{ (pageViewQuery$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (pageViewQuery$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
+            <ion-card-subtitle>Pageviews</ion-card-subtitle>
           </ion-card-header>
 
-          <ion-card-content>
-            <app-timeline-chart-row label="Total pageview" *ngIf="pageViewResult$ | async" [chartData]="pageViewResult$ | async"></app-timeline-chart-row>
-            <app-timeline-chart-row label="Unique visitors" *ngIf="users$ | async" [chartData]="users$ | async"></app-timeline-chart-row>
-          </ion-card-content>
+          <p class="total">{{ pageViewCount$ | async }}</p>
+          <app-line-chart [data]="pageViewResult$ | async"></app-line-chart>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size-lg="6" size-md="6" size="12" *ngIf="(users$ | async)?.length > 0">
+        <ion-card class="chart-card">
+          <ion-card-header>
+            <ion-card-subtitle>Visitors</ion-card-subtitle>
+          </ion-card-header>
+
+          <p class="total">{{ totalUserCount$ | async }}</p>
+          <app-line-chart [data]="users$ | async"></app-line-chart>
         </ion-card>
       </ion-col>
 

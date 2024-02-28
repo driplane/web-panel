@@ -1,14 +1,13 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
 import { ProjectPageRoutingModule } from './project-routing.module';
 
+import { LineChartComponent } from '../line-chart/line-chart.component';
 import { ProjectPage } from './project.page';
-import { TimelineChartRowComponent } from '../timeline-chart-row/timeline-chart-row.component';
-import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
   imports: [
@@ -17,9 +16,8 @@ import { NgChartsModule } from 'ng2-charts';
     ReactiveFormsModule,
     IonicModule,
     ProjectPageRoutingModule,
-    NgChartsModule,
   ],
-  declarations: [ProjectPage, TimelineChartRowComponent],
+  declarations: [ProjectPage, LineChartComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProjectPageModule {}

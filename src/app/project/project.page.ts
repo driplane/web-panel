@@ -17,6 +17,7 @@ import { DriplaneService } from '../driplane.service';
 import Logger from '../logger.service';
 import { addFilter, clearFilter, loadProjectKeys } from '../state/project/project.actions';
 import { activeFilters, activeProject, activeProjectKeys } from '../state/project/project.selectors';
+import { parseISO } from 'date-fns';
 const log = Logger('page:project');
 
 type Range = 'live'|'today'|'day'|'week'|'month';
@@ -149,10 +150,15 @@ export class ProjectPage implements OnInit {
 
   pageViewResult$ = this.pageViews$.pipe(
     map(({result}) => result.map(item => ({
-      name: item.time,
+      time: parseISO(item.time),
       value: ~~item.result
     }))),
   )
+
+  pageViewCount$ = this.pageViewResult$.pipe(
+    map((items) => items.reduce((acc, item) => acc + item.value, 0)),
+    tap((result) => log('pageViewCount', result)),
+  );
 
   pageViewQuery$ = this.pageViews$.pipe(
     map(({query}) => query),
@@ -253,7 +259,7 @@ export class ProjectPage implements OnInit {
       tap((result) => log('users', result)),
     )),
     map(({ result }) => result.map(item => ({
-      name: item.time,
+      time: parseISO(item.time),
       value: ~~item.result
     }))),
     shareReplay(),

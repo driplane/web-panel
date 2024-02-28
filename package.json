@@ -1,8 +1,9 @@
 {
   "name": "Driplane",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Driplane",
+  "homepage": "https://driplane.io/",
+  "repository": "git@github.com:driplane/web-panel.git",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -34,11 +35,10 @@
     "@ngrx/router-store": "^17.0.1",
     "@ngrx/store": "^17.0.1",
     "@ngrx/store-devtools": "^17.0.1",
-    "chart.js": "^4.4.1",
+    "@observablehq/plot": "^0.6.13",
     "cli-api-mocker": "^1.1.1",
     "date-fns": "^3.1.0",
     "ionicons": "^7.0.0",
-    "ng2-charts": "^5.0.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
@@ -73,5 +73,5 @@
     "ts-node": "^10.9.2",
     "typescript": "~5.2.2"
   },
-  "description": "An Ionic project"
+  "description": "Driplane Dashboard"
 }
