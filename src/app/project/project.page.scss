@@ -168,5 +168,11 @@ figure {
     padding: 0;
     margin: 0;
     transform: translate(-50%, -50%);
+    transition: opacity .2s ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover p {
+    opacity: 0;
   }
 }

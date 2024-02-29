@@ -1,66 +1,44 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ (activeProject$ | async )?.name }} Dashboard</ion-title>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-segment [formControl]="range">
-      <ion-segment-button value="live">Live <span class="live-indicator"></span></ion-segment-button>
-      <ion-segment-button value="today">Today</ion-segment-button>
-      <ion-segment-button value="day">Yesterday</ion-segment-button>
-      <ion-segment-button value="week">Last week</ion-segment-button>
-      <ion-segment-button value="month">Last Month</ion-segment-button>
-      <!-- <ion-segment-button value="previousMonth">Previous Month</ion-segment-button> -->
-    </ion-segment>
-
+    <ion-title>{{ (activeProject$ | async )?.name }}</ion-title>
+    <ion-select slot="end" interface="popover" [formControl]="range">
+      <ion-select-option value="live">Live</ion-select-option>
+      <ion-select-option value="today">Today</ion-select-option>
+      <ion-select-option value="day">Yesterday</ion-select-option>
+      <ion-select-option value="week">Last week</ion-select-option>
+      <ion-select-option value="month">Last Month</ion-select-option>
+    </ion-select>
   </ion-toolbar>
   <ion-toolbar *ngIf="(filters$ | async).length > 0">
-      <ion-chip *ngFor="let filter of filters$ | async">
-        <!-- <ion-icon name="pin" color="primary"></ion-icon> -->
-        <ion-label>{{ filter.label || filter.key }}: {{ filter.value }}</ion-label>
-        <ion-icon name="close" (click)="clearFilter(filter.key)"></ion-icon>
-      </ion-chip>
+    <ion-chip *ngFor="let filter of filters$ | async">
+      <ion-label>{{ filter.label || filter.key }}: {{ filter.value }}</ion-label>
+      <ion-icon name="close" (click)="clearFilter(filter.key)"></ion-icon>
+    </ion-chip>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true">
   <ion-grid [style]="{ '--total-page-view': totalPageCount$ | async,  '--total-user-count': totalUserCount$ | async }">
     <ion-row>
       <ion-col size="12" *ngIf="onboardingMode$ | async">
         <ion-card class="no-data-card">
           <ion-card-header>
             <ion-card-title>No Data</ion-card-title>
+            <ion-card-subtitle>Did you add your tracker code to your website?</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <p>Did you add your tracker code to your website?</p>
-            <ion-button id="add-tracker-code">Add now</ion-button>
+            <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
+            <div class="code-example">
+              <pre class="hljs" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ activeProjectKey$ | async }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
 
-            <ion-modal #trackerModal trigger="add-tracker-code">
-              <ng-template>
-                <ion-header>
-                  <ion-toolbar>
-                    <ion-title>Add tracking code</ion-title>
-                    <ion-buttons slot="end">
-                      <ion-button (click)="trackerModal.dismiss()" [strong]="true">Close</ion-button>
-                    </ion-buttons>
-                  </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding">
-                  <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
-                  <div class="code-example">
-                    <pre class="hljs" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ activeProjectKey$ | async }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
+              <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ activeProjectKey$ | async }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
+            </div>
 
-                    <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ activeProjectKey$ | async }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
-                  </div>
-
-                  <p>Then you will start to see your visitor insights in this dashboard.</p>
-                </ion-content>
-              </ng-template>
-
-            </ion-modal>
+            <p>Then you will start to see your visitor insights in this dashboard.</p>
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -68,11 +46,11 @@
       <ion-col size-lg="6" size-md="6" size="12" *ngIf="(pageViewResult$ | async)?.length > 0">
         <ion-card class="chart-card">
           <ion-card-header>
-            <ion-card-subtitle>Pageviews</ion-card-subtitle>
+            <ion-card-subtitle>Page views</ion-card-subtitle>
           </ion-card-header>
 
-          <p class="total">{{ pageViewCount$ | async }}</p>
-          <app-line-chart [data]="pageViewResult$ | async"></app-line-chart>
+          <p class="total">{{ totalPageCount$ | async }}</p>
+          <app-line-chart [data]="pageViewResult$ | async" valueLabel="Page views" [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
         </ion-card>
       </ion-col>
 
@@ -83,7 +61,7 @@
           </ion-card-header>
 
           <p class="total">{{ totalUserCount$ | async }}</p>
-          <app-line-chart [data]="users$ | async"></app-line-chart>
+          <app-line-chart [data]="users$ | async" valueLabel="Visitors" [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
         </ion-card>
       </ion-col>
 
@@ -213,39 +191,13 @@
         </ion-card>
       </ion-col>
 
-      <!-- <ion-col size-lg="6" size-md="8" size-sm="12" *ngIf="(perfTTFVAvg$ | async)?.length > 0">
-        <ion-card class="main-card">
-          <ion-card-header>
-            <ion-card-subtitle class="date-range">{{ (dateRange$ | async)?.since | date:'d MMMM HH:mm' }} - {{ (dateRange$ | async)?.until | date:'d MMMM HH:mm' }}</ion-card-subtitle>
-          </ion-card-header>
-
-          <ion-card-content>
-            <app-timeline-chart-row label="TTFB" *ngIf="perfTTFVAvg$ | async" [chartData]="perfTTFVAvg$ | async"></app-timeline-chart-row>
-          </ion-card-content>
-        </ion-card>
-      </ion-col> -->
-
-      <ion-col size="12" class="perf-stats">
+      <ion-col size="12" class="perf-stats" [hidden]="(onboardingMode$ | async)">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle>Performance</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            <!-- <h1 class=""><abbr title="Time To First Byte">TTFB</abbr>: {{ perfTTFBAvg$ | async | number: '1.0-0' }}ms</h1>
-            <h1><abbr title="First Contentful Paint">FCP</abbr>: {{ perfFCPAvg$ | async | number: '1.0-0' }}ms</h1>
-            <h1><abbr title="Largest Contentful Paint">LCP</abbr>: {{ perfLCPAvg$ | async | number: '1.0-0' }}ms</h1>
-            <h1><abbr title="First Input Delay">FID</abbr>: {{ perfFIDAvg$ | async | number: '1.0-0' }}ms</h1>
-            <h1><abbr title="Cumulative Layout Shift">CLS</abbr>: {{ perfCLSAvg$ | async | number: '1.1-4' }}ms</h1>
-            <h1><abbr title="Interaction to Next Point">INP</abbr>: {{ perfINPAvg$ | async | number: '1.0-0' }}ms</h1> -->
-
-<!--
-            <meter min="0" max="5000" low="800" high="1800" optimum="20" [value]="perfTTFBAvg$ | async | number: '1.0-0'">50/100</meter> -->
-
-            <!-- <h1>Min: {{ perfTTFBMin$ | async }}ms</h1>
-            <h1>Max: {{ perfTTFBMax$ | async }}ms</h1>
-            <h1>Median: {{ perfTTFBMed$ | async | number: '1.0-0' }}ms</h1> -->
-
             <ng-template #gauge let-item>
               <figure>
                 <svg class="gauge" [style.--value]="item.data?.percentages.value" width="100%" height="100%" viewBox="0 0 42 42" role="img">

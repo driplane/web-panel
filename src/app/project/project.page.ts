@@ -30,9 +30,44 @@ type DevType = 'ua_dv'|'ua_dv_t'|'ua_dv_v';
   styleUrls: ['./project.page.scss'],
 })
 export class ProjectPage implements OnInit {
-  range = new FormControl<Range>('today');
+  range = new FormControl<Range>('month');
 
-  dateRange$ = this.range.valueChanges.pipe(
+  range$ = this.range.valueChanges.pipe(
+    startWith(this.range.value),
+    shareReplay(),
+  );
+
+  chartDateFormat$ = this.range$.pipe(
+    map((range) => {
+      switch (range) {
+        case 'live':
+        case 'today':
+        case 'day':
+          return 'HH:mm';
+        case 'week':
+        case 'month':
+          return 'dd/MM';
+      }
+    }),
+    shareReplay(),
+  );
+
+  chartTimeLabel$ = this.range$.pipe(
+    map((range) => {
+      switch (range) {
+        case 'live':
+        case 'today':
+        case 'day':
+          return 'Time';
+        case 'week':
+        case 'month':
+          return 'Date';
+      }
+    }),
+    shareReplay(),
+  );
+
+  dateRange$ = this.range$.pipe(
     switchMap((range) => iif(
       () => range === 'live',
       timer(0, 5000).pipe(
@@ -68,13 +103,15 @@ export class ProjectPage implements OnInit {
     filter((project) => !!project),
     distinctUntilChanged((prev, next) => prev.id === next.id),
     tap((project) => { log('activeProject', project); }),
+    shareReplay(),
   );
 
   activeProjectKey$ = this.store.pipe(
     select(activeProjectKeys),
     tap((keys) => { log('activeProjectKeys', keys); }),
     filter((keys) => keys.length > 0),
-    map((keys) => keys[0].key)
+    map((keys) => keys[0].key),
+    shareReplay(),
   );
 
   filters$ = this.store.pipe(select(activeFilters));
@@ -111,11 +148,7 @@ export class ProjectPage implements OnInit {
       }),
       map((list) => list.map(item => ({
         count: item.result,
-        label: item[tag]
-      }))),
-      map((result) => result.map(({ label, count }) => ({
-        label: !!label ? label : unknownLabel,
-        count
+        label: item[tag] ? item[tag] : unknownLabel
       }))),
     );
   }
@@ -123,7 +156,7 @@ export class ProjectPage implements OnInit {
   topUrls$ = this.topList({ tag: 'url_path' }).pipe(
     shareReplay(),
   );
-  topHosts$ = this.topList({ tag: 'url_path' }).pipe(
+  topHosts$ = this.topList({ tag: 'url_host' }).pipe(
     shareReplay(),
   );
 
@@ -364,8 +397,6 @@ export class ProjectPage implements OnInit {
         this.loading.dismiss('', 'error');
       }
     });
-
-    this.range.setValue('today');
   }
 
   hasFilter(...keys: string[]) {
