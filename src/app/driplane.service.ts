@@ -6,13 +6,11 @@ import {
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import {
   AuthResponse,
-  GenericResponse,
   IntervalItem,
-  IntervalResponse,
   Project,
   ProjectConfig,
   ProjectKey,
@@ -20,7 +18,6 @@ import {
   QueryResponse,
   RequestOptions,
   Response,
-  Result,
   TopListItem,
   User
 } from './driplane.types';
@@ -99,12 +96,7 @@ export class DriplaneService {
       body: {
         name,
       },
-    })
-    // FIXME: This is a workaround for not having created project form API as the response
-    .pipe(
-      switchMap(() => this.getProjects()),
-      map((projects) => projects.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0])
-    );
+    });
   }
 
   getProjects(): Observable<Project[]> {
@@ -171,23 +163,6 @@ export class DriplaneService {
     );
   }
 
-  getHistogram(project: Project, event, params) {
-    return this.projectEventRequest<IntervalItem[]>(
-      project,
-      event,
-      'histogram',
-      params
-    ).pipe(
-      map((response) => ({
-        ...response,
-        result: response.result.map((item) => ({
-          ...item,
-          count: parseInt(item.result, 10),
-        }))
-      }))
-    );
-  }
-
   getUniqueTagCounts<T extends string | IntervalItem[] = IntervalItem[]>(
     project: Project,
     event: string,
@@ -203,15 +178,6 @@ export class DriplaneService {
         ...params,
         tag,
       }
-    ).pipe(
-      tap((result) => log('getUniqueTagCounts', result)),
-      // map((res) => (Array.isArray(res.result) ? res.result : [])),
-      // map((result) =>
-      //   result.map((item) => ({
-      //     ...item,
-      //     count: parseInt(item.count, 10),
-      //   }))
-      // )
     );
   }
 

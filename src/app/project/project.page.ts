@@ -92,10 +92,38 @@ export class ProjectPage implements OnInit {
     })),
   );
 
-  topUrls$ = this.topList('url_path').pipe(
+  topList({ tag, filters: extraFilters = {}, unknownLabel = '(unknown)'}) {
+    return this.selection$.pipe(
+      switchMap(({ since, until, project, filters }) =>
+        this.driplane.getToplist(project, 'page_view', {
+          since,
+          until,
+          limit: 10,
+          tag,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          ...filters,
+          ...extraFilters
+        })
+      ),
+      catchError((error) => {
+        log(error);
+        return of([]);
+      }),
+      map((list) => list.map(item => ({
+        count: item.result,
+        label: item[tag]
+      }))),
+      map((result) => result.map(({ label, count }) => ({
+        label: !!label ? label : unknownLabel,
+        count
+      }))),
+    );
+  }
+
+  topUrls$ = this.topList({ tag: 'url_path' }).pipe(
     shareReplay(),
   );
-  topHosts$ = this.topList('url_host').pipe(
+  topHosts$ = this.topList({ tag: 'url_path' }).pipe(
     shareReplay(),
   );
 
@@ -103,21 +131,18 @@ export class ProjectPage implements OnInit {
 
   topEnvType$ = this.envType.valueChanges.pipe(
     startWith('ua_br'),
-    switchMap((envType) => this.topList(envType)),
+    switchMap((envType) => this.topList({ tag: envType })),
     shareReplay(),
   );
 
-  topBrowserVersions$ = this.topList('ua_br_v').pipe(
-    map((result) => result.filter(({ label }) => !!label)),
+  topBrowserVersions$ = this.topList({ tag: 'ua_br_v' }).pipe(
     shareReplay(),
   );
 
-  topSources$ = this.topList('ref_host', { ref_ext: 1 }).pipe(
-    map((result) => result.filter(({ label }) => !!label)),
+  topSources$ = this.topList({ tag: 'ref_host', filters: { ref_ext: 1 }, unknownLabel: '(direct)' }).pipe(
     shareReplay(),
   );
-  topSourcesUrls$ = this.topList('ref').pipe(
-    map((result) => result.filter(({ label }) => !!label)),
+  topSourcesUrls$ = this.topList({ tag: 'ref', unknownLabel: '(none)' }).pipe(
     shareReplay(),
   );
 
@@ -125,16 +150,15 @@ export class ProjectPage implements OnInit {
 
   topDevType$ = this.devType.valueChanges.pipe(
     startWith('ua_dv_t'),
-    switchMap((devType) => this.topList(devType)),
-    map((result) => result.filter(({ label }) => !!label)),
+    switchMap((devType) => this.topList({ tag : devType })),
     shareReplay(),
   )
 
+  // PAGEVIEWS
   pageViews$ = this.selection$.pipe(
-    switchMap(({ since, until, range, project, filters }) => this.driplane.getHistogram(project, 'page_view', {
+    switchMap(({ since, until, range, project, filters }) => this.driplane.getTotalCounts(project, 'page_view', {
       since,
       until,
-      op: 'count',
       interval: ({
         live: 'minute',
         today: 'hour',
@@ -164,9 +188,51 @@ export class ProjectPage implements OnInit {
     map(({query}) => query),
   );
 
+  totalPageCount$ = this.pageViewResult$.pipe(
+    map((items) => items.reduce((acc, item) => acc + item.value, 0)),
+    tap((result) => log('totalPageCount', result)),
+  );
+
+  // VISITORS
+  users$ = this.selection$.pipe(
+    tap((l) => log('users Call')),
+    switchMap(({ since, until, range, project, filters }) => this.driplane.getUniqueTagCounts(project, 'page_view', 'cid', {
+      since,
+      until,
+      interval: ({
+        live: 'minute',
+        today: 'hour',
+        day: 'hour',
+        week: 'day',
+        month: 'day'
+      }[range]),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      ...filters
+    }).pipe(
+      tap((result) => log('users', result)),
+    )),
+    map(({ result }) => result.map(item => ({
+      time: parseISO(item.time),
+      value: ~~item.result
+    }))),
+    shareReplay(),
+  );
+
+  totalUserCount$ = this.selection$.pipe(
+    switchMap(({ since, until, project, filters }) => this.driplane.getUniqueTagCounts<string>(project, 'page_view', 'cid', {
+      since,
+      until,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      ...filters
+    })),
+    map(({result}) => ~~result),
+    tap((result) => log('totalUserCount', result)),
+  );
+
+  // PERFORMANCE
   private perf(vital: 'ttfb' | 'fcp' | 'fid' | 'inp' | 'cls' | 'lcp', op: 'average' | 'min' | 'max' | 'median') {
     return this.selection$.pipe(
-      switchMap(({ since, until, range, project, filters }) => this.driplane.getEventResult<string>(project, 'page_view', op, vital, {
+      switchMap(({ since, until, project, filters }) => this.driplane.getEventResult<string>(project, 'page_view', op, vital, {
         since,
         until,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -177,7 +243,6 @@ export class ProjectPage implements OnInit {
         if (vital === 'cls') {
           value = value / 10000;
         }
-
 
         const perfRanges = {
           ttfb: {
@@ -236,40 +301,6 @@ export class ProjectPage implements OnInit {
   perfCLSAvg$ = this.perf('cls', 'average');
   perfLCPAvg$ = this.perf('lcp', 'average');
 
-  totalPageCount$ = this.pageViewResult$.pipe(
-    map((items) => items.reduce((acc, item) => acc + item.value, 0)),
-    tap((result) => log('totalPageCount', result)),
-  );
-
-  users$ = this.selection$.pipe(
-    tap((l) => log('users Call')),
-    switchMap(({ since, until, range, project, filters }) => this.driplane.getUniqueTagCounts(project, 'page_view', 'cid', {
-      since,
-      until,
-      interval: ({
-        live: 'minute',
-        today: 'hour',
-        day: 'hour',
-        week: 'day',
-        month: 'day'
-      }[range]),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      ...filters
-    }).pipe(
-      tap((result) => log('users', result)),
-    )),
-    map(({ result }) => result.map(item => ({
-      time: parseISO(item.time),
-      value: ~~item.result
-    }))),
-    shareReplay(),
-  );
-
-  totalUserCount$ = this.users$.pipe(
-    map((items) => items.reduce((acc, item) => acc + item.value, 0)),
-    tap((result) => log('totalUserCount', result)),
-  );
-
   loading: HTMLIonLoadingElement;
 
   onboardingMode$ = this.selection$.pipe(
@@ -299,31 +330,6 @@ export class ProjectPage implements OnInit {
     tap((result) => log('onboardingMode', result)),
     shareReplay(),
   );
-
-  topList(tag: string, extraFilters = {}) {
-    return this.selection$.pipe(
-      switchMap(({ since, until, project, filters }) =>
-        this.driplane.getToplist(project, 'page_view', {
-          since,
-          until,
-          limit: 10,
-          tag,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          ...filters,
-          ...extraFilters
-        })
-      ),
-      catchError((error) => {
-        log(error);
-        return of([]);
-      }),
-      map((list) => list.map(item => ({
-        count: item.result,
-        label: item[tag]
-      }))),
-    );
-  }
-
 
   progress$ = this.selection$.pipe(
     tap((l) => this.loading.present() ),

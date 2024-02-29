@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './auth.guard';
+import { ProjectIdResolverService } from './project.resolver';
 
 const routes: Routes = [
   {
@@ -23,6 +24,16 @@ const routes: Routes = [
     path: '',
     canActivate: [AuthGuard],
     loadChildren: () => import('./sidemenu/sidemenu.module').then( m => m.SidemenuPageModule)
+  },
+  {
+    path: 'embed/:projectId',
+    resolve: {
+      project: ProjectIdResolverService,
+    },
+    loadChildren: () =>
+    import('./project/project.module').then(
+      (m) => m.ProjectPageModule
+    ),
   },
   {
     path: '**',
