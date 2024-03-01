@@ -1,5 +1,5 @@
 ion-split-pane {
-  --side-max-width: 300px;
+  --side-max-width: 200px;
 }
 
 ion-menu ion-content {
@@ -120,4 +120,17 @@ ion-note {
 
 ion-item.selected {
   --color: var(--ion-color-primary);
+}
+
+ion-list-header {
+  background: url(../../assets/driplane-light.png) no-repeat;
+  background-position: 16px center;
+  background-size: contain;
+  color: transparent
+}
+
+@media (prefers-color-scheme: dark) {
+  ion-list-header {
+      background-image: url(../../assets/driplane-dark.png);
+  }
 }

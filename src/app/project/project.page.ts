@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
@@ -28,6 +28,7 @@ type DevType = 'ua_dv'|'ua_dv_t'|'ua_dv_v';
   selector: 'app-project',
   templateUrl: './project.page.html',
   styleUrls: ['./project.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectPage implements OnInit {
   range = new FormControl<Range>('month');
@@ -129,13 +130,13 @@ export class ProjectPage implements OnInit {
     })),
   );
 
-  topList({ tag, filters: extraFilters = {}, unknownLabel = '(unknown)'}) {
+  topList({ tag, filters: extraFilters = {}, limit = 10, unknownLabel = '(unknown)'}) {
     return this.selection$.pipe(
       switchMap(({ since, until, project, filters }) =>
         this.driplane.getToplist(project, 'page_view', {
           since,
           until,
-          limit: 10,
+          limit,
           tag,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           ...filters,
@@ -156,7 +157,16 @@ export class ProjectPage implements OnInit {
   topUrls$ = this.topList({ tag: 'url_path' }).pipe(
     shareReplay(),
   );
+
+  topUrlsFull$ = this.topList({ tag: 'url_path', limit: 100 }).pipe(
+    shareReplay(),
+  );
+
   topHosts$ = this.topList({ tag: 'url_host' }).pipe(
+    shareReplay(),
+  );
+
+  topHostsFull$ = this.topList({ tag: 'url_host', limit: 100 }).pipe(
     shareReplay(),
   );
 
@@ -175,7 +185,15 @@ export class ProjectPage implements OnInit {
   topSources$ = this.topList({ tag: 'ref_host', filters: { ref_ext: 1 }, unknownLabel: '(direct)' }).pipe(
     shareReplay(),
   );
+  topSourcesFull$ = this.topList({ tag: 'ref_host', filters: { ref_ext: 1 }, limit: 100, unknownLabel: '(direct)' }).pipe(
+    shareReplay(),
+  );
+
   topSourcesUrls$ = this.topList({ tag: 'ref', unknownLabel: '(none)' }).pipe(
+    shareReplay(),
+  );
+
+  topSourceUrlsFull$ = this.topList({ tag: 'ref', limit: 100, unknownLabel: '(none)' }).pipe(
     shareReplay(),
   );
 
