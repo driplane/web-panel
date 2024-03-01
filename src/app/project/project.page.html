@@ -43,7 +43,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="6" size-md="6" size="12" *ngIf="(pageViewResult$ | async)?.length > 0">
+      <ion-col size-lg="6" size-md="6" size="12" *ngIf="notOnboardingMode$ | async">
         <ion-card class="chart-card">
           <ion-card-header>
             <ion-card-subtitle>Page views</ion-card-subtitle>
@@ -54,7 +54,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="6" size-md="6" size="12" *ngIf="(users$ | async)?.length > 0">
+      <ion-col size-lg="6" size-md="6" size="12" *ngIf="notOnboardingMode$ | async">
         <ion-card class="chart-card">
           <ion-card-header>
             <ion-card-subtitle>Visitors</ion-card-subtitle>
@@ -65,11 +65,11 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('url_host') | async) === false && (topHosts$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topHostsVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <ion-label>Domains</ion-label>
-            <ion-button id="top-domains-detail" *ngIf="(topHosts$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
+            <ion-button (click)="topHostsModal.present()" *ngIf="(topHosts$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
           </ion-item>
 
           <ion-card-content>
@@ -82,37 +82,15 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-modal #topHostsModal trigger="top-domains-detail">
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-title>Domains</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button [strong]="true" (click)="topHostsModal.dismiss()">Close</ion-button>
-                </ion-buttons>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding" color="light">
-              <ion-list inset>
-                <ion-item>
-                  <ion-label><strong>Domain</strong></ion-label>
-                  <ion-note slot="end"><strong>Page views</strong></ion-note>
-                </ion-item>
-                <ion-item *ngFor="let item of topHostsFull$ | async">
-                  <ion-label>{{ item.label }}</ion-label>
-                  <ion-note slot="end">{{ item.count | number }}</ion-note>
-                </ion-item>
-              </ion-list>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
+        <app-detail-modal title="Domains" label="Domain" value="Page views" [data]="topHostsFull$" #topHostsModal></app-detail-modal>
+
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('url_path') | async) === false && (topUrls$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topUrlsVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <ion-label>Top URLs</ion-label>
-            <ion-button id="top-urls-detail" *ngIf="(topUrls$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
+            <ion-button *ngIf="(topUrls$ | async)?.length > 9" (click)="topUrlsModal.present()" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
           </ion-item>
 
           <ion-card-content>
@@ -125,37 +103,14 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-modal #topUrlsModal trigger="top-urls-detail">
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-title>Top URLs</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button [strong]="true" (click)="topUrlsModal.dismiss()">Close</ion-button>
-                </ion-buttons>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding" color="light">
-              <ion-list inset>
-                <ion-item>
-                  <ion-label><strong>URL</strong></ion-label>
-                  <ion-note slot="end"><strong>Page views</strong></ion-note>
-                </ion-item>
-                <ion-item *ngFor="let item of topUrlsFull$ | async">
-                  <ion-label>{{ item.label }}</ion-label>
-                  <ion-note slot="end">{{ item.count | number }}</ion-note>
-                </ion-item>
-              </ion-list>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
+        <app-detail-modal title="Top URLs" label="URL" value="Page views" [data]="topUrlsFull$" #topUrlsModal></app-detail-modal>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ref_host') | async) === false && (topSources$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topSourcesVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <ion-text>Sources</ion-text>
-            <ion-button id="sources-detail" *ngIf="(topSources$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
+            <ion-button (click)="sourcesModal.present()" *ngIf="(topSources$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
           </ion-item>
 
           <ion-card-content>
@@ -168,37 +123,14 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-modal #sourcesModal trigger="sources-detail">
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-title>Sources</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button [strong]="true" (click)="sourcesModal.dismiss()">Close</ion-button>
-                </ion-buttons>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding" color="light">
-              <ion-list inset>
-                <ion-item>
-                  <ion-label><strong>Source Domain</strong></ion-label>
-                  <ion-note slot="end"><strong>Page views</strong></ion-note>
-                </ion-item>
-                <ion-item *ngFor="let item of topSourcesFull$ | async" [style]="{ '--item-value': item.count}">
-                  <ion-label>{{ item.label }}</ion-label>
-                  <ion-note slot="end">{{ item.count | number }}</ion-note>
-                </ion-item>
-              </ion-list>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
+        <app-detail-modal title="Sources" label="Source Domain" value="Page views" [data]="topSourcesFull$" #sourcesModal></app-detail-modal>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ref') | async) === false && (topSourcesUrls$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topSourcesUrlsVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <ion-text>Source URLs</ion-text>
-            <ion-button id="source-urls-detail" *ngIf="(topSourcesUrls$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
+            <ion-button (click)="sourceURLsModal.present()" *ngIf="(topSourcesUrls$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
           </ion-item>
 
           <ion-card-content>
@@ -211,33 +143,10 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-modal #sourceURLsModal trigger="source-urls-detail">
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-title>Source URLs</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button [strong]="true" (click)="sourceURLsModal.dismiss()">Close</ion-button>
-                </ion-buttons>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding" color="light">
-              <ion-list inset>
-                <ion-item>
-                  <ion-label><strong>Source URL</strong></ion-label>
-                  <ion-note slot="end"><strong>Page views</strong></ion-note>
-                </ion-item>
-                <ion-item *ngFor="let item of topSourceUrlsFull$ | async">
-                  <ion-label>{{ item.label }}</ion-label>
-                  <ion-note slot="end">{{ item.count | number }}</ion-note>
-                </ion-item>
-              </ion-list>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
+        <app-detail-modal title="Source URLs" label="Source URL" value="Page views" [data]="topSourceUrlsFull$" #sourceURLsModal></app-detail-modal>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_br', 'ua_os') | async) === false && (topEnvType$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topEnvTypeVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <!-- <ion-icon slot="start" size="small" name="desktop-outline"></ion-icon> -->
@@ -259,7 +168,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_br') | async) && (topBrowserVersions$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topBrowserVersionsVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <ion-label>Browser Versions</ion-label>
@@ -276,7 +185,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="(hasFilter('ua_dv_t', 'ua_dv', 'ua_dv_v') | async) === false && (topDevType$ | async)?.length > 0">
+      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topDevTypeVisible$ | async">
         <ion-card class="bar-chart-card">
           <ion-item lines="none">
             <ion-select interface="popover" value="ua_dv_t" [formControl]="devType" placeholder="Visitor Device">
@@ -297,7 +206,7 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="12" class="perf-stats" [hidden]="(onboardingMode$ | async)">
+      <ion-col size="12" class="perf-stats" *ngIf="notOnboardingMode$ | async">
         <ion-card>
           <ion-item lines="none">
             <ion-label>Performance</ion-label>

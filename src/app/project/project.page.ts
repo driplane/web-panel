@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
-import { combineLatest, forkJoin, iif, of, timer } from 'rxjs';
+import { parseISO } from 'date-fns';
+import { Observable, combineLatest, forkJoin, iif, of, timer } from 'rxjs';
 import {
   catchError,
   distinctUntilChanged,
@@ -17,7 +18,6 @@ import { DriplaneService } from '../driplane.service';
 import Logger from '../logger.service';
 import { addFilter, clearFilter, loadProjectKeys } from '../state/project/project.actions';
 import { activeFilters, activeProject, activeProjectKeys } from '../state/project/project.selectors';
-import { parseISO } from 'date-fns';
 const log = Logger('page:project');
 
 type Range = 'live'|'today'|'day'|'week'|'month';
@@ -115,7 +115,10 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   );
 
-  filters$ = this.store.pipe(select(activeFilters));
+  filters$ = this.store.pipe(
+    select(activeFilters),
+    shareReplay(),
+  );
 
   selection$ = combineLatest([this.dateRange$, this.activeProject$, this.filters$]).pipe(
     map(([{ since, until, range }, project, filters]) => ({
@@ -128,10 +131,47 @@ export class ProjectPage implements OnInit {
         [curr.key]: curr.value
       }), {})
     })),
+    shareReplay(),
+  );
+
+  onboardingMode$ = this.selection$.pipe(
+    switchMap(({ project }) => this.driplane
+      .getTotalCounts<string>(project, 'page_view', {
+        since: '-3M'
+      }).pipe(
+        catchError((error) => {
+          log('No data', error);
+          return of({result: "0" });
+        })
+      )),
+    tap((result) => log('onboardingMode', result)),
+    map(({result}) => ~~(result) === 0),
+    distinctUntilChanged(),
+    switchMap((onboarding) => iif(
+      () => onboarding,
+      this.activeProject$.pipe(
+        tap((project) => {
+          if (project) {
+            this.store.dispatch(loadProjectKeys({ project }));
+          }
+        }),
+        map(() => true)
+      ), of(false))
+    ),
+    tap((result) => log('onboardingMode', result)),
+    shareReplay(),
+  );
+
+  notOnboardingMode$ = this.onboardingMode$.pipe(
+    map((onboarding) => !onboarding),
+    shareReplay(),
   );
 
   topList({ tag, filters: extraFilters = {}, limit = 10, unknownLabel = '(unknown)'}) {
-    return this.selection$.pipe(
+    return this.notOnboardingMode$.pipe(
+      filter((notOnboarding) => notOnboarding),
+      switchMap(() => this.selection$),
+      tap((l) => log('topList Call', tag)),
       switchMap(({ since, until, project, filters }) =>
         this.driplane.getToplist(project, 'page_view', {
           since,
@@ -154,7 +194,28 @@ export class ProjectPage implements OnInit {
     );
   }
 
+  isVisible(sourceData: Observable<{count, label}[]>, ...keys: string[]) {
+    return combineLatest([this.onboardingMode$, this.filters$]).pipe(
+      switchMap(([onboarding, filters]) => iif(
+        () => onboarding || filters.some(filter => keys.includes(filter.key)),
+        of(false),
+        of(true)
+      )),
+      switchMap((visible) => iif(
+        () => visible,
+        sourceData.pipe(
+          map((list) => list.length > 0)
+        ),
+        of(false)
+      )),
+    );
+  }
+
   topUrls$ = this.topList({ tag: 'url_path' }).pipe(
+    shareReplay(),
+  );
+
+  topUrlsVisible$ = this.isVisible(this.topUrls$, 'url_path').pipe(
     shareReplay(),
   );
 
@@ -163,6 +224,10 @@ export class ProjectPage implements OnInit {
   );
 
   topHosts$ = this.topList({ tag: 'url_host' }).pipe(
+    shareReplay(),
+  );
+
+  topHostsVisible$ = this.isVisible(this.topHosts$, 'url_host').pipe(
     shareReplay(),
   );
 
@@ -178,18 +243,45 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   );
 
+  topEnvTypeVisible$ = this.isVisible(this.topEnvType$, 'ua_br', 'ua_os').pipe(
+    shareReplay(),
+  );
+
   topBrowserVersions$ = this.topList({ tag: 'ua_br_v' }).pipe(
+    shareReplay(),
+  );
+
+  topBrowserVersionsVisible$ = combineLatest([this.onboardingMode$, this.filters$]).pipe(
+    switchMap(([onboarding, filters]) => iif(
+      () => onboarding || filters.some(filter => filter.key === 'ua_br_'),
+      of(false),
+      of(filters.some(filter => filter.key === 'ua_br'))
+    )),
+    switchMap((visible) => iif(
+      () => visible,
+      this.topBrowserVersions$.pipe(
+        map((list) => list.length > 0)
+      ),
+      of(false)
+    )),
     shareReplay(),
   );
 
   topSources$ = this.topList({ tag: 'ref_host', filters: { ref_ext: 1 }, unknownLabel: '(direct)' }).pipe(
     shareReplay(),
   );
+  topSourcesVisible$ = this.isVisible(this.topSources$, 'ref_host').pipe(
+    shareReplay(),
+  );
+
   topSourcesFull$ = this.topList({ tag: 'ref_host', filters: { ref_ext: 1 }, limit: 100, unknownLabel: '(direct)' }).pipe(
     shareReplay(),
   );
 
   topSourcesUrls$ = this.topList({ tag: 'ref', unknownLabel: '(none)' }).pipe(
+    shareReplay(),
+  );
+  topSourcesUrlsVisible$ = this.isVisible(this.topSourcesUrls$, 'ref').pipe(
     shareReplay(),
   );
 
@@ -205,8 +297,14 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   )
 
+  topDevTypeVisible$ = this.isVisible(this.topDevType$, 'ua_dv_t', 'ua_dv', 'ua_dv_v').pipe(
+    shareReplay(),
+  );
+
   // PAGEVIEWS
-  pageViews$ = this.selection$.pipe(
+  pageViews$ = this.notOnboardingMode$.pipe(
+    filter((notOnboarding) => notOnboarding),
+    switchMap(() => this.selection$),
     switchMap(({ since, until, range, project, filters }) => this.driplane.getTotalCounts(project, 'page_view', {
       since,
       until,
@@ -245,7 +343,9 @@ export class ProjectPage implements OnInit {
   );
 
   // VISITORS
-  users$ = this.selection$.pipe(
+  users$ = this.notOnboardingMode$.pipe(
+    filter((notOnboarding) => notOnboarding),
+    switchMap(() => this.selection$),
     tap((l) => log('users Call')),
     switchMap(({ since, until, range, project, filters }) => this.driplane.getUniqueTagCounts(project, 'page_view', 'cid', {
       since,
@@ -269,7 +369,9 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   );
 
-  totalUserCount$ = this.selection$.pipe(
+  totalUserCount$ = this.notOnboardingMode$.pipe(
+    filter((notOnboarding) => notOnboarding),
+    switchMap(() => this.selection$),
     switchMap(({ since, until, project, filters }) => this.driplane.getUniqueTagCounts<string>(project, 'page_view', 'cid', {
       since,
       until,
@@ -354,34 +456,6 @@ export class ProjectPage implements OnInit {
 
   loading: HTMLIonLoadingElement;
 
-  onboardingMode$ = this.selection$.pipe(
-    switchMap(({ project }) => this.driplane
-      .getTotalCounts<string>(project, 'page_view', {
-        since: '-3M'
-      }).pipe(
-        catchError((error) => {
-          log('No data', error);
-          return of({result: "0" });
-        })
-      )),
-    tap((result) => log('onboardingMode', result)),
-    map(({result}) => ~~(result) === 0),
-    distinctUntilChanged(),
-    switchMap((onboarding) => iif(
-      () => onboarding,
-      this.activeProject$.pipe(
-        tap((project) => {
-          if (project) {
-            this.store.dispatch(loadProjectKeys({ project }));
-          }
-        }),
-        map(() => true)
-      ), of(false))
-    ),
-    tap((result) => log('onboardingMode', result)),
-    shareReplay(),
-  );
-
   progress$ = this.selection$.pipe(
     tap((l) => this.loading.present() ),
     map(() => forkJoin([
@@ -420,7 +494,9 @@ export class ProjectPage implements OnInit {
   hasFilter(...keys: string[]) {
     return this.filters$.pipe(
       map((filters) => filters.some(filter => keys.includes(filter.key))),
+      // tap((result) => log('hasFilter', keys, result)),
       distinctUntilChanged(),
+      shareReplay(),
     );
   }
 

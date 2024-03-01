@@ -36,6 +36,7 @@ export const projectReducer = createReducer(
   initialState,
   on(switchProjectSuccess, (state, { activeProject }) => ({
     ...state,
+    activeFilters: [],
     activeProjectKeys: [],
     activeProject,
   })),
