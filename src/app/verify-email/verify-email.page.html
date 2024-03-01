@@ -1,13 +1,26 @@
 <app-modal-view>
+  <div class="logo-container">
+    <h1>Driplane</h1>
+  </div>
   <ion-header>
-    <ion-toolbar>
-      <ion-title>Driplane Email Verify</ion-title>
-    </ion-toolbar>
+    <ion-title size="large">
+      Driplane Email Verify
+    </ion-title>
   </ion-header>
-  <ion-content class="ion-padding">
-    <ion-spinner *ngIf="!success"></ion-spinner>
-    <ion-text *ngIf="success" class="success" data-testid="successMessage">Your E-mail is verified. You can now
-      <a href="/login">login</a>.
-    </ion-text>
-  </ion-content>
+
+  <ion-list lines="none">
+    <ion-item *ngIf="!success && !failed">
+      <ion-spinner slot="start"></ion-spinner>
+      <ion-text>Checking token...</ion-text>
+    </ion-item>
+    <ion-item *ngIf="failed">
+      <ion-label color="danger" data-testid="failMessage">The link is not valid or expired. Please ask for a password reset.</ion-label>
+      <ion-button slot="end" routerLink="/password-reset" data-testid="resetPasswordButton">Reset Password</ion-button>
+    </ion-item>
+    <ion-item *ngIf="success">
+      <ion-label data-testid="successMessage">Your E-mail is verified! You can now login.
+      </ion-label>
+      <ion-button slot="end" routerLink="/login" data-testid="loginButton">Login</ion-button>
+    </ion-item>
+  </ion-list>
 </app-modal-view>

@@ -37,8 +37,8 @@ export class ResetPasswordPage implements OnInit {
   }
 
   resetPassword(form: NgForm) {
+    form.controls['email'].markAsTouched();
     if (form.valid) {
-      console.log(this.email);
       this.driplane.passwordReset(this.email)
         .subscribe(() => {
           this.mailSent = true;
@@ -47,6 +47,9 @@ export class ResetPasswordPage implements OnInit {
   }
 
   changePassword(form: NgForm) {
+    form.controls['password'].markAsTouched();
+    form.controls['password1'].markAsTouched();
+
     if (form.valid) {
       this.driplane.updatePassword(this.token, this.newPassword)
         .subscribe(() => {

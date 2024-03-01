@@ -59,6 +59,9 @@ export class LoginPage {
   }
 
   signIn() {
+    this.loginForm.controls['username'].markAsTouched();
+    this.loginForm.controls['password'].markAsTouched();
+
     if (this.loginForm.valid) {
       this.store.dispatch(logInFailedClear());
       this.store.dispatch(

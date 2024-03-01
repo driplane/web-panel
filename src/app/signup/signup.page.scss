@@ -1,3 +1,20 @@
+.logo-container {
+  padding: 36px 0;
+  border-radius: 10px;
+  margin: 16px 0;
+  background-image: url('../../assets/driplane-light.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: transparent
+}
+
+@media (prefers-color-scheme: dark) {
+  .logo-container {
+      background-image: url('../../assets/driplane-dark.png');
+  }
+}
+
 ion-slides {
     height: 100%;
 }

@@ -10,6 +10,7 @@ import { DriplaneService } from '../driplane.service';
 })
 export class VerifyEmailPage implements OnInit {
   success = false;
+  failed = false;
 
   constructor(private router: ActivatedRoute, private driplane: DriplaneService) { }
 
@@ -19,8 +20,13 @@ export class VerifyEmailPage implements OnInit {
         map(paramMap => paramMap.get('token')),
         switchMap((token) => this.driplane.verifyToken(token))
       )
-      .subscribe(() => {
-        this.success = true;
+      .subscribe({
+        next: () => {
+          this.success = true;
+        },
+        error: () => {
+          this.failed = true;
+        }
       });
   }
 

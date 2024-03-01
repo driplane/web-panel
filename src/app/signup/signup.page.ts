@@ -17,6 +17,10 @@ export class SignupPage {
   constructor(private driplane: DriplaneService) { }
 
   signUp(form: NgForm) {
+    form.controls['username'].markAsTouched();
+    form.controls['password'].markAsTouched();
+    form.controls['password2'].markAsTouched();
+
     if (form.valid) {
       this.driplane.register(this.username, this.password).subscribe((resp) => {
         this.success = true;
