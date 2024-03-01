@@ -129,6 +129,10 @@ ion-list-header {
   color: transparent
 }
 
+ion-footer {
+  padding-bottom: var(--ion-safe-area-bottom, 0);
+}
+
 @media (prefers-color-scheme: dark) {
   ion-list-header {
       background-image: url(../../assets/driplane-dark.png);

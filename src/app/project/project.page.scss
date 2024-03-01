@@ -1,3 +1,9 @@
+ion-content::part(scroll) {
+  padding-bottom: var(--ion-safe-area-bottom, 0);
+  padding-left: var(--ion-safe-area-left, 0);
+  padding-right: var(--ion-safe-area-right, 0);
+}
+
 .bar-chart-card {
   ion-card-header:has(ion-select) {
     padding-block: 0;
@@ -35,7 +41,6 @@
     }
   }
 }
-
 
 .live-indicator {
   display: inline-block;
