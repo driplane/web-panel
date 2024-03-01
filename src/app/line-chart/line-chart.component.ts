@@ -19,8 +19,9 @@ export class LineChartComponent {
     if (!data) {
       return;
     }
+
     this.element.nativeElement.innerHTML = '';
-    this.element.nativeElement.append(Plot.plot({
+    const chart = Plot.plot({
       grid: false,
       height: 150,
       y: {
@@ -44,7 +45,13 @@ export class LineChartComponent {
           }
         }))
       ]
-    }));
+    });
+
+    // Make SVG full size
+    chart.removeAttribute('width');
+    chart.removeAttribute('height');
+
+    this.element.nativeElement.append(chart);
 
   }
 }
