@@ -24,3 +24,12 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.limited-width[color=light]::part(background) {
+  background-color: var(--ion-color-light);
+}
+
+.limited-width::part(scroll) {
+  max-width: 900px;
+  margin: 0 auto;
+}

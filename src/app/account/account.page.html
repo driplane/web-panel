@@ -1,21 +1,20 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Account Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Account Settings</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="limited-width" [fullscreen]="true" color="light">
+  <ion-list inset>
+    <ion-list-header>
+      <ion-label>Project Management</ion-label>
+      <ion-button id="create-project"><ion-icon slot="start"
+          name="add"></ion-icon>Add new project</ion-button>
+    </ion-list-header>
 
-  <ion-card color="light">
-    <ion-item lines="none">
-      <h1>Project Management</h1>
-      <ion-button slot="end" size="small" id="create-project"><ion-icon slot="start" name="add"></ion-icon>Add new project</ion-button>
-    </ion-item>
     <ion-modal #modal trigger="create-project" (willDismiss)="onWillDismiss($event)">
       <ng-template>
         <ion-header>
@@ -38,50 +37,48 @@
       </ng-template>
     </ion-modal>
 
-    <ion-note color="medium" class="list-note ion-margin">Swipe item left to delete a project.</ion-note>
+    <ion-item-sliding *ngFor="let project of projects$ | async" #sliding>
+      <ion-item>
+        <ion-label>
+          <h2>{{ project.name }}</h2>
+          <ion-note>Created at: {{ project.created_at | date:'dd.MM.yyyy HH:MM' }}</ion-note>
+        </ion-label>
+      </ion-item>
 
-    <ion-list inset>
+      <ion-item-options>
+        <ion-item-option color="danger" id="project-delete-{{ project.id }}"><ion-icon slot="start"
+            name="trash"></ion-icon>Delete</ion-item-option>
+      </ion-item-options>
 
-      <ion-item-sliding *ngFor="let project of projects$ | async" #sliding>
-        <ion-item>
-          <ion-label>
-            <h2>{{ project.name }}</h2>
-            <ion-note>Created at: {{ project.created_at | date:'dd.MM.yyyy HH:MM' }}</ion-note>
-          </ion-label>
-        </ion-item>
+      <ion-modal #modal trigger="project-delete-{{ project.id }}" (willDismiss)="onWillDismissDelete($event)">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button (click)="cancel(modal)">Cancel</ion-button>
+              </ion-buttons>
+              <ion-title>Delete Project</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="confirmDelete(modal, project.id)" [strong]="true">Confirm</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <ion-text color="danger">
+              <h2>Are you sure you want to delete this project?</h2>
+              <p>This action cannot be undone. Please write the project name({{ project.name }}) below to confirm
+                deletion.</p>
+            </ion-text>
+            <ion-item>
+              <ion-input label="Write the name of the project" labelPlacement="stacked" type="text" [(ngModel)]="name"
+                pattern="{{ project.name }}" required></ion-input>
+            </ion-item>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+    </ion-item-sliding>
+  </ion-list>
 
-        <ion-item-options>
-          <ion-item-option color="danger" id="project-delete-{{ project.id }}"><ion-icon slot="start" name="trash"></ion-icon>Delete</ion-item-option>
-        </ion-item-options>
-
-        <ion-modal #modal trigger="project-delete-{{ project.id }}" (willDismiss)="onWillDismissDelete($event)">
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-buttons slot="start">
-                  <ion-button (click)="cancel(modal)">Cancel</ion-button>
-                </ion-buttons>
-                <ion-title>Delete Project</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button (click)="confirmDelete(modal, project.id)" [strong]="true">Confirm</ion-button>
-                </ion-buttons>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-              <ion-text color="danger">
-                <h2>Are you sure you want to delete this project?</h2>
-                <p>This action cannot be undone. Please write the project name({{ project.name }}) below to confirm deletion.</p>
-              </ion-text>
-              <ion-item>
-                <ion-input label="Write the name of the project" labelPlacement="stacked" type="text"
-                  [(ngModel)]="name" pattern="{{ project.name }}" required></ion-input>
-              </ion-item>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
-      </ion-item-sliding>
-    </ion-list>
-
-  </ion-card>
+  <ion-note color="medium" class="list-note ion-margin">Swipe item left to delete a project.</ion-note>
 
 </ion-content>

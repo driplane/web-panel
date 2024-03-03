@@ -7,95 +7,97 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Project Info</ion-card-title>
-    </ion-card-header>
-      <ion-list>
-        <ion-item lines="none">
-          <ion-label>
-            <h2>Project Name:</h2>
-            <p>{{ ( activeProject$ | async )?.name }}</p>
-          </ion-label>
-        </ion-item>
-        <ion-item lines="none">
-          <ion-label>
-            <h2>Project Client ID:</h2>
-            <p>{{ ( activeProject$ | async )?.id }} <sl-copy-button value="{{ ( activeProject$ | async )?.id }}"></sl-copy-button></p>
-          </ion-label>
-        </ion-item>
-        <ion-item lines="none">
-          <ion-label>
-            <h2>Project Client Secret:</h2>
-            <p>{{ ( activeProject$ | async )?.secret }} <sl-copy-button value="{{ ( activeProject$ | async )?.secret }}"></sl-copy-button></p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-
-  </ion-card>
-
-  <ion-card color="light">
-
-    <ion-item lines="none">
-      <h1>Project API Keys</h1>
-      <ion-button slot="end" (click)="keyCreateModal.present()" size="small" data-testid="create-project-key"><ion-icon slot="start" name="add"></ion-icon>Add New Key</ion-button>
+<ion-content class="limited-width" color="light">
+  <ion-list inset lines="none">
+    <ion-list-header>
+      <ion-label>Project Info</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <h2>Project Name:</h2>
+        <p>{{ ( activeProject$ | async )?.name }}</p>
+      </ion-label>
     </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>Project Client ID:</h2>
+        <p>{{ ( activeProject$ | async )?.id }} <sl-copy-button
+            value="{{ ( activeProject$ | async )?.id }}"></sl-copy-button></p>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>Project Client Secret:</h2>
+        <p>{{ ( activeProject$ | async )?.secret }} <sl-copy-button
+            value="{{ ( activeProject$ | async )?.secret }}"></sl-copy-button></p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 
-    <ion-note color="medium" class="list-note ion-margin">Project keys are non-expiring API tokens to allow external tools/websites to read or write data to your Project.</ion-note>
+  <ion-list inset>
+    <ion-list-header>
+      <ion-label>Project API Keys</ion-label>
+      <ion-button (click)="keyCreateModal.present()">Add New Key</ion-button>
+    </ion-list-header>
+    <ion-item *ngFor="let key of activeProjectKeys$ | async">
+      <ion-label>
+        <h2>{{ key.name }}</h2>
+        <p>Token: {{ key.key }} <sl-copy-button value='{{ key.key }}'></sl-copy-button></p>
+      </ion-label>
+      <ion-button *ngIf="key.write" slot="end" (click)="modal.present()"><ion-icon slot="icon-only"
+          name="information-circle"></ion-icon></ion-button>
 
-    <ion-list inset>
-      <ion-item *ngFor="let key of activeProjectKeys$ | async">
-        <ion-label>
-          <h2>{{ key.name }}</h2>
-          <p>Token: {{ key.key }} <sl-copy-button value='{{ key.key }}'></sl-copy-button></p>
-        </ion-label>
-        <ion-button *ngIf="key.write" slot="end" (click)="modal.present()"><ion-icon slot="icon-only" name="information-circle"></ion-icon></ion-button>
+      <ion-modal #modal>
+        <ng-template>
+          <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button (click)="modal.dismiss()">Close</ion-button>
+              </ion-buttons>
+              <ion-title>Tracking Code</ion-title>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
+            <div class="code-example">
+              <pre class="hljs"
+                style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ key.key }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
 
-        <ion-modal #modal>
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-buttons slot="start">
-                  <ion-button (click)="modal.dismiss()">Close</ion-button>
-                </ion-buttons>
-                <ion-title>Tracking Code</ion-title>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-              <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
-              <div class="code-example">
-                <pre class="hljs" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ key.key }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
+              <sl-copy-button
+                value='&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
+            </div>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+  </ion-list>
 
-                <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
-              </div>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
-      </ion-item>
-    </ion-list>
+  <ion-note color="medium" class="list-note ion-margin">Project keys are non-expiring API tokens to allow external
+    tools/websites to read or write data to your Project.</ion-note>
 
-    <ion-modal #keyCreateModal>
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Add New Key</ion-title>
-            <ion-buttons slot="start">
-              <ion-button (click)="keyCreateModal.dismiss()">Cancel</ion-button>
-            </ion-buttons>
-            <ion-buttons slot="end">
-              <ion-button (click)="createProjectKey()">Add Key</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content color="light">
-          <form [formGroup]="projectKeyCreateForm">
+
+  <ion-modal #keyCreateModal>
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Add New Key</ion-title>
+          <ion-buttons slot="start">
+            <ion-button (click)="keyCreateModal.dismiss()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button (click)="createProjectKey()">Add Key</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content color="light">
+        <form [formGroup]="projectKeyCreateForm">
           <ion-list inset>
             <ion-item>
               <ion-input label="Key Name" type="text" formControlName="name" required></ion-input>
             </ion-item>
           </ion-list>
-          <ion-note color="medium" class="list-note ion-margin-horizontal">Give your key a name that explains the purpose of this key. ex: Customer API Key</ion-note>
+          <ion-note color="medium" class="list-note ion-margin-horizontal">Give your key a name that explains the
+            purpose of this key. ex: Customer API Key</ion-note>
           <ion-list inset>
             <ion-item>
               <ion-toggle fontControlName="write" #writeAccess>
@@ -121,7 +123,8 @@
               </ion-item>
             </ion-list>
 
-            <ion-note color="medium" class="list-note ion-margin-horizontal">You can add some key/value pairs to every events that will be written with this key. <a>Learn more</a></ion-note>
+            <ion-note color="medium" class="list-note ion-margin-horizontal">You can add some key/value pairs to every
+              events that will be written with this key. <a>Learn more</a></ion-note>
           </ng-container>
 
           <ng-container *ngIf="readAccess.checked">
@@ -134,12 +137,12 @@
               </ion-item>
             </ion-list>
 
-            <ion-note color="medium" class="list-note ion-margin-horizontal">You can add some key/value pairs to filter out event data that will be read by this key. <a>Learn more</a></ion-note>
+            <ion-note color="medium" class="list-note ion-margin-horizontal">You can add some key/value pairs to filter
+              out event data that will be read by this key. <a>Learn more</a></ion-note>
           </ng-container>
-          </form>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-  </ion-card>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
