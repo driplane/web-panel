@@ -56,10 +56,23 @@ const routes: Routes = [
               {
                 path: 'settings',
                 title: 'Settings',
-                loadChildren: () =>
-                  import('../settings/settings.module').then(
-                    (m) => m.SettingsPageModule
-                  ),
+                children: [
+                  {
+                    path: '',
+                    loadChildren: () =>
+                      import('../settings/settings.module').then(
+                        (m) => m.SettingsPageModule
+                      ),
+                    pathMatch: 'full',
+                  },
+                  {
+                    path: 'keys/new',
+                    loadChildren: () => import('../key-detail/key-detail.module').then( m => m.KeyDetailPageModule)
+                  },{
+                    path: 'keys/:keyId',
+                    loadChildren: () => import('../key-detail/key-detail.module').then( m => m.KeyDetailPageModule)
+                  },
+                ]
               },
             ],
           },

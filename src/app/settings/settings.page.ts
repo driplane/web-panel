@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { filter, tap } from 'rxjs/operators';
 import { Project } from '../driplane.types';
-import { addProjectKey, loadProjectKeys } from '../state/project/project.actions';
+import { addProjectKey, deleteProjectKey, loadProjectKeys } from '../state/project/project.actions';
 import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import Logger from '../logger.service';
+import { ActionSheetController } from '@ionic/angular';
 const log = Logger('page:settings');
 
 interface AutoFill {
@@ -18,14 +19,6 @@ interface AutoFill {
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage {
-  projectKeyCreateForm = new FormGroup({
-    name: new FormControl(''),
-    read: new FormControl(false),
-    write: new FormControl(false),
-    auto_fill: new FormArray([]),
-    auto_filter: new FormArray([]),
-  });
-
   activeProject$ = this.store.pipe(
     select(activeProject),
     filter(p => !!p?.id),
@@ -36,20 +29,42 @@ export class SettingsPage {
     select(activeProjectKeys),
   );
 
-  constructor(private store: Store) { }
+  constructor(private store: Store, private actionSheetCtrl: ActionSheetController) { }
 
-  createProjectKey() {
-    log(this.projectKeyCreateForm.value);
-    return;
+  confirmDeleteKey(projectKey) {
+    log('confirmDeleteKey');
 
-    this.activeProject$.subscribe((project) => {
-      this.store.dispatch(addProjectKey({ project, projectKey: {
-        name: 'Main Key',
-        read: false,
-        write: true,
-        auto_fill: {},
-        auto_filter: {},
-      }}))
-    });
+    this.actionSheetCtrl
+      .create({
+        header: 'Are you sure you want to delete this key?',
+        buttons: [
+          {
+            text: 'Delete',
+            role: 'destructive',
+            data: {
+              action: 'delete',
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            data: {
+              action: 'cancel',
+            },
+          },
+        ],
+      })
+      .then((actionSheet) => {
+        actionSheet.present();
+        actionSheet.onDidDismiss().then((result) => {
+          log('confirmDeleteKey onDidDismiss', result);
+          if (result.role === 'destructive') {
+            log('confirmDeleteKey onDidDismiss delete');
+            this.activeProject$.subscribe((project) => {
+              deleteProjectKey({ project, projectKey })
+            });
+          }
+        })
+      });
   }
 }

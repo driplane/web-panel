@@ -21,5 +21,9 @@ export const addProjectKey = createAction(_('Add project key'), props<{ project:
 export const loadProjectKeys = createAction(_('Load project keys'),props<{ project: Project }>());
 export const loadProjectKeysSuccess = createAction(_('Project keys loaded'),props<{ project: Project; projectKeys: ProjectKey[] }>());
 
+export const deleteProjectKey = createAction(_('Delete project key'), props<{ project: Project, projectKey: ProjectKey }>());
+export const deleteProjectKeySuccess = createAction(_('Delete project key success'));
+export const deleteProjectKeyFailed = createAction(_('Delete project key failed'));
+
 export const addFilter = createAction(_('Add filter'), props<{ filter: Filter }>());
 export const clearFilter = createAction(_('Clear filter'), props<{ filterKey: string }>());

@@ -23,6 +23,7 @@ import {
 } from './driplane.types';
 import Logger from './logger.service';
 import { tokenInvalid } from './state/auth/auth.actions';
+import { deleteProject } from './state/project/project.actions';
 const log = Logger('service:driplane');
 
 @Injectable({
@@ -143,6 +144,14 @@ export class DriplaneService {
       'get',
       `projects/${project.id}/keys`
     ).pipe(map((res) => res.response));
+  }
+
+  deleteProjectKey(project: Project, key: ProjectKey) {
+    return this.projectAuthRequest<Response<boolean>>(
+      project,
+      'delete',
+      `projects/${project.id}/keys/${key.key}`
+    );
   }
 
   getToplist(project: Project, event, params) {

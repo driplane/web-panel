@@ -9,3 +9,13 @@
 .list-note + .list-note {
   margin-top: 1.5em;
 }
+
+.code-example {
+  position: relative;
+
+  sl-copy-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+  }
+}
