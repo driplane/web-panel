@@ -4,6 +4,13 @@ import { filter, tap } from 'rxjs/operators';
 import { Project } from '../driplane.types';
 import { addProjectKey, loadProjectKeys } from '../state/project/project.actions';
 import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import Logger from '../logger.service';
+const log = Logger('page:settings');
+
+interface AutoFill {
+  [key: string]: string;
+}
 
 @Component({
   selector: 'app-settings',
@@ -11,7 +18,13 @@ import { activeProject, activeProjectKeys } from '../state/project/project.selec
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage {
-  activeProject: Project;
+  projectKeyCreateForm = new FormGroup({
+    name: new FormControl(''),
+    read: new FormControl(false),
+    write: new FormControl(false),
+    auto_fill: new FormArray([]),
+    auto_filter: new FormArray([]),
+  });
 
   activeProject$ = this.store.pipe(
     select(activeProject),
@@ -25,14 +38,18 @@ export class SettingsPage {
 
   constructor(private store: Store) { }
 
-  addProjectKey() {
-    this.store.dispatch(addProjectKey({ project: this.activeProject, projectKey: {
-      name: 'Main Key',
-      read: false,
-      write: true,
-      auto_fill: {},
-      auto_filter: {},
-    }}))
-  }
+  createProjectKey() {
+    log(this.projectKeyCreateForm.value);
+    return;
 
+    this.activeProject$.subscribe((project) => {
+      this.store.dispatch(addProjectKey({ project, projectKey: {
+        name: 'Main Key',
+        read: false,
+        write: true,
+        auto_fill: {},
+        auto_filter: {},
+      }}))
+    });
+  }
 }

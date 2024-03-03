@@ -1,3 +1,15 @@
+.list-note {
+  display: block;
+}
+
+.list-note-section {
+  text-transform: uppercase;
+}
+
+.list-note + .list-note {
+  margin-top: 1.5em;
+}
+
 .code-example {
     position: relative;
 
