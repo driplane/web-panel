@@ -12,6 +12,12 @@
 
 .code-example {
   position: relative;
+  max-width: 100%;
+  margin-bottom: 16px;
+  font-size: .8em;
+  pre {
+    margin: 0;
+  }
 
   sl-copy-button {
       position: absolute;

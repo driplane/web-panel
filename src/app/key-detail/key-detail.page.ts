@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ActionSheetController, NavController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
-import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
-import { filter, map, shareReplay, tap } from 'rxjs';
-import { addProjectKey, loadProjectKeys } from '../state/project/project.actions';
+import { combineLatest, filter, first, map, shareReplay, takeLast, tap } from 'rxjs';
 import Logger from '../logger.service';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { addProjectKey, deleteProjectKey, loadProjectKeys } from '../state/project/project.actions';
+import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
 const log = Logger('page:key-detail');
 
 @Component({
@@ -37,6 +38,7 @@ export class KeyDetailPage implements OnInit {
 
   activeProjectKeys$ = this.store.pipe(
     select(activeProjectKeys),
+    shareReplay(),
   );
 
   selectedKey$ = this.activeProjectKeys$.pipe(
@@ -46,25 +48,30 @@ export class KeyDetailPage implements OnInit {
 
   editMode = false;
 
-  constructor(private store: Store, private route: ActivatedRoute, private router: Router, private ref: ChangeDetectorRef) {
+  constructor(
+    private store: Store,
+    private actionSheetCtrl: ActionSheetController,
+    private route: ActivatedRoute,
+    private router: Router,
+    private navCtrl: NavController,
+    private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
-    this.activeProject$.subscribe((project) => {});
+    this.activeProject$.subscribe((project) => { });
     if (this.route.snapshot.paramMap.get('keyId')) {
       this.editMode = true;
+      this.projectKeyForm.disable();
       this.ref.markForCheck();
     }
 
-    log('KeyDetailPage ngOnInit()');
-
+    // Prefill the form
     this.selectedKey$.subscribe((key) => {
-      log('KeyDetailPage ngOnInit() selectedKey$', key);
-
+      log('selectedKey$', key);
       if (key) {
         this.projectKeyForm.patchValue(key);
       }
-    })
+    });
   }
 
   saveProjectKey() {
@@ -72,11 +79,12 @@ export class KeyDetailPage implements OnInit {
 
     const { name, read, write, auto_fill, auto_filter } = this.projectKeyForm.value;
 
+    log('saveProjectKey', { name, read, write, auto_fill, auto_filter });
     this.activeProject$.subscribe((project) => {
-      this.store.dispatch(addProjectKey({ project, projectKey: { name, read, write, auto_fill, auto_filter }}))
+      this.store.dispatch(addProjectKey({ project, projectKey: { name, read, write, auto_fill, auto_filter } }))
+      this.navCtrl.navigateBack(`/projects/${project.id}/settings`);
     });
 
-    this.router.navigate(['../..'], { relativeTo: this.route });
   }
 
   saveAddAutoFill(modal) {
@@ -141,6 +149,8 @@ export class KeyDetailPage implements OnInit {
         [this.autoFillForm.value.key]: this.autoFillForm.value.value,
       },
     });
+
+    log(this.projectKeyForm.value);
     this.autoFillForm.reset();
 
     modal.dismiss(this.autoFillForm.value);
@@ -166,5 +176,45 @@ export class KeyDetailPage implements OnInit {
   confirmDeleteKey() {
     log('confirmDeleteKey');
 
+    this.actionSheetCtrl
+      .create({
+        header: 'Are you sure you want to delete this key?',
+        buttons: [
+          {
+            text: 'Delete',
+            role: 'destructive',
+            data: {
+              action: 'delete',
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            data: {
+              action: 'cancel',
+            },
+          },
+        ],
+      })
+      .then((actionSheet) => {
+        actionSheet.present();
+        actionSheet.onDidDismiss().then((result) => {
+          log('confirmDeleteKey onDidDismiss', result);
+          if (result.role === 'destructive') {
+            log('confirmDeleteKey onDidDismiss delete');
+            combineLatest([
+              this.activeProject$,
+              this.selectedKey$
+            ]).pipe(
+              first()
+            ).subscribe(([project, projectKey ]) => {
+              this.store.dispatch(deleteProjectKey({ project, projectKey }));
+              log('confirmDeleteKey onDidDismiss delete', project, projectKey);
+              this.navCtrl.navigateBack(`/projects/${project.id}/settings`);
+
+            });
+          }
+        })
+      });
   }
 }

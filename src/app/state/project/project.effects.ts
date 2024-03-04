@@ -90,11 +90,15 @@ export class ProjectEffects {
     ofType(deleteProjectKey),
     exhaustMap(({ project, projectKey }) => this.driplane.deleteProjectKey(project, projectKey)
       .pipe(
-        tap(() => loadProjectKeys({ project })),
-        map(() => deleteProjectKeySuccess()),
+        map(() => deleteProjectKeySuccess({ project })),
         catchError(() => of(deleteProjectKeyFailed()))
       )
     )
+  ));
+
+  deleteProjectKeySuccess$ = createEffect(() => this.actions$.pipe(
+    ofType(deleteProjectKeySuccess),
+    map(({ project }) => loadProjectKeys({ project }))
   ));
 
   constructor(

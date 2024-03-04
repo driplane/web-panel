@@ -124,7 +124,7 @@ export class DriplaneService {
   }
 
   createProjectKey(project: Project, keyConfig: ProjectKeyConfig) {
-    log('createProjectKey');
+    log('createProjectKey', keyConfig);
     return this.projectAuthRequest<Response<ProjectKey>>(
       project,
       'post',
@@ -147,6 +147,7 @@ export class DriplaneService {
   }
 
   deleteProjectKey(project: Project, key: ProjectKey) {
+    log('deleting key', `projects/${project.id}/keys/${key.key}`);
     return this.projectAuthRequest<Response<boolean>>(
       project,
       'delete',

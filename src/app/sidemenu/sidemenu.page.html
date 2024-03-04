@@ -1,9 +1,11 @@
 <ion-split-pane when="xl" contentId="main-content">
   <ion-menu contentId="main-content" type="overlay">
     <ion-content>
-      <ion-list id="inbox-list">
-        <ion-list-header>Driplane</ion-list-header>
-        <ion-note data-testid="loggedInUser">{{ ( loggedInUser$ | async )?.email }}</ion-note>
+      <ion-list class="ion-padding-vertical">
+        <ion-item lines="full">
+          <ion-list-header>Driplane</ion-list-header>
+          <ion-note data-testid="loggedInUser">{{ ( loggedInUser$ | async )?.email }}</ion-note>
+        </ion-item>
 
         <ion-menu-toggle auto-hide="false">
           <ion-item routerDirection="root" [routerLink]="['/projects', ( activeProject$ | async ) ]" lines="none" routerLinkActive="active"[routerLinkActiveOptions]="{exact:

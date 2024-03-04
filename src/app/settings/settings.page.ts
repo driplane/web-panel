@@ -6,7 +6,7 @@ import { addProjectKey, deleteProjectKey, loadProjectKeys } from '../state/proje
 import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import Logger from '../logger.service';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, Platform } from '@ionic/angular';
 const log = Logger('page:settings');
 
 interface AutoFill {
@@ -29,7 +29,14 @@ export class SettingsPage {
     select(activeProjectKeys),
   );
 
-  constructor(private store: Store, private actionSheetCtrl: ActionSheetController) { }
+  pointerDevice = false;
+  editMode = false;
+
+  constructor(private store: Store, private actionSheetCtrl: ActionSheetController, private platform: Platform) {
+    if (matchMedia('(pointer:fine)').matches) {
+      this.pointerDevice = true;
+    }
+  }
 
   confirmDeleteKey(projectKey) {
     log('confirmDeleteKey');
@@ -61,7 +68,8 @@ export class SettingsPage {
           if (result.role === 'destructive') {
             log('confirmDeleteKey onDidDismiss delete');
             this.activeProject$.subscribe((project) => {
-              deleteProjectKey({ project, projectKey })
+              this.store.dispatch(deleteProjectKey({ project, projectKey }));
+              log('confirmDeleteKey onDidDismiss delete', project, projectKey);
             });
           }
         })

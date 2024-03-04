@@ -22,7 +22,7 @@ export const loadProjectKeys = createAction(_('Load project keys'),props<{ proje
 export const loadProjectKeysSuccess = createAction(_('Project keys loaded'),props<{ project: Project; projectKeys: ProjectKey[] }>());
 
 export const deleteProjectKey = createAction(_('Delete project key'), props<{ project: Project, projectKey: ProjectKey }>());
-export const deleteProjectKeySuccess = createAction(_('Delete project key success'));
+export const deleteProjectKeySuccess = createAction(_('Delete project key success'), props<{ project: Project }>());
 export const deleteProjectKeyFailed = createAction(_('Delete project key failed'));
 
 export const addFilter = createAction(_('Add filter'), props<{ filter: Filter }>());
