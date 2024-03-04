@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
@@ -12,6 +12,7 @@ const log = Logger('page:key-detail');
   selector: 'app-key-detail',
   templateUrl: './key-detail.page.html',
   styleUrls: ['./key-detail.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KeyDetailPage implements OnInit {
   projectKeyForm = new FormGroup({
@@ -45,15 +46,21 @@ export class KeyDetailPage implements OnInit {
 
   editMode = false;
 
-  constructor(private store: Store, private route: ActivatedRoute, private router: Router) {
-    this.activeProject$.subscribe((project) => {});
-    this.editMode = !!this.route.snapshot.paramMap.get('keyId');
+  constructor(private store: Store, private route: ActivatedRoute, private router: Router, private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
+    this.activeProject$.subscribe((project) => {});
+    if (this.route.snapshot.paramMap.get('keyId')) {
+      this.editMode = true;
+      this.ref.markForCheck();
+    }
+
     log('KeyDetailPage ngOnInit()');
+
     this.selectedKey$.subscribe((key) => {
       log('KeyDetailPage ngOnInit() selectedKey$', key);
+
       if (key) {
         this.projectKeyForm.patchValue(key);
       }

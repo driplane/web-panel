@@ -11,20 +11,20 @@
   <ion-list inset>
     <ion-list-header>
       <ion-label>Project Management</ion-label>
-      <ion-button id="create-project"><ion-icon slot="start"
+      <ion-button (click)="createProjectModal.present()"><ion-icon slot="start"
           name="add"></ion-icon>Add new project</ion-button>
     </ion-list-header>
 
-    <ion-modal #modal trigger="create-project" (willDismiss)="onWillDismiss($event)">
+    <ion-modal #createProjectModal (willDismiss)="onWillDismiss($event)">
       <ng-template>
         <ion-header>
           <ion-toolbar>
             <ion-buttons slot="start">
-              <ion-button (click)="cancel(modal)">Cancel</ion-button>
+              <ion-button (click)="cancel(createProjectModal)">Cancel</ion-button>
             </ion-buttons>
             <ion-title>Create New Project</ion-title>
             <ion-buttons slot="end">
-              <ion-button (click)="confirm(modal)" [strong]="true">Confirm</ion-button>
+              <ion-button (click)="confirm(createProjectModal)" [strong]="true">Confirm</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -46,20 +46,20 @@
       </ion-item>
 
       <ion-item-options>
-        <ion-item-option color="danger" id="project-delete-{{ project.id }}"><ion-icon slot="start"
+        <ion-item-option color="danger" (click)="confirmDeleteModal.present()"><ion-icon slot="start"
             name="trash"></ion-icon>Delete</ion-item-option>
       </ion-item-options>
 
-      <ion-modal #modal trigger="project-delete-{{ project.id }}" (willDismiss)="onWillDismissDelete($event)">
+      <ion-modal #confirmDeleteModal (willDismiss)="onWillDismissDelete($event)">
         <ng-template>
           <ion-header>
             <ion-toolbar>
               <ion-buttons slot="start">
-                <ion-button (click)="cancel(modal)">Cancel</ion-button>
+                <ion-button (click)="cancel(confirmDeleteModal)">Cancel</ion-button>
               </ion-buttons>
               <ion-title>Delete Project</ion-title>
               <ion-buttons slot="end">
-                <ion-button (click)="confirmDelete(modal, project.id)" [strong]="true">Confirm</ion-button>
+                <ion-button (click)="confirmDelete(confirmDeleteModal, project.id)" [strong]="true">Confirm</ion-button>
               </ion-buttons>
             </ion-toolbar>
           </ion-header>

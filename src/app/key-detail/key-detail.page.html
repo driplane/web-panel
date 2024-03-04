@@ -110,11 +110,11 @@
 
     <ion-list inset *ngIf="editMode">
       <ion-item button [detail]="false">
-        <ion-label color="danger" id="confirm-delete-key">Delete Key</ion-label>
+        <ion-label color="danger" (click)="confirmDeleteKeyActionSheet.present()">Delete Key</ion-label>
       </ion-item>
     </ion-list>
 
-    <ion-action-sheet trigger="confirm-delete-key" header="Are you sure to delete this key?" [buttons]="actionSheetButtons"></ion-action-sheet>
+    <ion-action-sheet #confirmDeleteKeyActionSheet header="Are you sure to delete this key?" [buttons]="actionSheetButtons"></ion-action-sheet>
   </form>
 
   <ion-modal #addAutoFill>
