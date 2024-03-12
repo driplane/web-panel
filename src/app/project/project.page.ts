@@ -390,7 +390,8 @@ export class ProjectPage implements OnInit {
               until,
               tag: card.tag ? card.tag : undefined,
               timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              ...filters
+              ...filters,
+              ...(card.filters || {})
             })),
             map((response) => response.result),
             shareReplay(),
@@ -408,11 +409,11 @@ export class ProjectPage implements OnInit {
         case 'toplist': {
 
           const data$ = dataGroup$.pipe(
-            switchMap((card) => this.topList({ event: card.event, tag: card.tag, unknownLabel: card.unknownLabel }))
+            switchMap((card) => this.topList({ event: card.event, filters: card.filters, tag: card.tag, unknownLabel: card.unknownLabel }))
           );
 
           const dataFull$ = dataGroup$.pipe(
-            switchMap((card) => this.topList({ event: card.event, tag: card.tag, limit: 100, unknownLabel: card.unknownLabel }))
+            switchMap((card) => this.topList({ event: card.event, filters: card.filters, limit: 1000, tag: card.tag, unknownLabel: card.unknownLabel }))
           );
 
           const visible$ = dataGroup$.pipe(

@@ -32,6 +32,7 @@ export interface CardSizeBreakpoints {
 export interface CardData {
   event: string;
   title: string;
+  filters?: { [key: string]: string | number };
   dataLabel?: string;
   valueLabel?: string;
   unknownLabel?: string;

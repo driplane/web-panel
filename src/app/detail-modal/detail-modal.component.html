@@ -8,17 +8,19 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding" color="light">
-      <ion-list inset>
+    <ion-content class="ion-padding" color="light" [scrollY]="false">
+      <cdk-virtual-scroll-viewport itemSize="44" minBufferPx="600" maxBufferPx="1000" class="ion-content-scroll-host">
+        <ion-list inset>
         <ion-item>
           <ion-label><strong>{{ label }}</strong></ion-label>
           <ion-note slot="end"><strong>{{ value }}</strong></ion-note>
         </ion-item>
-        <ion-item *ngFor="let item of data | async">
+        <ion-item *cdkVirtualFor="let item of data | async">
           <ion-label>{{ item.label }}</ion-label>
           <ion-note slot="end">{{ item.count | number }}</ion-note>
         </ion-item>
       </ion-list>
+      </cdk-virtual-scroll-viewport>
     </ion-content>
   </ng-template>
 </ion-modal>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -17,6 +18,7 @@ import { DetailModalComponent } from '../detail-modal/detail-modal.component';
     ReactiveFormsModule,
     IonicModule,
     ProjectPageRoutingModule,
+    ScrollingModule,
   ],
   declarations: [ProjectPage, LineChartComponent, DetailModalComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -74,6 +74,9 @@ export default {
         dataLabel: 'Source Domain',
         valueLabel: 'Page Views',
         unknownLabel: '(direct)',
+        filters: {
+          ref_ext: 1
+        }
       }]
     },
     {
@@ -90,6 +93,9 @@ export default {
         dataLabel: 'Source URL',
         valueLabel: 'Page Views',
         unknownLabel: '(none)',
+        filters: {
+          ref_ext: 1
+        }
       }]
     },
     {
