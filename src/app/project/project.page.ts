@@ -185,7 +185,7 @@ export class ProjectPage implements OnInit {
         this.driplane.getEventResult(project, event, 'count', {
           since,
           until,
-          // limit,
+          limit,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           group_by: tag,
           order_by: 'result',
@@ -198,7 +198,7 @@ export class ProjectPage implements OnInit {
         log(error);
         return of({ result: [] });
       }),
-      map((res) => res.result.slice(0, limit)),
+      map((res) => res.result),
       map((list) => list.map(item => ({
         count: item.result,
         label: item[tag] ? item[tag] : unknownLabel

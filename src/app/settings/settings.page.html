@@ -37,11 +37,13 @@
   <ion-list inset>
     <ion-list-header>
       <ion-label>Project API Keys</ion-label>
-      <ion-button *ngIf="pointerDevice && (activeProjectKeys$ | async)?.length > 0" (click)="editMode=!editMode">Edit</ion-button>
+      <ion-button *ngIf="pointerDevice && (activeProjectKeys$ | async)?.length > 0"
+        (click)="editMode=!editMode">Edit</ion-button>
     </ion-list-header>
     <ion-item-sliding *ngFor="let key of activeProjectKeys$ | async" [disabled]="pointerDevice">
       <ion-item [routerLink]="editMode ? [] : ['keys', key.key]" [detail]="!editMode">
-        <ion-button *ngIf="editMode" (click)="confirmDeleteKey(key)" fill="clear" color="danger" slot="start"><ion-icon slot="icon-only" name="trash"></ion-icon></ion-button>
+        <ion-button *ngIf="editMode" (click)="confirmDeleteKey(key)" fill="clear" color="danger" slot="start"><ion-icon
+            slot="icon-only" name="trash"></ion-icon></ion-button>
         <ion-label>
           <h2>{{ key.name }}</h2>
           <ion-note>Token: ****{{ key.key.slice(-5) }}</ion-note>
@@ -64,4 +66,19 @@
   <ion-note color="medium" class="list-note ion-margin">Project keys are non-expiring API tokens to allow external
     tools/websites to read or write data to your Project.</ion-note>
 
+
+  <ion-list inset>
+    <ion-list-header>
+      <ion-label>Project Events</ion-label>
+    </ion-list-header>
+
+    <ion-item *ngFor="let event of projectEvents$ | async">
+      <ion-label>
+        <h2>{{ event.name }}</h2>
+        <ion-note class="tag-list">Tags: <span *ngFor="let tag of event.schema | keyvalue">{{ tag.key }}</span></ion-note>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-note color="medium" class="list-note ion-margin">These are the events this project currently holds</ion-note>
 </ion-content>

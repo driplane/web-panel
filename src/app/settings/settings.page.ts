@@ -1,12 +1,13 @@
 import { Component, ElementRef } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { filter, tap } from 'rxjs/operators';
+import { filter, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Project } from '../driplane.types';
 import { addProjectKey, deleteProjectKey, loadProjectKeys } from '../state/project/project.actions';
 import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import Logger from '../logger.service';
 import { ActionSheetController, Platform } from '@ionic/angular';
+import { DriplaneService } from '../driplane.service';
 const log = Logger('page:settings');
 
 interface AutoFill {
@@ -23,16 +24,22 @@ export class SettingsPage {
     select(activeProject),
     filter(p => !!p?.id),
     tap((project) => this.store.dispatch(loadProjectKeys({ project }))),
+    shareReplay(),
   );
 
   activeProjectKeys$ = this.store.pipe(
     select(activeProjectKeys),
   );
 
+  projectEvents$ = this.activeProject$.pipe(
+    switchMap((project) => this.api.getEventList(project)),
+    shareReplay(),
+  )
+
   pointerDevice = false;
   editMode = false;
 
-  constructor(private store: Store, private actionSheetCtrl: ActionSheetController, private platform: Platform) {
+  constructor(private store: Store, private api: DriplaneService, private actionSheetCtrl: ActionSheetController, private platform: Platform) {
     if (matchMedia('(pointer:fine)').matches) {
       this.pointerDevice = true;
     }

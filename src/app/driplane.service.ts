@@ -10,6 +10,7 @@ import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import {
   AuthResponse,
+  EventListResponse,
   IntervalItem,
   Project,
   ProjectConfig,
@@ -152,6 +153,16 @@ export class DriplaneService {
       project,
       'delete',
       `projects/${project.id}/keys/${key.key}`
+    );
+  }
+
+  getEventList(project: Project) {
+    return this.projectAuthRequest<EventListResponse>(
+      project,
+      'get',
+      `events`
+    ).pipe(
+      map((res) => res.events)
     );
   }
 

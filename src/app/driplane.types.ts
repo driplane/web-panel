@@ -51,6 +51,21 @@ export interface ProjectKey extends ProjectKeyConfig {
   created_at: string;
 }
 
+export interface EventSchema {
+  [key: string]: {
+    type: 'string' | 'number';
+  };
+}
+
+export interface Event {
+  name: string;
+  schema: EventSchema;
+}
+
+export interface EventListResponse {
+  events: Event[];
+}
+
 export interface TaggedListItem {
   result: string;
   [tag: string]: string;

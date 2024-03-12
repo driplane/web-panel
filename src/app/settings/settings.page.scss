@@ -9,3 +9,7 @@
 .list-note + .list-note {
   margin-top: 1.5em;
 }
+
+.tag-list span:not(:last-child)::after {
+  content: ', ';
+}
