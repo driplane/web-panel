@@ -18,7 +18,7 @@ import {
   QueryResponse,
   RequestOptions,
   Response,
-  TopListItem,
+  Result,
   User
 } from './driplane.types';
 import Logger from './logger.service';
@@ -155,16 +155,7 @@ export class DriplaneService {
     );
   }
 
-  getToplist(project: Project, event, params) {
-    return this.projectEventRequest<TopListItem[]>(
-      project,
-      event,
-      'toplist',
-      params
-    ).pipe(map((res) => res.result));
-  }
-
-  getTotalCounts<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, params) {
+  getTotalCounts<T extends Result = IntervalItem[]>(project: Project, event, params) {
     return this.projectEventRequest<T>(
       project,
       event,
@@ -173,7 +164,7 @@ export class DriplaneService {
     );
   }
 
-  getUniqueTagCounts<T extends string | IntervalItem[] = IntervalItem[]>(
+  getUniqueTagCounts<T extends Result = IntervalItem[]>(
     project: Project,
     event: string,
     tag: string,
@@ -191,24 +182,23 @@ export class DriplaneService {
     );
   }
 
-  getAverage<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, tag, params) {
+  getAverage<T extends Result = IntervalItem[]>(project: Project, event, tag, params) {
     return this.projectEventRequest<T>(project, event, 'average', {
       ...params,
       tag,
     });
   }
 
-  getTotals<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, tag, params) {
+  getTotals<T extends Result = IntervalItem[]>(project: Project, event, tag, params) {
     return this.projectEventRequest<T>(project, event, 'total', {
       ...params,
       tag,
     });
   }
 
-  getEventResult<T extends string | IntervalItem[] = IntervalItem[]>(project: Project, event, endpoint, tag, params) {
+  getEventResult<T extends Result = IntervalItem[]>(project: Project, event, endpoint, params) {
     return this.projectEventRequest<T>(project, event, endpoint, {
       ...params,
-      tag
     });
   }
 

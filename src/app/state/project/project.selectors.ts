@@ -32,4 +32,9 @@ export const activeProjectKeys = createSelector(
 export const activeFilters = createSelector(
   selectProjectState,
   (state: ProjectState) => state?.activeFilters || [],
-)
+);
+
+export const activeDashboard = createSelector(
+  selectProjectState,
+  (state: ProjectState) => state?.activeDashboard || null,
+);

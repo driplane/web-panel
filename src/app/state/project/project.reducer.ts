@@ -6,6 +6,7 @@ import {
   clearFilter,
   loadProjectKeysSuccess,
   loadProjectSuccess,
+  switchDashboardSuccess,
   switchProjectSuccess
 } from './project.actions';
 
@@ -16,12 +17,52 @@ export interface Filter {
   value: string;
   label?: string;
 }
+
+export type DashboardCardStyle = 'chart' | 'toplist';
+
+export interface CardSizeBreakpoints {
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+  size?: number;
+}
+
+export interface CardData {
+  event: string;
+  title: string;
+  dataLabel?: string;
+  valueLabel?: string;
+  unknownLabel?: string;
+  op?: 'unique' | 'total' | 'average' | 'min' | 'max' | 'count';
+  tag?: string;
+}
+
+export interface DashboardCardBase {
+  style: DashboardCardStyle;
+  size?: CardSizeBreakpoints;
+}
+export interface DashboardCard extends DashboardCardBase, CardData {
+}
+
+export interface DashboardGroupCard extends DashboardCardBase {
+  data: CardData[];
+}
+
+export interface Dashboard {
+  id: string;
+  title: string;
+  mainEvent: string;
+  cards: DashboardGroupCard[];
+}
+
 export interface ProjectState {
   projects: Project[];
   projectListFetched: boolean;
   activeProject: string;
   activeFilters: Filter[];
-  activeProjectKeys: ProjectKey[]
+  activeProjectKeys: ProjectKey[];
+  activeDashboard: Dashboard;
 }
 
 export const initialState: ProjectState = {
@@ -29,7 +70,8 @@ export const initialState: ProjectState = {
   projectListFetched: false,
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
-  activeProjectKeys: []
+  activeProjectKeys: [],
+  activeDashboard: null,
 };
 
 export const projectReducer = createReducer(
@@ -59,5 +101,9 @@ export const projectReducer = createReducer(
   on(loadProjectKeysSuccess, (state, { project, projectKeys }) => ({
     ...state,
     activeProjectKeys: projectKeys,
-  }))
+  })),
+  on(switchDashboardSuccess, (state, { dashboard }) => ({
+    ...state,
+    activeDashboard: dashboard
+  })),
 );

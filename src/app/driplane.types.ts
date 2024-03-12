@@ -51,9 +51,9 @@ export interface ProjectKey extends ProjectKeyConfig {
   created_at: string;
 }
 
-export interface TopListItem {
-  tag: string;
-  result: number;
+export interface TaggedListItem {
+  result: string;
+  [tag: string]: string;
 }
 
 export interface HistogramItem {
@@ -66,10 +66,17 @@ export interface IntervalItem {
   result: string;
 }
 
-export type Result = string | IntervalItem[];
+export interface TaggedIntervalItem extends IntervalItem {
+  [tag: string]: string;
+}
+
+export type Result = string | IntervalItem[] | TaggedListItem[] | TaggedIntervalItem[];
 export interface IntervalResponse extends QueryResponse<IntervalItem[]> {}
 export interface SingleResponse extends QueryResponse<string> {}
-export type GenericResponse = IntervalResponse | SingleResponse;
+export interface TaggedResponse extends QueryResponse<TaggedListItem[]> {}
+export interface TaggedIntervalResponse extends QueryResponse<TaggedIntervalItem[]> {}
+
+export type GenericResponse = IntervalResponse | SingleResponse | TaggedResponse | TaggedIntervalResponse;
 export interface RequestOptions {
   body?: any;
   headers?: HttpHeaders |

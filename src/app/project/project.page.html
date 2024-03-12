@@ -21,7 +21,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-grid [style]="{ '--total-page-view': totalPageCount$ | async,  '--total-user-count': totalUserCount$ | async }">
+  <ion-grid [style]="{ '--total-event-count': totalEventCount$ | async }">
     <ion-row>
       <ion-col size="12" *ngIf="onboardingMode$ | async">
         <ion-card class="no-data-card">
@@ -43,130 +43,45 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size-lg="6" size-md="6" size="12" *ngIf="notOnboardingMode$ | async">
-        <ion-card class="chart-card">
-          <ion-card-header>
-            <ion-card-subtitle>Page views</ion-card-subtitle>
-          </ion-card-header>
+      <ng-container *ngFor="let card of dashboardCards$ | async">
+        <ng-container *ngIf="card.style === 'toplist'">
+          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm" *ngIf="card.visible$ | async">
+            <ion-card class="bar-chart-card">
+              <ion-item lines="none">
+                <ion-label *ngIf="card.data.length === 1">{{ card.dataGroup.value.title }}</ion-label>
+                <ion-select *ngIf="card.data.length > 1" interface="popover" value="ua_br" [formControl]="card.dataGroup">
+                  <ion-select-option *ngFor="let group of card.data" [value]="group">{{ group.title }}</ion-select-option>
+                </ion-select>
+                <ion-button (click)="details.present()" *ngIf="(card.data$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
+              </ion-item>
 
-          <p class="total">{{ totalPageCount$ | async }}</p>
-          <app-line-chart [data]="pageViewResult$ | async" valueLabel="Page views" [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
-        </ion-card>
-      </ion-col>
+              <ion-card-content>
+                <ul>
+                  <li *ngFor="let item of card.data$ | async" [style]="{ '--item-value': item.count}">
+                    <a class="label" (click)="addFilter(card.dataGroup.value.tag, item.label, card.dataGroup.value.dataLabel)">{{ item.label }}</a>
+                    <span>{{ item.count | number }}</span>
+                  </li>
+                </ul>
+              </ion-card-content>
+            </ion-card>
 
-      <ion-col size-lg="6" size-md="6" size="12" *ngIf="notOnboardingMode$ | async">
-        <ion-card class="chart-card">
-          <ion-card-header>
-            <ion-card-subtitle>Visitors</ion-card-subtitle>
-          </ion-card-header>
+            <app-detail-modal [title]="card.dataGroup.value.title" [label]="card.dataGroup.value.dataLabel" [value]="card.dataGroup.value.valueLabel" [data]="card.dataFull$" #details></app-detail-modal>
+          </ion-col>
+        </ng-container>
 
-          <p class="total">{{ totalUserCount$ | async }}</p>
-          <app-line-chart [data]="users$ | async" valueLabel="Visitors" [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
-        </ion-card>
-      </ion-col>
+        <ng-container *ngIf="card.style === 'chart'">
+          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm" *ngIf="notOnboardingMode$ | async">
+            <ion-card class="chart-card">
+              <ion-card-header>
+                <ion-card-subtitle>{{ card.dataGroup.value.title }}</ion-card-subtitle>
+              </ion-card-header>
 
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topHostsVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <ion-label>Domains</ion-label>
-            <ion-button (click)="topHostsModal.present()" *ngIf="(topHosts$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topHosts$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter('url_host', item.label, 'Domain')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-
-        <app-detail-modal title="Domains" label="Domain" value="Page views" [data]="topHostsFull$" #topHostsModal></app-detail-modal>
-
-      </ion-col>
-
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topUrlsVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <ion-label>Top URLs</ion-label>
-            <ion-button *ngIf="(topUrls$ | async)?.length > 9" (click)="topUrlsModal.present()" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topUrls$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter('url_path', item.label, 'URL')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-
-        <app-detail-modal title="Top URLs" label="URL" value="Page views" [data]="topUrlsFull$" #topUrlsModal></app-detail-modal>
-      </ion-col>
-
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topSourcesVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <ion-text>Sources</ion-text>
-            <ion-button (click)="sourcesModal.present()" *ngIf="(topSources$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topSources$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter('ref_host', item.label, 'Source')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-
-        <app-detail-modal title="Sources" label="Source Domain" value="Page views" [data]="topSourcesFull$" #sourcesModal></app-detail-modal>
-      </ion-col>
-
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topSourcesUrlsVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <ion-text>Source URLs</ion-text>
-            <ion-button (click)="sourceURLsModal.present()" *ngIf="(topSourcesUrls$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topSourcesUrls$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter('ref', item.label, 'Source')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-
-        <app-detail-modal title="Source URLs" label="Source URL" value="Page views" [data]="topSourceUrlsFull$" #sourceURLsModal></app-detail-modal>
-      </ion-col>
-
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topEnvTypeVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <!-- <ion-icon slot="start" size="small" name="desktop-outline"></ion-icon> -->
-            <ion-select interface="popover" value="ua_br" [formControl]="envType" placeholder="Visitor Software">
-              <ion-select-option value="ua_br">Browsers</ion-select-option>
-              <ion-select-option value="ua_os">Operating Systems</ion-select-option>
-            </ion-select>
-            <!-- <ion-button slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button> -->
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topEnvType$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter(envType.value, item.label, envType.value === 'ua_br' ? 'Browser' : 'OS')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
+              <p class="total">{{ card.total$ | async }}</p>
+              <app-line-chart [data]="card.timedData$ | async" [valueLabel]="card.dataGroup.value.valueLabel" [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
+            </ion-card>
+          </ion-col>
+        </ng-container>
+      </ng-container>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topBrowserVersionsVisible$ | async">
         <ion-card class="bar-chart-card">
@@ -178,27 +93,6 @@
             <ul>
               <li *ngFor="let item of topBrowserVersions$ | async" [style]="{ '--item-value': item.count}">
                 <a class="label" (click)="addFilter('ua_br_v', item.label, 'Browser Version')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topDevTypeVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <ion-select interface="popover" value="ua_dv_t" [formControl]="devType" placeholder="Visitor Device">
-              <ion-select-option value="ua_dv_t">Device Types</ion-select-option>
-              <ion-select-option value="ua_dv_v">Vendors</ion-select-option>
-              <ion-select-option value="ua_dv">Models</ion-select-option>
-            </ion-select>
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topDevType$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter(devType.value, item.label, 'Device')">{{ item.label }}</a>
                 <span>{{ item.count | number }}</span>
               </li>
             </ul>

@@ -19,7 +19,7 @@ ion-content::part(scroll) {
 
     li {
       display: flex;
-      --percentage: calc((var(--item-value) / var(--total-page-view)) * 100 * 1%);
+      --percentage: calc((var(--item-value) / var(--total-event-count)) * 100 * 1%);
       --bar-color: var(--ion-color-light);
       --background-color: transparent;
       background: linear-gradient(to right, var(--bar-color), var(--bar-color) var(--percentage), transparent var(--percentage));
