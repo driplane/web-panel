@@ -9,7 +9,7 @@ import {
   switchDashboardSuccess,
   switchProjectSuccess
 } from './project.actions';
-
+import defaultDashboard from './default-dashboard';
 export const PROJECT_FEATURE_KEY = 'project';
 
 export interface Filter {
@@ -18,7 +18,7 @@ export interface Filter {
   label?: string;
 }
 
-export type DashboardCardStyle = 'chart' | 'toplist';
+export type DashboardCardStyle = 'chart' | 'toplist' | 'webvitals';
 
 export interface CardSizeBreakpoints {
   sm?: number;
@@ -71,7 +71,7 @@ export const initialState: ProjectState = {
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
   activeProjectKeys: [],
-  activeDashboard: null,
+  activeDashboard: defaultDashboard,
 };
 
 export const projectReducer = createReducer(

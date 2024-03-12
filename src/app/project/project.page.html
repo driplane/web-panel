@@ -33,9 +33,11 @@
           <ion-card-content>
             <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
             <div class="code-example">
-              <pre class="hljs" style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ activeProjectKey$ | async }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
+              <pre class="hljs"
+                style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ activeProjectKey$ | async }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
 
-              <sl-copy-button value='&lt;script type="module" data-driplane-token="{{ activeProjectKey$ | async }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
+              <sl-copy-button
+                value='&lt;script type="module" data-driplane-token="{{ activeProjectKey$ | async }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;'></sl-copy-button>
             </div>
 
             <p>Then you will start to see your visitor insights in this dashboard.</p>
@@ -45,39 +47,108 @@
 
       <ng-container *ngFor="let card of dashboardCards$ | async">
         <ng-container *ngIf="card.style === 'toplist'">
-          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm" *ngIf="card.visible$ | async">
+          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm"
+            *ngIf="card.visible$ | async">
             <ion-card class="bar-chart-card">
               <ion-item lines="none">
                 <ion-label *ngIf="card.data.length === 1">{{ card.dataGroup.value.title }}</ion-label>
-                <ion-select *ngIf="card.data.length > 1" interface="popover" value="ua_br" [formControl]="card.dataGroup">
-                  <ion-select-option *ngFor="let group of card.data" [value]="group">{{ group.title }}</ion-select-option>
+                <ion-select *ngIf="card.data.length > 1" interface="popover" value="ua_br"
+                  [formControl]="card.dataGroup">
+                  <ion-select-option *ngFor="let group of card.data" [value]="group">{{ group.title
+                    }}</ion-select-option>
                 </ion-select>
-                <ion-button (click)="details.present()" *ngIf="(card.data$ | async)?.length > 9" slot="end" color="medium" fill="clear" size="small"><ion-icon slot="icon-only" name="expand"></ion-icon></ion-button>
+                <ion-button (click)="details.present()" *ngIf="(card.data$ | async)?.length > 9" slot="end"
+                  color="medium" fill="clear" size="small"><ion-icon slot="icon-only"
+                    name="expand"></ion-icon></ion-button>
               </ion-item>
 
               <ion-card-content>
                 <ul>
                   <li *ngFor="let item of card.data$ | async" [style]="{ '--item-value': item.count}">
-                    <a class="label" (click)="addFilter(card.dataGroup.value.tag, item.label, card.dataGroup.value.dataLabel)">{{ item.label }}</a>
+                    <a class="label"
+                      (click)="addFilter(card.dataGroup.value.tag, item.label, card.dataGroup.value.dataLabel)">{{
+                      item.label }}</a>
                     <span>{{ item.count | number }}</span>
                   </li>
                 </ul>
               </ion-card-content>
             </ion-card>
 
-            <app-detail-modal [title]="card.dataGroup.value.title" [label]="card.dataGroup.value.dataLabel" [value]="card.dataGroup.value.valueLabel" [data]="card.dataFull$" #details></app-detail-modal>
+            <app-detail-modal [title]="card.dataGroup.value.title" [label]="card.dataGroup.value.dataLabel"
+              [value]="card.dataGroup.value.valueLabel" [data]="card.dataFull$" #details></app-detail-modal>
           </ion-col>
         </ng-container>
 
         <ng-container *ngIf="card.style === 'chart'">
-          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm" *ngIf="notOnboardingMode$ | async">
+          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm"
+            *ngIf="notOnboardingMode$ | async">
             <ion-card class="chart-card">
               <ion-card-header>
                 <ion-card-subtitle>{{ card.dataGroup.value.title }}</ion-card-subtitle>
               </ion-card-header>
 
               <p class="total">{{ card.total$ | async }}</p>
-              <app-line-chart [data]="card.timedData$ | async" [valueLabel]="card.dataGroup.value.valueLabel" [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
+              <app-line-chart [data]="card.timedData$ | async" [valueLabel]="card.dataGroup.value.valueLabel"
+                [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
+            </ion-card>
+          </ion-col>
+        </ng-container>
+
+        <ng-container *ngIf="card.style === 'webvitals'">
+          <ion-col [size]="card.size?.size" class="perf-stats" *ngIf="notOnboardingMode$ | async">
+            <ion-card>
+              <ion-item lines="none">
+                <ion-label>Performance</ion-label>
+              </ion-item>
+
+              <ion-card-content>
+                <ng-template #gauge let-item>
+                  <figure>
+                    <svg class="gauge" [style.--value]="item.data?.percentages.value" width="100%" height="100%"
+                      viewBox="0 0 42 42" role="img">
+                      <circle class="gauge-segment-poor" cx="21" cy="21" r="15.91549430918954" stroke-width="3"
+                        attr.stroke-dasharray="{{ item.data?.percentages.poor * .75 }} {{ 100 - item.data?.percentages.poor * .75 }}"
+                        attr.stroke-dashoffset="{{ 62.5 - item.data?.percentages.improve * .75 - item.data?.percentages.good * .75 }}">
+                      </circle>
+                      <circle class="gauge-segment-improve" cx="21" cy="21" r="15.91549430918954" stroke-width="3"
+                        attr.stroke-dasharray="{{ item.data?.percentages.improve * .75 }} {{ 100 - item.data?.percentages.improve * .75 }}"
+                        attr.stroke-dashoffset="{{ 62.5 - item.data?.percentages.good * .75}}"></circle>
+                      <circle class="gauge-segment-good" cx="21" cy="21" r="15.91549430918954" stroke-width="3"
+                        attr.stroke-dasharray="{{ item.data?.percentages.good * .75 }} {{ 100 - item.data?.percentages.good * .75 }}"
+                        stroke-dashoffset="62.5"></circle>
+
+                      <circle cx="21" cy="21" r="15.91549430918954" class="pointer" stroke="black"
+                        stroke-dasharray="1 99"></circle>
+
+                      <g class="chart-text {{ item.data?.state }}">
+                        <text x="50%" y="50%" class="chart-number" *ngIf="item.label === 'CLS'">
+                          {{ item.data?.value | number:'1.1-4' }}
+                        </text>
+                        <text x="50%" y="50%" class="chart-number" *ngIf="item.label !== 'CLS'">
+                          {{ item.data?.value | number:'1.0-0' }}ms
+                        </text>
+                        <text x="50%" y="50%" class="chart-label">
+                          {{ item.label }}
+                        </text>
+                      </g>
+                    </svg>
+                  </figure>
+                </ng-template>
+
+                <ng-container
+                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'TTFB', data: perfTTFBAvg$ | async } }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FCP',  data: perfFCPAvg$ | async } }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'LCP',  data: perfLCPAvg$ | async } }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FID',  data: perfFIDAvg$ | async } }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'CLS',  data: perfCLSAvg$ | async } }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'INP',  data: perfINPAvg$ | async } }"></ng-container>
+
+              </ion-card-content>
             </ion-card>
           </ion-col>
         </ng-container>
@@ -100,47 +171,6 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="12" class="perf-stats" *ngIf="notOnboardingMode$ | async">
-        <ion-card>
-          <ion-item lines="none">
-            <ion-label>Performance</ion-label>
-          </ion-item>
-
-          <ion-card-content>
-            <ng-template #gauge let-item>
-              <figure>
-                <svg class="gauge" [style.--value]="item.data?.percentages.value" width="100%" height="100%" viewBox="0 0 42 42" role="img">
-                  <circle class="gauge-segment-poor" cx="21" cy="21" r="15.91549430918954" stroke-width="3" attr.stroke-dasharray="{{ item.data?.percentages.poor * .75 }} {{ 100 - item.data?.percentages.poor * .75 }}" attr.stroke-dashoffset="{{ 62.5 - item.data?.percentages.improve * .75 - item.data?.percentages.good * .75 }}"></circle>
-                  <circle class="gauge-segment-improve" cx="21" cy="21" r="15.91549430918954" stroke-width="3" attr.stroke-dasharray="{{ item.data?.percentages.improve * .75 }} {{ 100 - item.data?.percentages.improve * .75 }}" attr.stroke-dashoffset="{{ 62.5 - item.data?.percentages.good * .75}}"></circle>
-                  <circle class="gauge-segment-good" cx="21" cy="21" r="15.91549430918954" stroke-width="3" attr.stroke-dasharray="{{ item.data?.percentages.good * .75 }} {{ 100 - item.data?.percentages.good * .75 }}" stroke-dashoffset="62.5"></circle>
-
-                  <circle cx="21" cy="21" r="15.91549430918954" class="pointer" stroke="black" stroke-dasharray="1 99"></circle>
-
-                  <g class="chart-text {{ item.data?.state }}">
-                    <text x="50%" y="50%" class="chart-number" *ngIf="item.label === 'CLS'">
-                      {{ item.data?.value | number:'1.1-4' }}
-                    </text>
-                    <text x="50%" y="50%" class="chart-number" *ngIf="item.label !== 'CLS'">
-                      {{ item.data?.value | number:'1.0-0' }}ms
-                    </text>
-                    <text x="50%" y="50%" class="chart-label">
-                      {{ item.label }}
-                    </text>
-                  </g>
-                </svg>
-              </figure>
-            </ng-template>
-
-            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'TTFB', data: perfTTFBAvg$ | async } }"></ng-container>
-            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FCP',  data: perfFCPAvg$ | async } }"></ng-container>
-            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'LCP',  data: perfLCPAvg$ | async } }"></ng-container>
-            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FID',  data: perfFIDAvg$ | async } }"></ng-container>
-            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'CLS',  data: perfCLSAvg$ | async } }"></ng-container>
-            <ng-container *ngTemplateOutlet="gauge; context: { $implicit: { label: 'INP',  data: perfINPAvg$ | async } }"></ng-container>
-
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
