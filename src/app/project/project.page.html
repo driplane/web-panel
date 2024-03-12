@@ -46,14 +46,12 @@
       </ion-col>
 
       <ng-container *ngFor="let card of dashboardCards$ | async">
-        <ng-container *ngIf="card.style === 'toplist'">
-          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm"
-            *ngIf="card.visible$ | async">
+        <ion-col [sizeXl]="card.size?.xl" [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm" [sizeXs]="card.size?.xs" [size]="card.size?.size" *ngIf="card.visible$ | async">
+          <ng-container *ngIf="card.style === 'toplist'">
             <ion-card class="bar-chart-card">
               <ion-item lines="none">
                 <ion-label *ngIf="card.data.length === 1">{{ card.dataGroup.value.title }}</ion-label>
-                <ion-select *ngIf="card.data.length > 1" interface="popover" value="ua_br"
-                  [formControl]="card.dataGroup">
+                <ion-select *ngIf="card.data.length > 1" interface="popover" [formControl]="card.dataGroup">
                   <ion-select-option *ngFor="let group of card.data" [value]="group">{{ group.title
                     }}</ion-select-option>
                 </ion-select>
@@ -76,27 +74,22 @@
 
             <app-detail-modal [title]="card.dataGroup.value.title" [label]="card.dataGroup.value.dataLabel"
               [value]="card.dataGroup.value.valueLabel" [data]="card.dataFull$" #details></app-detail-modal>
-          </ion-col>
-        </ng-container>
-
-        <ng-container *ngIf="card.style === 'chart'">
-          <ion-col [sizeLg]="card.size?.lg" [sizeMd]="card.size?.md" [sizeSm]="card.size?.sm"
-            *ngIf="notOnboardingMode$ | async">
+            </ng-container>
+          <ng-container *ngIf="card.style === 'chart'">
             <ion-card class="chart-card">
               <ion-card-header>
                 <ion-card-subtitle>{{ card.dataGroup.value.title }}</ion-card-subtitle>
               </ion-card-header>
 
-              <p class="total">{{ card.total$ | async }}</p>
+              <p class="total">{{ card.total$ | async | number }}</p>
+
               <app-line-chart [data]="card.timedData$ | async" [valueLabel]="card.dataGroup.value.valueLabel"
                 [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
             </ion-card>
-          </ion-col>
-        </ng-container>
+          </ng-container>
 
-        <ng-container *ngIf="card.style === 'webvitals'">
-          <ion-col [size]="card.size?.size" class="perf-stats" *ngIf="notOnboardingMode$ | async">
-            <ion-card>
+          <ng-container *ngIf="card.style === 'webvitals'">
+            <ion-card class="perf-stats">
               <ion-item lines="none">
                 <ion-label>Performance</ion-label>
               </ion-item>
@@ -150,8 +143,8 @@
 
               </ion-card-content>
             </ion-card>
-          </ion-col>
-        </ng-container>
+          </ng-container>
+        </ion-col>
       </ng-container>
 
       <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topBrowserVersionsVisible$ | async">

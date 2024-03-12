@@ -21,6 +21,7 @@ export interface Filter {
 export type DashboardCardStyle = 'chart' | 'toplist' | 'webvitals';
 
 export interface CardSizeBreakpoints {
+  xs?: number;
   sm?: number;
   md?: number;
   lg?: number;

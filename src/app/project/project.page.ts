@@ -402,7 +402,7 @@ export class ProjectPage implements OnInit {
             total$,
             data$: of([]),
             dataFull$: of([]),
-            visible$: of(true),
+            visible$: this.notOnboardingMode$,
           };
         }
         case 'toplist': {
@@ -438,7 +438,7 @@ export class ProjectPage implements OnInit {
         total$: of("0"),
         data$: of([]),
         dataFull$: of([]),
-        visible$: of(true)
+        visible$: this.notOnboardingMode$,
       };
     })),
   );

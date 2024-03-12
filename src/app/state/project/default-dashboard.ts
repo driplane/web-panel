@@ -8,10 +8,8 @@ export default {
     {
       style: 'chart',
       size: {
-        lg: 6,
         md: 6,
-        sm: 12,
-        size: 12,
+        xs: 12,
       },
       data: [{
         event: 'page_view',
@@ -22,9 +20,8 @@ export default {
     {
       style: 'chart',
       size: {
-        lg: 6,
         md: 6,
-        sm: 12
+        xs: 12,
       },
       data: [{
         event: 'page_view',
