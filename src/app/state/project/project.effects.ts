@@ -5,7 +5,7 @@ import { EMPTY, of } from 'rxjs';
 import { catchError, exhaustMap, flatMap, map, mergeMap, tap, throttleTime } from 'rxjs/operators';
 import { DriplaneService } from '../../driplane.service';
 import Logger from '../../logger.service';
-import { addProject, addProjectKey, deleteProject, deleteProjectFailed, deleteProjectKey, deleteProjectKeyFailed, deleteProjectKeySuccess, deleteProjectSuccess, loadProjectFailed, loadProjectKeys, loadProjectKeysSuccess, loadProjectSuccess, loadProjects, switchProject, switchProjectSuccess } from './project.actions';
+import { addProject, addProjectKey, deleteProject, deleteProjectFailed, deleteProjectKey, deleteProjectKeyFailed, deleteProjectKeySuccess, deleteProjectSuccess, loadProjectFailed, loadProjectKeys, loadProjectKeysSuccess, loadProjectSuccess, loadProjects, switchProject, switchProjectSuccess, updateProjectKey } from './project.actions';
 const log = Logger('effects:project');
 
 @Injectable()
@@ -16,7 +16,10 @@ export class ProjectEffects {
     exhaustMap(({ project }) => this.driplane.createProject(project)
       .pipe(
         mergeMap((project) => [
-          addProjectKey({ project, projectKey: { name: "Main Key", read: false, write: true, auto_filter: {}, auto_fill: {}} }),
+          addProjectKey({ project, projectKey: { name: "Main Key", read: false, write: true, auto_filter: {}, auto_fill: {}, auto_fill_template:{
+            city: "geoip.city",
+            country: "geoip.country_code"
+          }} }),
           loadProjects(),
         ]),
         catchError(() => EMPTY)
@@ -79,6 +82,17 @@ export class ProjectEffects {
   addProjectKey$ = createEffect(() => this.actions$.pipe(
     ofType(addProjectKey),
     exhaustMap(({ project, projectKey }) => this.driplane.createProjectKey(project, projectKey)
+      .pipe(
+        map(() => loadProjectKeys({ project })),
+        catchError(() => EMPTY)
+      )
+    )
+  ));
+
+
+  updateProjectKey$ = createEffect(() => this.actions$.pipe(
+    ofType(updateProjectKey),
+    exhaustMap(({ project, projectKey }) => this.driplane.updateProjectKey(project, projectKey)
       .pipe(
         map(() => loadProjectKeys({ project })),
         catchError(() => EMPTY)

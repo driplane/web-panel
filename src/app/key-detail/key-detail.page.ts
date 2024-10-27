@@ -5,7 +5,7 @@ import { ActionSheetController, NavController } from '@ionic/angular';
 import { Store, select } from '@ngrx/store';
 import { combineLatest, filter, first, map, shareReplay, takeLast, tap } from 'rxjs';
 import Logger from '../logger.service';
-import { addProjectKey, deleteProjectKey, loadProjectKeys } from '../state/project/project.actions';
+import { addProjectKey, deleteProjectKey, loadProjectKeys, updateProjectKey } from '../state/project/project.actions';
 import { activeProject, activeProjectKeys } from '../state/project/project.selectors';
 const log = Logger('page:key-detail');
 
@@ -17,11 +17,13 @@ const log = Logger('page:key-detail');
 })
 export class KeyDetailPage implements OnInit {
   projectKeyForm = new FormGroup({
+    key: new FormControl(''),
     name: new FormControl(''),
     read: new FormControl(false),
     write: new FormControl(false),
     auto_fill: new FormControl({}),
     auto_filter: new FormControl({}),
+    auto_fill_template: new FormControl({}),
   });
 
   autoFillForm = new FormGroup({
@@ -61,7 +63,7 @@ export class KeyDetailPage implements OnInit {
     this.activeProject$.subscribe((project) => { });
     if (this.route.snapshot.paramMap.get('keyId')) {
       this.editMode = true;
-      this.projectKeyForm.disable();
+      // this.projectKeyForm.disable();
       this.ref.markForCheck();
     }
 
@@ -77,11 +79,15 @@ export class KeyDetailPage implements OnInit {
   saveProjectKey() {
     log(this.projectKeyForm.value);
 
-    const { name, read, write, auto_fill, auto_filter } = this.projectKeyForm.value;
+    const { key, name, read, write, auto_fill, auto_filter, auto_fill_template } = this.projectKeyForm.value;
 
     log('saveProjectKey', { name, read, write, auto_fill, auto_filter });
     this.activeProject$.subscribe((project) => {
-      this.store.dispatch(addProjectKey({ project, projectKey: { name, read, write, auto_fill, auto_filter } }))
+      if (this.editMode) {
+        this.store.dispatch(updateProjectKey({ project, projectKey: { key, name, read, write, auto_fill, auto_filter, auto_fill_template } }))
+      } else {
+        this.store.dispatch(addProjectKey({ project, projectKey: { name, read, write, auto_fill, auto_filter, auto_fill_template: {} } }))
+      }
       this.navCtrl.navigateBack(`/projects/${project.id}/settings`);
     });
 
@@ -97,8 +103,18 @@ export class KeyDetailPage implements OnInit {
     }
 
     const current = this.projectKeyForm.value.auto_fill;
-    if (this.autoFillForm.value.valueType === 'number') {
-      this.autoFillForm.value.value = ~~(this.autoFillForm.value.value);
+    const currentTemplate = this.projectKeyForm.value.auto_fill_template;
+    let newTemplate = {};
+    let newAutofill = {};
+
+    if (this.autoFillForm.value.valueType === 'template') {
+      newTemplate[this.autoFillForm.value.key] = this.autoFillForm.value.value;
+    } else {
+      if (this.autoFillForm.value.valueType === 'number') {
+        newAutofill[this.autoFillForm.value.key] = ~~(this.autoFillForm.value.value);
+      } else {
+        newAutofill[this.autoFillForm.value.key] = `${this.autoFillForm.value.value}`;
+      }
     }
 
     log(this.autoFillForm.value);
@@ -106,19 +122,32 @@ export class KeyDetailPage implements OnInit {
     this.projectKeyForm.patchValue({
       auto_fill: {
         ...current,
-        [this.autoFillForm.value.key]: this.autoFillForm.value.value,
+        ...newAutofill,
       },
+      auto_fill_template: {
+        ...currentTemplate,
+        ...newTemplate
+      }
     });
-    this.autoFillForm.reset();
+    // this.autoFillForm.reset();
 
     modal.dismiss(this.autoFillForm.value);
   }
 
   deleteAutoFillKey(key) {
-    const current = this.projectKeyForm.value.auto_fill;
+    const current = { ...this.projectKeyForm.value.auto_fill };
     delete current[key];
     this.projectKeyForm.patchValue({
       auto_fill: current,
+    });
+  }
+
+
+  deleteAutoFillTemplateKey(key) {
+    const current = { ...this.projectKeyForm.value.auto_fill_template };
+    delete current[key];
+    this.projectKeyForm.patchValue({
+      auto_fill_template: current,
     });
   }
 
@@ -151,7 +180,7 @@ export class KeyDetailPage implements OnInit {
     });
 
     log(this.projectKeyForm.value);
-    this.autoFillForm.reset();
+    // this.autoFillForm.reset();
 
     modal.dismiss(this.autoFillForm.value);
   }

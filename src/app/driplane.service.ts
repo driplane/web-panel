@@ -139,6 +139,18 @@ export class DriplaneService {
     );
   }
 
+  updateProjectKey(project: Project, projectKey: Partial<ProjectKey>) {
+    log('updateProjectKey', projectKey);
+    return this.projectAuthRequest<Response<ProjectKey>>(
+      project,
+      'patch',
+      `projects/${project.id}/keys/${projectKey.key}`,
+      {
+        body: projectKey
+      }
+    )
+  }
+
   getProjectsKeys(project: Project): Observable<ProjectKey[]> {
     return this.projectAuthRequest<Response<ProjectKey[]>>(
       project,

@@ -10,6 +10,7 @@ import { ProjectPageRoutingModule } from './project-routing.module';
 import { LineChartComponent } from '../line-chart/line-chart.component';
 import { ProjectPage } from './project.page';
 import { DetailModalComponent } from '../detail-modal/detail-modal.component';
+import { LabelFormatPipe } from '../label-format.pipe';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { DetailModalComponent } from '../detail-modal/detail-modal.component';
     IonicModule,
     ProjectPageRoutingModule,
     ScrollingModule,
+    LabelFormatPipe,
   ],
   declarations: [ProjectPage, LineChartComponent, DetailModalComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

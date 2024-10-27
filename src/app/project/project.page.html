@@ -14,7 +14,7 @@
   </ion-toolbar>
   <ion-toolbar *ngIf="(filters$ | async).length > 0">
     <ion-chip *ngFor="let filter of filters$ | async">
-      <ion-label>{{ filter.label || filter.key }}: {{ filter.value }}</ion-label>
+      <ion-label>{{ filter.label || filter.key }}: {{ filter.formattedValue || filter.value }}</ion-label>
       <ion-icon name="close" (click)="clearFilter(filter.key)"></ion-icon>
     </ion-chip>
   </ion-toolbar>
@@ -64,8 +64,8 @@
                 <ul>
                   <li *ngFor="let item of card.data$ | async" [style]="{ '--item-value': item.count}">
                     <a class="label"
-                      (click)="addFilter(card.dataGroup.value.tag, item.label, card.dataGroup.value.dataLabel)">{{
-                      item.label }}</a>
+                      (click)="addFilter(card.dataGroup.value.tag, item.label, card.dataGroup.value.dataLabel, card.dataGroup.value.labelFormat, card.dataGroup.value.unknownLabel)">{{
+                      item.label | labelFormat:card.dataGroup.value.labelFormat:card.dataGroup.value.unknownLabel }}</a>
                     <span>{{ item.count | number }}</span>
                   </li>
                 </ul>
@@ -146,23 +146,6 @@
           </ng-container>
         </ion-col>
       </ng-container>
-
-      <ion-col size-lg="3" size-md="4" size-sm="12" *ngIf="topBrowserVersionsVisible$ | async">
-        <ion-card class="bar-chart-card">
-          <ion-item lines="none">
-            <ion-label>Browser Versions</ion-label>
-          </ion-item>
-
-          <ion-card-content>
-            <ul>
-              <li *ngFor="let item of topBrowserVersions$ | async" [style]="{ '--item-value': item.count}">
-                <a class="label" (click)="addFilter('ua_br_v', item.label, 'Browser Version')">{{ item.label }}</a>
-                <span>{{ item.count | number }}</span>
-              </li>
-            </ul>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
 
     </ion-row>
   </ion-grid>

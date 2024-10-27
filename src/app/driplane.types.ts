@@ -44,6 +44,9 @@ export interface ProjectKeyConfig {
   write: boolean;
   auto_fill: object;
   auto_filter: object;
+  auto_fill_template: {
+    [key:string]: 'geoip.city' | 'geoip.country_code'
+  }
 }
 
 export interface ProjectKey extends ProjectKeyConfig {

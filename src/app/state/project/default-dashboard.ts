@@ -107,6 +107,42 @@ export default {
       },
       data: [{
         event: 'page_view',
+        tag: 'country',
+        title: 'Countries',
+        dataLabel: 'Country',
+        valueLabel: 'Page Views',
+        unknownLabel: '(unknown)',
+        labelFormat: 'country'
+      }]
+    },
+    {
+      style: 'toplist',
+      // visible: {
+      //   parent: ['country']
+      // },
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'page_view',
+        tag: 'city',
+        title: 'Cities',
+        dataLabel: 'City',
+        valueLabel: 'Page Views',
+        unknownLabel: '(unknown)',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'page_view',
         tag: 'ua_br',
         title: 'Browsers',
         dataLabel: 'Browser',
@@ -119,6 +155,25 @@ export default {
         dataLabel: 'Operating System',
         valueLabel: 'Page Views',
         unknownLabel: '(other)',
+      }]
+    },
+    {
+      style: 'toplist',
+      visible: {
+        parent: ['ua_br']
+      },
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'page_view',
+        tag: 'ua_br_v',
+        title: 'Browsers Versions',
+        dataLabel: 'Browser Version',
+        valueLabel: 'Page Views',
+        unknownLabel: '(unknown)',
       }]
     },
     {

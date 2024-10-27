@@ -16,6 +16,7 @@ export interface Filter {
   key: string;
   value: string;
   label?: string;
+  formattedValue?: string;
 }
 
 export type DashboardCardStyle = 'chart' | 'toplist' | 'webvitals';
@@ -32,6 +33,8 @@ export interface CardSizeBreakpoints {
 export interface CardData {
   event: string;
   title: string;
+  labelFormat: 'none' | 'country';
+  valueFormat: 'number' | 'filesize';
   filters?: { [key: string]: string | number };
   dataLabel?: string;
   valueLabel?: string;
@@ -40,10 +43,16 @@ export interface CardData {
   tag?: string;
 }
 
+export interface CardVisibilityCondition {
+  parent: string[];
+}
+
 export interface DashboardCardBase {
   style: DashboardCardStyle;
   size?: CardSizeBreakpoints;
+  visible?: CardVisibilityCondition;
 }
+
 export interface DashboardCard extends DashboardCardBase, CardData {
 }
 
@@ -73,7 +82,7 @@ export const initialState: ProjectState = {
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
   activeProjectKeys: [],
-  activeDashboard: defaultDashboard,
+  activeDashboard: (localStorage.getItem('dashboard') && JSON.parse(localStorage.getItem('dashboard'))) || defaultDashboard,
 };
 
 export const projectReducer = createReducer(

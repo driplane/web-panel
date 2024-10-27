@@ -19,6 +19,7 @@ import Logger from '../logger.service';
 import { addFilter, clearFilter, loadProjectKeys, switchDashboardSuccess } from '../state/project/project.actions';
 import { activeDashboard, activeFilters, activeProject, activeProjectKeys } from '../state/project/project.selectors';
 import { CardData, Dashboard } from '../state/project/project.reducer';
+import { LabelFormatPipe } from '../label-format.pipe';
 const log = Logger('page:project');
 
 type Range = 'live' | 'today' | 'day' | 'week' | 'month';
@@ -176,7 +177,7 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   );
 
-  topList({ tag, event = 'page_view', filters: extraFilters = {}, limit = 10, unknownLabel = '(unknown)' }) {
+  topList({ tag, event = 'page_view', filters: extraFilters = {}, limit = 10 }) {
     return this.notOnboardingMode$.pipe(
       filter((notOnboarding) => notOnboarding),
       switchMap(() => this.selection$),
@@ -201,15 +202,15 @@ export class ProjectPage implements OnInit {
       map((res) => res.result),
       map((list) => list.map(item => ({
         count: item.result,
-        label: item[tag] ? item[tag] : unknownLabel
+        label: item[tag]
       }))),
     );
   }
 
-  isVisible(sourceData: Observable<{ count, label }[]>, ...keys: string[]) {
+  isVisible(sourceData: Observable<{ count, label }[]>, tag: string, parent: string[]) {
     return combineLatest([this.onboardingMode$, this.filters$]).pipe(
       switchMap(([onboarding, filters]) => iif(
-        () => onboarding || filters.some(filter => keys.includes(filter.key)),
+        () => onboarding || filters.some(filter => filter.key === tag) || (parent.length > 0 && !filters.some(filter => parent.includes(filter.key))),
         of(false),
         of(true)
       )),
@@ -222,26 +223,6 @@ export class ProjectPage implements OnInit {
       )),
     );
   }
-
-  topBrowserVersions$ = this.topList({ tag: 'ua_br_v' }).pipe(
-    shareReplay(),
-  );
-
-  topBrowserVersionsVisible$ = combineLatest([this.onboardingMode$, this.filters$]).pipe(
-    switchMap(([onboarding, filters]) => iif(
-      () => onboarding || filters.some(filter => filter.key === 'ua_br_'),
-      of(false),
-      of(filters.some(filter => filter.key === 'ua_br'))
-    )),
-    switchMap((visible) => iif(
-      () => visible,
-      this.topBrowserVersions$.pipe(
-        map((list) => list.length > 0)
-      ),
-      of(false)
-    )),
-    shareReplay(),
-  );
 
   totalEventCount$ = this.selection$.pipe(
     switchMap(({ project, dashboard, since, until, filters }) => this.driplane.getEventResult<string>(project, dashboard.mainEvent, 'count', {
@@ -341,7 +322,7 @@ export class ProjectPage implements OnInit {
   constructor(
     private store: Store,
     private driplane: DriplaneService,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
   ) {
 
   }
@@ -409,15 +390,15 @@ export class ProjectPage implements OnInit {
         case 'toplist': {
 
           const data$ = dataGroup$.pipe(
-            switchMap((card) => this.topList({ event: card.event, filters: card.filters, tag: card.tag, unknownLabel: card.unknownLabel }))
+            switchMap((cardData) => this.topList({ event: cardData.event, filters: cardData.filters, tag: cardData.tag }))
           );
 
           const dataFull$ = dataGroup$.pipe(
-            switchMap((card) => this.topList({ event: card.event, filters: card.filters, limit: 1000, tag: card.tag, unknownLabel: card.unknownLabel }))
+            switchMap((cardData) => this.topList({ event: cardData.event, filters: cardData.filters, limit: 1000, tag: cardData.tag }))
           );
 
           const visible$ = dataGroup$.pipe(
-            switchMap((card) => this.isVisible(data$, card.tag))
+            switchMap((cardData) => this.isVisible(data$, cardData.tag, (card.visible?.parent || [])))
           );
 
           return {
@@ -461,6 +442,11 @@ export class ProjectPage implements OnInit {
     });
   }
 
+  formatLabel(itemLabel: string, labelFormat: string, unknownLabel: string): string {
+    return new LabelFormatPipe().transform(itemLabel, labelFormat, unknownLabel);
+  }
+
+
   hasFilter(...keys: string[]) {
     return this.filters$.pipe(
       map((filters) => filters.some(filter => keys.includes(filter.key))),
@@ -470,8 +456,10 @@ export class ProjectPage implements OnInit {
     );
   }
 
-  addFilter(key: string, value: string, label?: string) {
-    this.store.dispatch(addFilter({ filter: { key, value, label } }));
+  addFilter(key: string, value: string, label?: string, labelFormat?: string, unknownLabel?: string) {
+    const formattedValue = new LabelFormatPipe().transform(value, labelFormat, unknownLabel);
+
+    this.store.dispatch(addFilter({ filter: { key, value, label, formattedValue } }));
   }
 
   clearFilter(filterKey: string) {

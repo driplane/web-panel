@@ -17,6 +17,7 @@ import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { ActionReducer } from '@ngrx/store';
 import Logger from './logger.service';
 import { ToastEffects } from './state/toast/taoast.effects';
+import { LabelFormatPipe } from './label-format.pipe';
 const log = Logger('rx:actions');
 
 export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -43,6 +44,7 @@ export function logger(reducer: ActionReducer<any>): ActionReducer<any> {
     }, {metaReducers: [logger]}),
     EffectsModule.forRoot([AuthEffects, ProjectEffects, ToastEffects]),
     StoreRouterConnectingModule.forRoot(),
+    LabelFormatPipe,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

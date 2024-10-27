@@ -44,13 +44,13 @@
     <ion-list inset>
       <ion-item>
         <ion-checkbox [checked]="projectKeyForm.value.write"
-          (ionChange)="projectKeyForm.patchValue({ write: $event.target.checked })" #writeAccess [disabled]="editMode">Write
+          (ionChange)="projectKeyForm.patchValue({ write: $event.target.checked })" #writeAccess>Write
           Access</ion-checkbox>
         <ion-note color="medium">Allow event write</ion-note>
       </ion-item>
       <ion-item>
         <ion-checkbox [checked]="projectKeyForm.value.read"
-          (ionChange)="projectKeyForm.patchValue({ read: $event.target.checked })" #readAccess [disabled]="editMode">Read
+          (ionChange)="projectKeyForm.patchValue({ read: $event.target.checked })" #readAccess>Read
           Access</ion-checkbox>
         <ion-note color="medium">Allow reading event stats</ion-note>
       </ion-item>
@@ -63,7 +63,7 @@
           <ion-label><strong>Key</strong></ion-label>
           <ion-note><strong>Value</strong></ion-note>
         </ion-item> -->
-        <ion-item-sliding *ngFor="let autoFill of projectKeyForm.value.auto_fill | keyvalue" #sliding [disabled]="editMode">
+        <ion-item-sliding *ngFor="let autoFill of projectKeyForm.value.auto_fill | keyvalue" #sliding>
           <ion-item>
             <ion-label>{{ autoFill.key }}</ion-label>
             <ion-note>{{ autoFill.value }}</ion-note>
@@ -75,8 +75,20 @@
           </ion-item-options>
 
         </ion-item-sliding>
+        <ion-item-sliding *ngFor="let autoFill of projectKeyForm.value.auto_fill_template | keyvalue" #sliding>
+          <ion-item>
+            <ion-label>{{ autoFill.key }}</ion-label>
+            <ion-note>{{ autoFill.value }}</ion-note>
+          </ion-item>
 
-        <ion-item button (click)="addAutoFill.present()" [disabled]="editMode">
+          <ion-item-options>
+            <ion-item-option color="danger" (click)="deleteAutoFillTemplateKey(autoFill.key)"><ion-icon slot="start"
+                name="trash"></ion-icon>Delete</ion-item-option>
+          </ion-item-options>
+
+        </ion-item-sliding>
+
+        <ion-item button (click)="addAutoFill.present()">
           <ion-icon slot="start" name="add-circle"></ion-icon>
           <ion-label>Add auto fill value</ion-label>
         </ion-item>
@@ -89,7 +101,7 @@
     <ng-container *ngIf="readAccess.checked">
       <ion-note color="medium" class="list-note-section list-note ion-margin-horizontal">Auto Filter</ion-note>
       <ion-list inset>
-        <ion-item-sliding *ngFor="let autoFilter of projectKeyForm.value.auto_filter | keyvalue" #sliding [disabled]="editMode">
+        <ion-item-sliding *ngFor="let autoFilter of projectKeyForm.value.auto_filter | keyvalue" #sliding>
           <ion-item>
             <ion-label>{{ autoFilter.key }}</ion-label>
             <ion-note>{{ autoFilter.value }}</ion-note>
@@ -101,7 +113,7 @@
           </ion-item-options>
 
         </ion-item-sliding>
-        <ion-item button (click)="addAutoFilter.present()" [disabled]="editMode">
+        <ion-item button (click)="addAutoFilter.present()">
           <ion-icon slot="start" name="add-circle"></ion-icon>
           <ion-label>Add auto filter value</ion-label>
         </ion-item>
@@ -142,6 +154,9 @@
               <ion-segment-button value="number">
                 <ion-label>Numeric value</ion-label>
               </ion-segment-button>
+              <ion-segment-button value="template">
+                <ion-label>Template</ion-label>
+              </ion-segment-button>
             </ion-segment>
           </ion-toolbar>
         </form>
@@ -153,7 +168,13 @@
             <ion-item>
               <ion-input label="Key" type="text" errorText="Key can only include lowercase letters, numbers, dash and underscore" formControlName="key" required pattern="[a-z1-9\-_]*"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item *ngIf="valueType.value === 'template'">
+              <ion-select label="Value" interface="popover" formControlName="value" required>
+                <ion-select-option value="geoip.city">City</ion-select-option>
+                <ion-select-option value="geoip.country_code">Country Code</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item *ngIf="valueType.value !== 'template'">
               <ion-input label="Value" errorText="Please check value" [type]="valueType.value" formControlName="value" required></ion-input>
             </ion-item>
           </ion-list>
