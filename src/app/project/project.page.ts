@@ -22,7 +22,7 @@ import { CardData, Dashboard } from '../state/project/project.reducer';
 import { LabelFormatPipe } from '../label-format.pipe';
 const log = Logger('page:project');
 
-type Range = 'live' | 'today' | 'day' | 'week' | 'month';
+type Range = 'live' | 'today' | '24h' | 'day' | 'week' | 'month';
 type EnvType = 'ua_br' | 'ua_os';
 type DevType = 'ua_dv' | 'ua_dv_t' | 'ua_dv_v';
 
@@ -45,6 +45,7 @@ export class ProjectPage implements OnInit {
       switch (range) {
         case 'live':
         case 'today':
+        case '24h':
         case 'day':
           return 'HH:mm';
         case 'week':
@@ -60,6 +61,7 @@ export class ProjectPage implements OnInit {
       switch (range) {
         case 'live':
         case 'today':
+        case '24h':
         case 'day':
           return 'Time';
         case 'week':
@@ -83,6 +85,7 @@ export class ProjectPage implements OnInit {
     map((range) => {
       const diffMap = {
         live: ['now', '-30m'],
+        '24h': ['now', '-24h'],
         today: ['now', '-0d/d'],
         day: ['-0d/d', '-1d/d'],
         week: ['-0d/d', '-7d/d'],
@@ -237,7 +240,7 @@ export class ProjectPage implements OnInit {
   // PERFORMANCE
   private perf(vital: 'ttfb' | 'fcp' | 'fid' | 'inp' | 'cls' | 'lcp', op: 'average' | 'min' | 'max' | 'median') {
     return this.selection$.pipe(
-      switchMap(({ since, until, project, filters }) => this.driplane.getEventResult<string>(project, 'page_view', op, {
+      switchMap(({ since, until, project, filters }) => this.driplane.getEventResult<string>(project, 'page_perf', op, {
         since,
         until,
         tag: vital,
@@ -348,6 +351,7 @@ export class ProjectPage implements OnInit {
               interval: ({
                 live: 'minute',
                 today: 'hour',
+                '24h': 'hour',
                 day: 'hour',
                 week: 'day',
                 month: 'day'
