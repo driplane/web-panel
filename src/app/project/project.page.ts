@@ -238,7 +238,7 @@ export class ProjectPage implements OnInit {
   );
 
   // PERFORMANCE
-  private perf(vital: 'ttfb' | 'fcp' | 'fid' | 'inp' | 'cls' | 'lcp', op: 'average' | 'min' | 'max' | 'median') {
+  private perf(vital: 'ttfb' | 'fcp' | 'inp' | 'cls' | 'lcp', op: 'average' | 'min' | 'max' | 'median') {
     return this.selection$.pipe(
       switchMap(({ since, until, project, filters }) => this.driplane.getEventResult<string>(project, 'page_perf', op, {
         since,
@@ -261,10 +261,6 @@ export class ProjectPage implements OnInit {
           fcp: {
             improve: 1800,
             poor: 3000,
-          },
-          fid: {
-            improve: 100,
-            poor: 300,
           },
           inp: {
             improve: 200,
@@ -305,7 +301,6 @@ export class ProjectPage implements OnInit {
 
   perfTTFBAvg$ = this.perf('ttfb', 'average');
   perfFCPAvg$ = this.perf('fcp', 'average');
-  perfFIDAvg$ = this.perf('fid', 'average');
   perfINPAvg$ = this.perf('inp', 'average');
   perfCLSAvg$ = this.perf('cls', 'average');
   perfLCPAvg$ = this.perf('lcp', 'average');

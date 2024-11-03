@@ -136,8 +136,6 @@
                 <ng-container
                   *ngTemplateOutlet="gauge; context: { $implicit: { label: 'LCP',  data: perfLCPAvg$ | async } }"></ng-container>
                 <ng-container
-                  *ngTemplateOutlet="gauge; context: { $implicit: { label: 'FID',  data: perfFIDAvg$ | async } }"></ng-container>
-                <ng-container
                   *ngTemplateOutlet="gauge; context: { $implicit: { label: 'CLS',  data: perfCLSAvg$ | async } }"></ng-container>
                 <ng-container
                   *ngTemplateOutlet="gauge; context: { $implicit: { label: 'INP',  data: perfINPAvg$ | async } }"></ng-container>
