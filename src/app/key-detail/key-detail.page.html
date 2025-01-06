@@ -23,10 +23,10 @@
         <p>You can put the code below before <code>&lt;/head&gt;</code> tag in your website:</p>
         <div class="code-example">
           <pre class="hljs"
-            style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ key.key }}"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
+            style="display: block; overflow-x: auto; padding: 0.5em; background: rgb(240, 240, 240); color: rgb(68, 68, 68);"><span class="hljs-tag">&lt;<span class="hljs-name" style="font-weight: 700;">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"module"</span><br>  <span class="hljs-attr">data-driplane-token</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"{{ key.key }}"</span><br>  <span class="hljs-attr">data-driplane-modules</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"vitals"</span><br>  <span class="hljs-attr">src</span>=<span class="hljs-string" style="color: rgb(136, 0, 0);">"https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name" style="font-weight: 700;">script</span>&gt;</span></pre>
 
           <sl-copy-button
-            value='&lt;script type="module" data-driplane-token="{{ key.key }}" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;' hoist></sl-copy-button>
+            value='&lt;script type="module" data-driplane-token="{{ key.key }}" data-driplane-modules="vitals" src="https://cdn.jsdelivr.net/npm/&#64;driplane/web&#64;beta/dist/driplane.js"&gt;&lt;/script&gt;' hoist></sl-copy-button>
         </div>
         <p color="medium">Learn more about <a>advanced tracking options</a></p>
       </ion-item>
