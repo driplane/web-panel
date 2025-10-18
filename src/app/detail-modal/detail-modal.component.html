@@ -16,7 +16,7 @@
           <ion-note slot="end"><strong>{{ value }}</strong></ion-note>
         </ion-item>
         <ion-item *cdkVirtualFor="let item of data | async">
-          <ion-label>{{ item.label }}</ion-label>
+          <ion-label><a href="#">{{ item.label | labelFormat:labelFormatInput:unknownLabel }}</a></ion-label>
           <ion-note slot="end">{{ item.count | number }}</ion-note>
         </ion-item>
       </ion-list>

@@ -30,9 +30,6 @@ export const deleteProjectKeyFailed = createAction(_('Delete project key failed'
 export const addFilter = createAction(_('Add filter'), props<{ filter: Filter }>());
 export const clearFilter = createAction(_('Clear filter'), props<{ filterKey: string }>());
 
-export const loadDashboards = createAction(_('Load dashboards'), props<{ project: Project }>());
-export const loadDashboardsSuccess = createAction(_('Dashboard loaded'), props<{ project: Project, dashboards: Dashboard[] }>());
-export const loadDashboardsFailed = createAction(_('Dashboard loading failed'));
-
 export const switchDashboard = createAction(_('Switch dashboard'), props<{ project: Project, dashboard: Dashboard }>());
 export const switchDashboardSuccess = createAction(_('Switch dashboard success'), props<{ project: Project, dashboard: Dashboard }>());
+export const switchDashboardFailed = createAction(_('Switch dashboard failed'), props<{ project: Project, dashboard: Dashboard }>());

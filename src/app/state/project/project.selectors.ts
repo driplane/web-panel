@@ -1,6 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { Project } from '../../driplane.types';
 import { ProjectState, PROJECT_FEATURE_KEY } from './project.reducer';
+import { userClientConfig } from '../auth/auth.selectors';
+import { combineLatest, combineLatestAll } from 'rxjs';
 
 export const selectProjectState = createFeatureSelector<ProjectState>(
   PROJECT_FEATURE_KEY,

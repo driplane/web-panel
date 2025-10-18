@@ -5,12 +5,13 @@ import {
   Router
 } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { EMPTY } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
 import { Project } from './driplane.types';
 import Logger from './logger.service';
 import { loadProjects, switchProjectSuccess } from './state/project/project.actions';
 import { projects } from './state/project/project.selectors';
+import { DriplaneService } from './driplane.service';
 const log = Logger('resolver:projectId');
 
 export const ProjectIdResolverService: ResolveFn<Project> = (
@@ -19,7 +20,22 @@ export const ProjectIdResolverService: ResolveFn<Project> = (
   log('resolving project');
   const router = inject(Router);
   const store = inject(Store);
+  const api = inject(DriplaneService);
   const urlId = route.paramMap.get('projectId');
+
+  const token = route.paramMap.get('projectKey');
+
+  console.log(token);
+
+  if (token) {
+    // encode token with base64
+    const encodedToken = btoa(`${token}:`);
+    api.setBasicToken(`${encodedToken}`);
+
+    store.dispatch(switchProjectSuccess({ activeProject: urlId }));
+
+    return of({} as Project)
+  }
 
   store.dispatch(loadProjects());
 
@@ -34,7 +50,7 @@ export const ProjectIdResolverService: ResolveFn<Project> = (
         return project;
       }
 
-      throw Error("projcet not found");
+      throw Error("project not found");
     }),
     catchError(() => {
       console.error('project not found');

@@ -85,26 +85,31 @@
   <ion-list inset>
     <ion-list-header>
       <ion-label>Dashboard Settings</ion-label>
+      <ion-button *ngIf="pointerDevice && (dashboardCards$ | async)?.length > 0"
+        (click)="dashboardEditMode=!dashboardEditMode">Edit</ion-button>
     </ion-list-header>
 
-    <ion-item-sliding *ngFor="let card of dashboardCards$ | async" [disabled]="pointerDevice">
-      <ion-item [detail]="!editMode">
-        <!-- <ion-button *ngIf="editMode" (click)="confirmDeleteKey(key)" fill="clear" color="danger" slot="start"><ion-icon
-            slot="icon-only" name="trash"></ion-icon></ion-button> -->
-        <ion-label>
-          <h2>{{ card.data[0]?.title || card.style }}</h2>
-          <ion-note class="tag-list">Tags:
-            <span *ngFor="let data of card.data">{{data.event }}.{{ data.tag }}</span>
-          </ion-note>
-        </ion-label>
-      </ion-item>
+    <ion-reorder-group [disabled]="!dashboardEditMode" (ionItemReorder)="orderDashboardCards($any($event))">
+      <ion-item-sliding *ngFor="let card of dashboardCards$ | async" [disabled]="pointerDevice">
+        <ion-item [detail]="!dashboardEditMode" (click)="!dashboardEditMode && showCardEditor(card)">
+          <ion-button *ngIf="dashboardEditMode" (click)="confirmDeleteCard(card)" fill="clear" color="danger" slot="start"><ion-icon
+              slot="icon-only" name="trash"></ion-icon></ion-button>
+          <ion-label>
+            <h2>{{ card.data[0]?.title || card.style }}</h2>
+            <ion-note class="tag-list">Tags:
+              <span *ngFor="let data of card.data">{{data.event }}.{{ data.tag }}</span>
+            </ion-note>
+          </ion-label>
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
 
-      <ion-item-options>
-        <ion-item-option color="danger"><ion-icon slot="start"
-            name="trash"></ion-icon>Delete</ion-item-option>
-      </ion-item-options>
+        <ion-item-options>
+          <ion-item-option color="danger"><ion-icon slot="start"
+              name="trash"></ion-icon>Delete</ion-item-option>
+        </ion-item-options>
 
-    </ion-item-sliding>
+      </ion-item-sliding>
+    </ion-reorder-group>
 
     <ion-item button (click)="cardEditor.present()">
       <ion-icon slot="start" ios="add-circle-outline" md="add-circle-sharp"></ion-icon>

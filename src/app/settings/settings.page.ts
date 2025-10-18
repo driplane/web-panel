@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Project } from '../driplane.types';
@@ -9,6 +9,16 @@ import Logger from '../logger.service';
 import { ActionSheetController, IonModal, Platform } from '@ionic/angular';
 import { DriplaneService } from '../driplane.service';
 import { combineLatest, merge } from 'rxjs';
+import {
+  ItemReorderEventDetail,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonReorder,
+  IonReorderGroup,
+} from '@ionic/angular/standalone';
+import { DashboardCard, DashboardGroupCard } from '../state/project/project.reducer';
+
 const log = Logger('page:settings');
 
 interface AutoFill {
@@ -23,6 +33,9 @@ interface AutoFill {
 export class SettingsPage {
   pointerDevice = false;
   editMode = false;
+  dashboardEditMode = false;
+
+  @ViewChild('cardEditor') cardEditor: IonModal;
 
   cardEditForm = new FormGroup({
     style: new FormControl('chart'),
@@ -77,6 +90,54 @@ export class SettingsPage {
     if (matchMedia('(pointer:fine)').matches) {
       this.pointerDevice = true;
     }
+  }
+
+  orderDashboardCards(event: CustomEvent<ItemReorderEventDetail>) {
+    // The `from` and `to` properties contain the index of the item
+    // when the drag started and ended, respectively
+    console.log('Dragged from index', event.detail.from, 'to', event.detail.to);
+
+    // Finish the reorder and position the item in the DOM based on
+    // where the gesture ended. This method can also be called directly
+    // by the reorder group
+    event.detail.complete();
+  }
+
+  showCardEditor(card) {
+    this.cardEditForm.patchValue(card);
+    this.cardEditor.present();
+  }
+
+  confirmDeleteCard(card: DashboardGroupCard) {
+    this.actionSheetCtrl
+      .create({
+        header: 'Are you sure you want to delete this card?',
+        buttons: [
+          {
+            text: 'Delete',
+            role: 'destructive',
+            data: {
+              action: 'delete',
+              card,
+            },
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            data: {
+              action: 'cancel',
+            },
+          },
+        ],
+      })
+      .then((actionSheet) => {
+        actionSheet.present();
+        actionSheet.onDidDismiss().then((result) => {
+          if (result.role === 'destructive') {
+            // this.store.dispatch(deleteDashboardCard({ card }));
+          }
+        })
+      });
   }
 
   confirmDeleteKey(projectKey) {

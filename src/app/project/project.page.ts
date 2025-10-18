@@ -180,17 +180,18 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   );
 
-  topList({ tag, event = 'page_view', filters: extraFilters = {}, limit = 10 }) {
+  topList({ tag, event = 'page_view', filters: extraFilters = {}, limit = 10, key = 'visitor' }) {
     return this.notOnboardingMode$.pipe(
       filter((notOnboarding) => notOnboarding),
       switchMap(() => this.selection$),
       tap((l) => log('topList Call', tag)),
       switchMap(({ since, until, project, filters }) =>
-        this.driplane.getEventResult(project, event, 'count', {
+        this.driplane.getEventResult(project, event, key === 'visitor' ? 'unique' : 'count', {
           since,
           until,
           limit,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          ...(key === 'visitor' ? { tag: 'cid' } : {}),
           group_by: tag,
           order_by: 'result',
           order_by_dir: 'desc',

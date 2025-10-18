@@ -172,6 +172,15 @@
               <ion-select label="Value" interface="popover" formControlName="value" required>
                 <ion-select-option value="geoip.city">City</ion-select-option>
                 <ion-select-option value="geoip.country_code">Country Code</ion-select-option>
+                <ion-select-option value="visitor.id">Visitor ID</ion-select-option>
+                <ion-select-option value="ua.browser_name">Browser Name</ion-select-option>
+                <ion-select-option value="ua.browser_version">Browser Version</ion-select-option>
+                <ion-select-option value="ua.device_type">Device Type</ion-select-option>
+                <ion-select-option value="ua.device_vendor">Device Vendor</ion-select-option>
+                <ion-select-option value="ua.device_model">Device Model</ion-select-option>
+                <ion-select-option value="ua.os_name">OS Name</ion-select-option>
+                <ion-select-option value="ua.os_version">OS Version</ion-select-option>
+                <ion-select-option value="ua.bot_name">Bot Name</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item *ngIf="valueType.value !== 'template'">

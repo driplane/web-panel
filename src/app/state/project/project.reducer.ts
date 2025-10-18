@@ -70,6 +70,7 @@ export interface Dashboard {
 export interface ProjectState {
   projects: Project[];
   projectListFetched: boolean;
+  dashboard: Dashboard[];
   activeProject: string;
   activeFilters: Filter[];
   activeProjectKeys: ProjectKey[];
@@ -79,6 +80,7 @@ export interface ProjectState {
 export const initialState: ProjectState = {
   projects: null,
   projectListFetched: false,
+  dashboard: [],
   activeProject: localStorage.getItem('lastProjectId'),
   activeFilters: [],
   activeProjectKeys: [],
@@ -113,7 +115,7 @@ export const projectReducer = createReducer(
     ...state,
     activeProjectKeys: projectKeys,
   })),
-  on(switchDashboardSuccess, (state, { dashboard }) => ({
+  on(switchDashboardSuccess, (state, { project, dashboard }) => ({
     ...state,
     activeDashboard: dashboard
   })),

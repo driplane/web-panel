@@ -33,11 +33,16 @@ const log = Logger('service:driplane');
 export class DriplaneService {
   private baseUrl = environment.apiBaseUrl;
   private token = '';
+  private basicToken = '';
 
   constructor(private http: HttpClient, private store: Store) {}
 
   setToken(token: string) {
     this.token = token;
+  }
+
+  setBasicToken(token: string) {
+    this.basicToken = token;
   }
 
   register(email, password) {
@@ -91,6 +96,12 @@ export class DriplaneService {
 
   me() {
     return this.tokenReq<User>('get', 'users/me');
+  }
+
+  saveClientConfig(config) {
+    return this.tokenReq('put', 'users/me/client_config', {
+      body: config,
+    });
   }
 
   createProject({ name }: ProjectConfig): Observable<Project> {
@@ -258,7 +269,7 @@ export class DriplaneService {
     endpoint: string,
     options?: RequestOptions
   ): Observable<T> {
-    const token = btoa(`${project.id}:${project.secret}`);
+    const token = this.basicToken || btoa(`${project.id}:${project.secret}`);
     return this.http.request<T>(method, `${this.baseUrl}/${endpoint}`, {
       headers: {
         authorization: `Basic ${token}`,

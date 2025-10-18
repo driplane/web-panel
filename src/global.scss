@@ -30,6 +30,15 @@
 }
 
 .limited-width::part(scroll) {
-  max-width: 700px;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: [full-start] 1fr [main-start] min(700px, 100% - 30px) [main-end] 1fr [full-end];
+  grid-auto-rows: max-content;
+}
+
+.limited-width > * {
+  grid-column: main;
+}
+
+.limited-width > .full-width {
+  grid-column: full;
 }

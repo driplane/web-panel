@@ -26,7 +26,7 @@ const routes: Routes = [
     loadChildren: () => import('./sidemenu/sidemenu.module').then( m => m.SidemenuPageModule)
   },
   {
-    path: 'embed/:projectId',
+    path: 'embed/:projectId/:projectKey',
     resolve: {
       project: ProjectIdResolverService,
     },

@@ -1,12 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 import {
+  loadClientConfigSuccess,
   logInFailed,
   logInFailedClear,
   logInSuccess,
   setSession,
-  signOutSuccess
+  signOutSuccess,
+  updateClientConfigSuccess
 } from './auth.actions';
-import { User } from '../../driplane.types';
+import { ClientConfig, User } from '../../driplane.types';
 
 export const AUTH_FEATURE_KEY = 'auth';
 
@@ -16,6 +18,7 @@ export interface AuthState {
   expiresAt: Date;
   errorMessage: string;
   me: User;
+  clientConfig: ClientConfig;
 }
 
 export const initialState: AuthState = {
@@ -23,7 +26,8 @@ export const initialState: AuthState = {
   token: '',
   expiresAt: null,
   errorMessage: '',
-  me: null
+  me: null,
+  clientConfig: {}
 };
 
 export const authReducer = createReducer(
@@ -33,7 +37,8 @@ export const authReducer = createReducer(
     loggedIn: true,
     token,
     expiresAt,
-    me: user
+    me: user,
+    clientConfig: user.client_config
   })),
 
   on(signOutSuccess, (state) => ({
@@ -59,4 +64,14 @@ export const authReducer = createReducer(
     ...state,
     errorMessage: ''
   }))),
+
+  on(loadClientConfigSuccess, (state, { clientConfig }) => ({
+    ...state,
+    clientConfig
+  })),
+
+  on(updateClientConfigSuccess, (state, { clientConfig }) => ({
+    ...state,
+    clientConfig
+  }))
 );

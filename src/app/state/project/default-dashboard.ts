@@ -42,7 +42,7 @@ export default {
         tag: 'url_host',
         title: 'Domains',
         dataLabel: 'Domain',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
       }]
     },
     {
@@ -57,7 +57,7 @@ export default {
         tag: 'url_path',
         title: 'Top URLs',
         dataLabel: 'URL',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
       }]
     },
     {
@@ -72,7 +72,7 @@ export default {
         tag: 'ref_host',
         title: 'Sources',
         dataLabel: 'Source Domain',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(direct)',
         filters: {
           ref_ext: 1
@@ -91,7 +91,7 @@ export default {
         tag: 'ref',
         title: 'Source URLs',
         dataLabel: 'Source URL',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(none)',
         filters: {
           ref_ext: 1
@@ -110,7 +110,7 @@ export default {
         tag: 'country',
         title: 'Countries',
         dataLabel: 'Country',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
         labelFormat: 'country'
       }]
@@ -130,7 +130,7 @@ export default {
         tag: 'city',
         title: 'Cities',
         dataLabel: 'City',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
       }]
     },
@@ -146,14 +146,14 @@ export default {
         tag: 'ua_br',
         title: 'Browsers',
         dataLabel: 'Browser',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
       }, {
         event: 'page_view',
         tag: 'ua_os',
         title: 'Operating Systems',
         dataLabel: 'Operating System',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(other)',
       }]
     },
@@ -172,7 +172,7 @@ export default {
         tag: 'ua_br_v',
         title: 'Browsers Versions',
         dataLabel: 'Browser Version',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
       }]
     },
@@ -188,21 +188,21 @@ export default {
         tag: 'ua_dv_t',
         title: 'Device Types',
         dataLabel: 'Device Type',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
       }, {
         event: 'page_view',
         tag: 'ua_dv_v',
         title: 'Vendors',
         dataLabel: 'Vendor',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(other)',
       }, {
         event: 'page_view',
         tag: 'ua_dv',
         title: 'Models',
         dataLabel: 'Model',
-        valueLabel: 'Page Views',
+        valueLabel: 'Visitors',
         unknownLabel: '(other)',
       }]
     },
@@ -212,6 +212,21 @@ export default {
         size: 12,
       },
       data: []
-    }
+    },
+    // {
+    //   style: 'gauge',
+    //   size: {
+    //     size: 12
+    //   },
+    //   title: 'Performance',
+    //   data: [{
+    //     event: 'page_view',
+    //     tag: 'ttfb',
+    //     op: 'avg',
+    //     dataLabel: 'TTFB',
+    //     valueFormat: 'number:1.0-0',
+    //     sections: [800, 1800]
+    //   }]
+    // }
   ]
 } as Dashboard;

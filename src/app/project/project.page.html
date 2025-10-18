@@ -75,7 +75,7 @@
             </ion-card>
 
             <app-detail-modal [title]="card.dataGroup.value.title" [label]="card.dataGroup.value.dataLabel"
-              [value]="card.dataGroup.value.valueLabel" [data]="card.dataFull$" #details></app-detail-modal>
+              [value]="card.dataGroup.value.valueLabel" [labelFormat]="card.dataGroup.value.labelFormat" [unknownLabel]="card.dataGroup.value.unknownLabel" [data]="card.dataFull$" #details></app-detail-modal>
             </ng-container>
           <ng-container *ngIf="card.style === 'chart'">
             <ion-card class="chart-card">

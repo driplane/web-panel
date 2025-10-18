@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { User } from '../../driplane.types';
+import { ClientConfig, User } from '../../driplane.types';
 
 const _ = log => `[Auth] ${log}`;
 
@@ -18,3 +18,11 @@ export const signOutSuccess = createAction(_('Sign out successful'));
 
 export const tokenInvalid = createAction(_('Token invalid'));
 export const tokenExpired = createAction(_('Token expired'));
+
+export const loadClientConfig = createAction(_('Load client config'));
+export const loadClientConfigSuccess = createAction(_('Client config loaded'), props<{ clientConfig: ClientConfig }>());
+export const loadClientConfigFailed = createAction(_('Client config loading failed'));
+
+export const updateClientConfig = createAction(_('Update client config'), props<{ clientConfig: ClientConfig }>());
+export const updateClientConfigSuccess = createAction(_('Update client config success'), props<{ clientConfig: ClientConfig }>());
+export const updateClientConfigFailed = createAction(_('Update client config failed'), props<{ clientConfig: ClientConfig }>());

@@ -14,6 +14,8 @@ export class DetailModalComponent implements OnInit {
   @Input() label: string;
   @Input() value: string;
   @Input() data: Observable<{ label: string; count: number }[]>;
+  @Input() labelFormatInput: string;
+  @Input() unknownLabel: string;
 
   isOpen = false;
   presentingElement = null;

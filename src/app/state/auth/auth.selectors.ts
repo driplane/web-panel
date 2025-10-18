@@ -25,3 +25,8 @@ export const loginFailed = createSelector(
   selectAuthState,
   (state: AuthState) => state?.errorMessage || false,
 );
+
+export const userClientConfig = createSelector(
+  selectAuthState,
+  (state: AuthState) => state?.clientConfig || {},
+);

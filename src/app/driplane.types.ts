@@ -3,15 +3,24 @@ import {
   HttpHeaders,
   HttpParams
 } from '@angular/common/http';
+import { Dashboard } from './state/project/project.reducer';
 
 
 export interface AuthResponse {
   token: string;
 }
 
+export interface ProjectClientConfig {
+  dashboards?: Dashboard[];
+}
+
+export interface ClientConfig {
+  [projectId: string]: ProjectClientConfig;
+}
 export interface User {
   id: string;
   email: string;
+  client_config?: ClientConfig;
 }
 
 export interface Query {
