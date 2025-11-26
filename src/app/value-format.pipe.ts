@@ -2,18 +2,14 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { getName } from 'country-list';
 
 @Pipe({
-  name: 'labelFormat',
+  name: 'valueFormat',
   standalone: true
 })
-export class LabelFormatPipe implements PipeTransform {
+export class ValueFormatPipe implements PipeTransform {
 
-  transform(value: string, format: string, unknownLabel = '(unknown)'): string {
+  transform(value: string, format: 'number' | 'filesize' = 'number', unknownLabel = '(unknown)'): string {
     if (!value) {
       return unknownLabel;
-    }
-
-    if (format === 'country') {
-      return getName(value);
     }
 
     if (format == 'filesize') {
@@ -30,6 +26,12 @@ export class LabelFormatPipe implements PipeTransform {
       }
 
       return `${size.toFixed(1)} ${units[unitIndex]}`;
+    }
+
+    if (format === 'number') {
+      const num = parseFloat(value);
+      if (isNaN(num)) return value;
+      return num.toLocaleString();
     }
 
     return value;

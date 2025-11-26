@@ -11,6 +11,7 @@ import { LineChartComponent } from '../line-chart/line-chart.component';
 import { ProjectPage } from './project.page';
 import { DetailModalComponent } from '../detail-modal/detail-modal.component';
 import { LabelFormatPipe } from '../label-format.pipe';
+import { ValueFormatPipe } from '../value-format.pipe';
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import { LabelFormatPipe } from '../label-format.pipe';
     ProjectPageRoutingModule,
     ScrollingModule,
     LabelFormatPipe,
+    ValueFormatPipe,
   ],
   declarations: [ProjectPage, LineChartComponent, DetailModalComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

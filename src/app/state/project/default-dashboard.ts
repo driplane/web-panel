@@ -3,7 +3,7 @@ import { Dashboard } from "./project.reducer";
 export default {
   id: 'default',
   title: 'Dashboard',
-  mainEvent: 'page_view',
+  mainEvent: 'hit',
   cards: [
     {
       style: 'chart',
@@ -12,11 +12,24 @@ export default {
         xs: 12,
       },
       data: [{
-        event: 'page_view',
-        title: 'Page Views',
+        event: 'hit',
+        title: 'Hits',
         op: 'count',
       }]
     },
+    // {
+    //   style: 'chart',
+    //   size: {
+    //     md: 6,
+    //     xs: 12,
+    //   },
+    //   data: [{
+    //     event: 'hit',
+    //     title: 'Clients',
+    //     op: 'unique',
+    //     tag: 'visitor',
+    //   }]
+    // },
     {
       style: 'chart',
       size: {
@@ -24,10 +37,11 @@ export default {
         xs: 12,
       },
       data: [{
-        event: 'page_view',
-        title: 'Visitors',
-        op: 'unique',
-        tag: 'cid'
+        event: 'hit',
+        title: 'Bandwidth',
+        op: 'total',
+        tag: 'srv_size',
+        valueFormat: 'filesize',
       }]
     },
     {
@@ -38,7 +52,82 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
+        event: 'hit',
+        op: 'total',
+        tag: 'srv_size',
+        filters: {group_by: 'service'},
+        title: 'Top Bandwidth by Service',
+        dataLabel: 'Service',
+        valueFormat: 'filesize',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        op: 'total',
+        tag: 'srv_size',
+        title: 'Hotlinked Bandwidth',
+        dataLabel: 'Service',
+        valueLabel: 'Bandwidth',
+        valueFormat: 'filesize',
+        unknownLabel: '(none)',
+        filters: {
+          ref_ext: 1,
+          category: 'static',
+          group_by: 'service'
+        }
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        tag: 'url',
+        title: 'Hotlinked URLs',
+        dataLabel: 'URL',
+        valueLabel: 'Visitors',
+        unknownLabel: '(none)',
+        filters: {
+          ref_ext: 1,
+          category: 'static',
+        }
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        tag: 'srv_status',
+        title: 'HTTP Status Codes',
+        dataLabel: 'Status',
+        valueLabel: 'Visitors',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
         tag: 'url_host',
         title: 'Domains',
         dataLabel: 'Domain',
@@ -53,7 +142,22 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
+        event: 'hit',
+        tag: 'srv_cache',
+        title: 'Cache Status',
+        dataLabel: 'Cached',
+        valueLabel: 'Visitors',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
         tag: 'url_path',
         title: 'Top URLs',
         dataLabel: 'URL',
@@ -68,7 +172,7 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
+        event: 'hit',
         tag: 'ref_host',
         title: 'Sources',
         dataLabel: 'Source Domain',
@@ -87,7 +191,7 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
+        event: 'hit',
         tag: 'ref',
         title: 'Source URLs',
         dataLabel: 'Source URL',
@@ -106,7 +210,7 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
+        event: 'hit',
         tag: 'country',
         title: 'Countries',
         dataLabel: 'Country',
@@ -126,7 +230,7 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
+        event: 'hit',
         tag: 'city',
         title: 'Cities',
         dataLabel: 'City',
@@ -142,15 +246,85 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
-        tag: 'ua_br',
+        event: 'hit',
+        tag: 'category',
+        title: 'Categories',
+        dataLabel: 'Category',
+        valueLabel: 'Hits',
+        unknownLabel: '(unknown)',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        tag: 'logger',
+        title: 'Loggers',
+        dataLabel: 'Logger',
+        valueLabel: 'Hits',
+        unknownLabel: '(unknown)',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        tag: 'bot_name',
+        title: 'Bots',
+        dataLabel: 'Bot',
+        valueLabel: 'Hits',
+        unknownLabel: '(unknown)',
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        tag: 'client_type',
+        title: 'Client Types',
+        dataLabel: 'Client Type',
+        valueLabel: 'Hits',
+        unknownLabel: '(unknown)',
+        filters: {
+          client_type__neq: ''
+        }
+      }]
+    },
+    {
+      style: 'toplist',
+      size: {
+        lg: 3,
+        md: 4,
+        sm: 12
+      },
+      data: [{
+        event: 'hit',
+        tag: 'client_name',
         title: 'Browsers',
         dataLabel: 'Browser',
         valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
+        filters: {
+          client_type: 'browser'
+        }
       }, {
-        event: 'page_view',
-        tag: 'ua_os',
+        event: 'hit',
+        tag: 'os_name',
         title: 'Operating Systems',
         dataLabel: 'Operating System',
         valueLabel: 'Visitors',
@@ -160,7 +334,7 @@ export default {
     {
       style: 'toplist',
       visible: {
-        parent: ['ua_br']
+        parent: ['client_name']
       },
       size: {
         lg: 3,
@@ -168,8 +342,8 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
-        tag: 'ua_br_v',
+        event: 'hit',
+        tag: 'client_version',
         title: 'Browsers Versions',
         dataLabel: 'Browser Version',
         valueLabel: 'Visitors',
@@ -184,35 +358,35 @@ export default {
         sm: 12
       },
       data: [{
-        event: 'page_view',
-        tag: 'ua_dv_t',
+        event: 'hit',
+        tag: 'device_type',
         title: 'Device Types',
         dataLabel: 'Device Type',
         valueLabel: 'Visitors',
         unknownLabel: '(unknown)',
       }, {
-        event: 'page_view',
-        tag: 'ua_dv_v',
+        event: 'hit',
+        tag: 'device_vendor',
         title: 'Vendors',
         dataLabel: 'Vendor',
         valueLabel: 'Visitors',
         unknownLabel: '(other)',
       }, {
-        event: 'page_view',
-        tag: 'ua_dv',
+        event: 'hit',
+        tag: 'device_model',
         title: 'Models',
         dataLabel: 'Model',
         valueLabel: 'Visitors',
         unknownLabel: '(other)',
       }]
     },
-    {
-      style: 'webvitals',
-      size: {
-        size: 12,
-      },
-      data: []
-    },
+    // {
+    //   style: 'webvitals',
+    //   size: {
+    //     size: 12,
+    //   },
+    //   data: []
+    // },
     // {
     //   style: 'gauge',
     //   size: {
@@ -220,7 +394,7 @@ export default {
     //   },
     //   title: 'Performance',
     //   data: [{
-    //     event: 'page_view',
+    //     event: 'hit',
     //     tag: 'ttfb',
     //     op: 'avg',
     //     dataLabel: 'TTFB',

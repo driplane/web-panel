@@ -180,18 +180,19 @@ export class ProjectPage implements OnInit {
     shareReplay(),
   );
 
-  topList({ tag, event = 'page_view', filters: extraFilters = {}, limit = 10, key = 'visitor' }) {
+  topList({ tag, event = 'hit', filters: extraFilters = {}, limit = 10, key = 'visitor', op = null }) {
     return this.notOnboardingMode$.pipe(
       filter((notOnboarding) => notOnboarding),
       switchMap(() => this.selection$),
       tap((l) => log('topList Call', tag)),
       switchMap(({ since, until, project, filters }) =>
-        this.driplane.getEventResult(project, event, key === 'visitor' ? 'unique' : 'count', {
+        this.driplane.getEventResult(project, event, op ? op : (key === 'visitor' ? 'unique' : 'count'), {
           since,
           until,
           limit,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          ...(key === 'visitor' ? { tag: 'cid' } : {}),
+          tag,
+          ...(op ? {} : (key === 'visitor' ? { tag: 'visitor' } : {})),
           group_by: tag,
           order_by: 'result',
           order_by_dir: 'desc',
@@ -206,7 +207,7 @@ export class ProjectPage implements OnInit {
       map((res) => res.result),
       map((list) => list.map(item => ({
         count: item.result,
-        label: item[tag]
+        label: item[op && extraFilters['group_by'] ? extraFilters['group_by'] : tag]
       }))),
     );
   }
@@ -390,11 +391,11 @@ export class ProjectPage implements OnInit {
         case 'toplist': {
 
           const data$ = dataGroup$.pipe(
-            switchMap((cardData) => this.topList({ event: cardData.event, filters: cardData.filters, tag: cardData.tag }))
+            switchMap((cardData) => this.topList({ event: cardData.event, filters: cardData.filters, tag: cardData.tag, op: cardData.op ?? null }))
           );
 
           const dataFull$ = dataGroup$.pipe(
-            switchMap((cardData) => this.topList({ event: cardData.event, filters: cardData.filters, limit: 1000, tag: cardData.tag }))
+            switchMap((cardData) => this.topList({ event: cardData.event, filters: cardData.filters, limit: 1000, tag: cardData.tag, op: cardData.op ?? null }))
           );
 
           const visible$ = dataGroup$.pipe(

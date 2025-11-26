@@ -13,6 +13,7 @@ export class LineChartComponent {
   @Input() dateFormat: string = 'dd/MM/yy HH:mm';
   @Input() valueLabel: string = 'Value';
   @Input() timeLabel: string = 'Time';
+  @Input() valueFormat: string = 'number';
 
   @Input()
   set data(data: { time: Date; value: number }[]) {
@@ -41,7 +42,24 @@ export class LineChartComponent {
           fontSize: 14,
           format: {
             x: (d) => format(d, this.dateFormat),
-            y: (d) => `${d}`,
+            y: (d) => {
+              if (this.valueFormat === 'filesize') {
+                const bytes = parseInt(d.toString(), 10);
+                if (isNaN(bytes)) return d.toString();
+
+                const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                let size = bytes;
+                let unitIndex = 0;
+
+                while (size >= 1024 && unitIndex < units.length - 1) {
+                  size /= 1024;
+                  unitIndex++;
+                }
+
+                return `${size.toFixed(1)} ${units[unitIndex]}`;
+              }
+              return `${d}`;
+            },
           }
         }))
       ]

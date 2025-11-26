@@ -68,7 +68,7 @@
                     <a class="label"
                       (click)="addFilter(card.dataGroup.value.tag, item.label, card.dataGroup.value.dataLabel, card.dataGroup.value.labelFormat, card.dataGroup.value.unknownLabel)">{{
                       item.label | labelFormat:card.dataGroup.value.labelFormat:card.dataGroup.value.unknownLabel }}</a>
-                    <span>{{ item.count | number }}</span>
+                    <span>{{ item.count | valueFormat:card.dataGroup.value.valueFormat }}</span>
                   </li>
                 </ul>
               </ion-card-content>
@@ -83,10 +83,10 @@
                 <ion-card-subtitle>{{ card.dataGroup.value.title }}</ion-card-subtitle>
               </ion-card-header>
 
-              <p class="total">{{ card.total$ | async | number }}</p>
+              <p class="total">{{ card.total$ | async | valueFormat:card.dataGroup.value.valueFormat }}</p>
 
               <app-line-chart [data]="card.timedData$ | async" [valueLabel]="card.dataGroup.value.valueLabel"
-                [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async"></app-line-chart>
+                [timeLabel]="chartTimeLabel$ | async" [dateFormat]="chartDateFormat$ | async" [valueFormat]="card.dataGroup.value.valueFormat"></app-line-chart>
             </ion-card>
           </ng-container>
 
