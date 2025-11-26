@@ -54,7 +54,7 @@ export interface ProjectKeyConfig {
   auto_fill: object;
   auto_filter: object;
   auto_fill_template: {
-    [key:string]: 'geoip.city' | 'geoip.country_code'
+    [key:string]: 'geoip.city' | 'geoip.country_code' | 'visitor.id' | 'ua.client_name' | 'ua.client_type' | 'ua.client_version' | 'ua.device_type' | 'ua.device_vendor' | 'ua.device_model' | 'ua.os_name' | 'ua.os_version' | 'ua.bot_name';
   }
 }
 
