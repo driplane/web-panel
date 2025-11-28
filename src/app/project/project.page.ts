@@ -158,7 +158,7 @@ export class ProjectPage implements OnInit {
         })
       )),
     tap((result) => log('onboardingMode', result)),
-    map(({ result }) => ~~(result) === 0),
+    map(({ result }) => parseInt(result, 10) === 0),
     distinctUntilChanged(),
     switchMap((onboarding) => iif(
       () => onboarding,
@@ -359,9 +359,10 @@ export class ProjectPage implements OnInit {
             })),
             map(({ result }) => result.map(item => ({
               time: parseISO(item.time),
-              value: ~~item.result
+              value: parseInt(item.result, 10)
             }))),
             shareReplay(),
+            tap((data) => log('timedData', data)),
           );
 
           const total$ = this.notOnboardingMode$.pipe(

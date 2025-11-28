@@ -111,7 +111,7 @@ export class KeyDetailPage implements OnInit {
       newTemplate[this.autoFillForm.value.key] = this.autoFillForm.value.value;
     } else {
       if (this.autoFillForm.value.valueType === 'number') {
-        newAutofill[this.autoFillForm.value.key] = ~~(this.autoFillForm.value.value);
+        newAutofill[this.autoFillForm.value.key] = parseInt(this.autoFillForm.value.value, 10);
       } else {
         newAutofill[this.autoFillForm.value.key] = `${this.autoFillForm.value.value}`;
       }
@@ -169,7 +169,7 @@ export class KeyDetailPage implements OnInit {
 
     const current = this.projectKeyForm.value.auto_filter;
     if (this.autoFillForm.value.valueType === 'number') {
-      this.autoFillForm.value.value = ~~(this.autoFillForm.value.value);
+      this.autoFillForm.value.value = parseInt(this.autoFillForm.value.value, 10);
     }
 
     this.projectKeyForm.patchValue({

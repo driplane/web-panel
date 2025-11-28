@@ -43,6 +43,7 @@ export class LineChartComponent {
           format: {
             x: (d) => format(d, this.dateFormat),
             y: (d) => {
+              console.log(d, this.valueFormat);
               if (this.valueFormat === 'filesize') {
                 const bytes = parseInt(d.toString(), 10);
                 if (isNaN(bytes)) return d.toString();
@@ -55,6 +56,8 @@ export class LineChartComponent {
                   size /= 1024;
                   unitIndex++;
                 }
+
+                console.log(size, units[unitIndex]);
 
                 return `${size.toFixed(1)} ${units[unitIndex]}`;
               }
